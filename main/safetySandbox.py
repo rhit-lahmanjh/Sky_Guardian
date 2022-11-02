@@ -8,16 +8,22 @@ import time
 telloOne = Tello()
 telloOne.connect()
 
+print(telloOne.get_battery())
+print(telloOne.get_barometer())
+print(telloOne.get_highest_temperature())
+print(telloOne.get_temperature())
+print(telloOne.query_wifi_signal_noise_ratio())
+
 # Conditional Statements to run through the static telemetry checks
 # In the main code base, will likely use the get methods directly rather than recreating them
 flag = False
 if telloOne.get_battery() < 50:
     flag = False
-elif telloOne.get_barometer() > 20:
+elif telloOne.get_barometer() > 10000:
     flag = False
-elif telloOne.get_highest_temperature() > 75:
+elif telloOne.get_highest_temperature() > 100:
     flag = False
-elif telloOne.get_temperature() > 60:
+elif telloOne.get_temperature() > 100:
     flag = False
 else:
     flag = True
@@ -40,7 +46,7 @@ if flag == True: # called launch function with flag input
         telloOne.move_forward(30)
         telloOne.get_status()
         telloOne.rotate_clockwise(180)
-        telloOne.get_status()
+        get_status()
 
         if telloOne.get_battery() < 10:
             break
