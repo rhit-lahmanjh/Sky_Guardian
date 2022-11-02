@@ -8,48 +8,58 @@ import time
 telloOne = Tello()
 telloOne.connect()
 
+print(telloOne.get_battery())
+print(telloOne.get_barometer())
+print(telloOne.get_highest_temperature())
+print(telloOne.get_temperature())
+print(telloOne.query_wifi_signal_noise_ratio())
+
 # Conditional Statements to run through the static telemetry checks
 # In the main code base, will likely use the get methods directly rather than recreating them
 flag = False
-if telloOne.telemtry_battery() < 50:
+if telloOne.get_battery() < 50:
     flag = False
-elif telloOne.telemetry_barometer() > 20:
+elif telloOne.get_barometer() > 10000:
     flag = False
-elif telloOne.telemtry_hightemp() > 75:
+elif telloOne.get_highest_temperature() > 100:
     flag = False
-elif telloOne.telemetry_avgtemp() > 60:
-    flag = False
-elif telloOne.telemetry_wifi_strength() < 25:
+elif telloOne.get_temperature() > 100:
     flag = False
 else:
     flag = True
 
-telloOne.launch(flag)  # called launch function with flag input
+if flag == True: # called launch function with flag input
+    print("Launch success")
+    telloOne.streamon()
+    telloOne.takeoff()
 
-# Creating list of status variables
-column_list = ["Time (s)", "Average Temp(C)", "Highest Temp(C)", "Battery Charge"]
-data = [[] for x in range(len(column_list))]
+    # Creating list of status variables
+    column_list = ["Time (s)", "Average Temp(C)", "Highest Temp(C)", "Battery Charge"]
+    data = [[] for x in range(len(column_list))]
 
-while telloOne.get_battery() > 10:
+    while telloOne.get_battery() > 10:
 
-    telloOne.move_forward(30)
-    telloOne.get_status()
-    telloOne.rotate_clockwise(180)
-    telloOne.get_status()
-    telloOne.move_forward(30)
-    telloOne.get_status()
-    telloOne.rotate_clockwise(180)
-    telloOne.get_status()
+        telloOne.move_forward(30)
+        telloOne.get_status()
+        telloOne.rotate_clockwise(180)
+        telloOne.get_status()
+        telloOne.move_forward(30)
+        telloOne.get_status()
+        telloOne.rotate_clockwise(180)
+        get_status()
 
-    if telloOne.get_battery() < 10:
-        break
+        if telloOne.get_battery() < 10:
+            break
 
-telloOne.land()
+    telloOne.land()
 
-df = pd.DataFrame(list, columns = column_list)
-filepath = Path("C:\\Users\\prestokp\\OneDrive\\College Career\\Senior Year Two\\MDS Capstone\\Data\\FlightData.csv")
-filepath.parent.mkdir(parents=True, exist_ok=True)
-df.to_csv(filepath)
+    df = pd.DataFrame(list, columns = column_list)
+    filepath = Path("C:\\Users\\prestokp\\OneDrive\\College Career\\Senior Year Two\\MDS Capstone\\Data\\FlightData.csv")
+    filepath.parent.mkdir(parents=True, exist_ok=True)
+    df.to_csv(filepath)
+
+if flag == False:
+    print("Launch failed")
 
 # Telemetry 'Get' Functions are getting static telemetry data to be used in Safety checks before the drones is allowed
 # to take off
@@ -98,7 +108,7 @@ def get_status(data):
     data[1].append(telloOne.get_temperature()) # appends average temp to list
     data[2].append(telloOne.get_highest_temperature()) # appends highest temperature to list
     data[3].append(telloOne.get_battery()) # appends battery charge to list
-    data[4].append(telloOne.telemetry_wifi_strength()) # appends the Wi-Fi SNR value to list
+    data[4].append(telloOne.query_wifi_signal_noise_ratio()) # appends the Wi-Fi SNR value to list
 
 
 
