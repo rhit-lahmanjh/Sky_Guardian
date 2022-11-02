@@ -1,11 +1,13 @@
 from drone import Drone
 import cv2
 import time as t
+import json
 
-chuck = Drone('Chuck')
+chuck = Drone('Chuck',False)
 
 while cv2.waitKey(1) != 27: # Escape
     timeStart = t.time_ns()
-    bat = chuck.get_current_state()() # swap out for any functions
+    status = chuck.get_current_state() # swap out for any functions
     timeEnd = t.time_ns()
-    print(f'battery is at :{bat.unwa} and it took {timeEnd-timeStart} ns')
+    printDict = json.dumps(status)
+    print(f'battery is at :{printDict} and it took {timeEnd-timeStart} ns')
