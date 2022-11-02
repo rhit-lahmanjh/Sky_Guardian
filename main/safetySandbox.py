@@ -44,6 +44,8 @@ while telloOne.get_battery() > 10:
     if telloOne.get_battery() < 10:
         break
 
+telloOne.land()
+
 df = pd.DataFrame(list, columns = column_list)
 filepath = Path("C:\\Users\\prestokp\\OneDrive\\College Career\\Senior Year Two\\MDS Capstone\\Data\\FlightData.csv")
 filepath.parent.mkdir(parents=True, exist_ok=True)
