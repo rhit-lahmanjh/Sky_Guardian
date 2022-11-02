@@ -11,15 +11,13 @@ telloOne.connect()
 # Conditional Statements to run through the static telemetry checks
 # In the main code base, will likely use the get methods directly rather than recreating them
 flag = False
-if telloOne.telemtry_battery() < 50:
+if telloOne.get_battery() < 50:
     flag = False
-elif telloOne.telemetry_barometer() > 20:
+elif telloOne.get_barometer() > 20:
     flag = False
-elif telloOne.telemtry_hightemp() > 75:
+elif telloOne.get_highest_temperature() > 75:
     flag = False
-elif telloOne.telemetry_avgtemp() > 60:
-    flag = False
-elif telloOne.telemetry_wifi_strength() < 25:
+elif telloOne.get_temperature() > 60:
     flag = False
 else:
     flag = True
@@ -98,7 +96,7 @@ def get_status(data):
     data[1].append(telloOne.get_temperature()) # appends average temp to list
     data[2].append(telloOne.get_highest_temperature()) # appends highest temperature to list
     data[3].append(telloOne.get_battery()) # appends battery charge to list
-    data[4].append(telloOne.telemetry_wifi_strength()) # appends the Wi-Fi SNR value to list
+    data[4].append(telloOne.query_wifi_signal_noise_ratio()) # appends the Wi-Fi SNR value to list
 
 
 
