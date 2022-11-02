@@ -8,11 +8,11 @@ import time
 telloOne = Tello()
 telloOne.connect()
 
-print(telloOne.get_battery())
-print(telloOne.get_barometer())
-print(telloOne.get_highest_temperature())
-print(telloOne.get_temperature())
-print(telloOne.query_wifi_signal_noise_ratio())
+print("Battery Percent (%): " + telloOne.get_battery())
+print("Absolute Height (cm): " + telloOne.get_barometer())
+print("Highest Temp (C):" + telloOne.get_highest_temperature())
+print("Average Temp (C): " + telloOne.get_temperature())
+print("Signal Noise Ratio (dB): " + telloOne.query_wifi_signal_noise_ratio())
 
 # Conditional Statements to run through the static telemetry checks
 # In the main code base, will likely use the get methods directly rather than recreating them
@@ -30,21 +30,30 @@ else:
 
 if flag == True: # called launch function with flag input
     print("Launch success")
+    time.sleep(1)
     telloOne.streamon()
+    time.sleep(1)
     telloOne.takeoff()
+    time.sleep(1)
+    telloOne.set_speed(100)
+    time.sleep(1)
+    telloOne.move_up(300)
+    time.sleep(1)
 
     # Creating list of status variables
-    column_list = ["Time (s)", "Average Temp(C)", "Highest Temp(C)", "Battery Charge"]
+    column_list = ["Time (s)", "Average Temp(C)", "Highest Temp(C)", "Battery Charge", "Wi-Fi SNR"]
     data = [[] for x in range(len(column_list))]
 
+    time.sleep(1)
     while telloOne.get_battery() > 10:
 
-        telloOne.move_forward(30)
+        telloOne.move_forward(300)
         data[0].append(time.time())  # appends time to list
         data[1].append(telloOne.get_temperature())  # appends average temp to list
         data[2].append(telloOne.get_highest_temperature())  # appends highest temperature to list
         data[3].append(telloOne.get_battery())  # appends battery charge to list
         data[4].append(telloOne.query_wifi_signal_noise_ratio())  # appends the Wi-Fi SNR value to list
+        time.sleep(1)
 
         telloOne.rotate_clockwise(180)
         data[0].append(time.time())  # appends time to list
@@ -52,13 +61,15 @@ if flag == True: # called launch function with flag input
         data[2].append(telloOne.get_highest_temperature())  # appends highest temperature to list
         data[3].append(telloOne.get_battery())  # appends battery charge to list
         data[4].append(telloOne.query_wifi_signal_noise_ratio())  # appends the Wi-Fi SNR value to list
+        time.sleep(1)
 
-        telloOne.move_forward(30)
+        telloOne.move_forward(300)
         data[0].append(time.time())  # appends time to list
         data[1].append(telloOne.get_temperature())  # appends average temp to list
         data[2].append(telloOne.get_highest_temperature())  # appends highest temperature to list
         data[3].append(telloOne.get_battery())  # appends battery charge to list
         data[4].append(telloOne.query_wifi_signal_noise_ratio())  # appends the Wi-Fi SNR value to list
+        time.sleep(1)
 
         telloOne.rotate_clockwise(180)
         data[0].append(time.time())  # appends time to list
@@ -66,16 +77,26 @@ if flag == True: # called launch function with flag input
         data[2].append(telloOne.get_highest_temperature())  # appends highest temperature to list
         data[3].append(telloOne.get_battery())  # appends battery charge to list
         data[4].append(telloOne.query_wifi_signal_noise_ratio())  # appends the Wi-Fi SNR value to list
+        time.sleep(1)
 
+        time.sleep(1)
         if telloOne.get_battery() < 10:
             break
 
+    time.sleep(1)
+    telloOne.streamoff()
     telloOne.land()
 
-    df = pd.DataFrame(list, columns = column_list)
+    df = pd.DataFrame(data, columns = column_list)
     filepath = Path("C:\\Users\\prestokp\\OneDrive\\College Career\\Senior Year Two\\MDS Capstone\\Data\\FlightData.csv")
     filepath.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(filepath)
+
+    print("Battery Percent (%): " + telloOne.get_battery())
+    print("Absolute Height (cm): " + telloOne.get_barometer())
+    print("Highest Temp (C):" + telloOne.get_highest_temperature())
+    print("Average Temp (C): " + telloOne.get_temperature())
+    print("Signal Noise Ratio (dB): " + telloOne.query_wifi_signal_noise_ratio())
 
 if flag == False:
     print("Launch failed")
