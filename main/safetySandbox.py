@@ -8,10 +8,10 @@ import time
 telloOne = Tello()
 telloOne.connect()
 
-print("Battery Percent (%): " + telloOne.get_battery())
-print("Absolute Height (cm): " + telloOne.get_barometer())
-print("Highest Temp (C):" + telloOne.get_highest_temperature())
-print("Average Temp (C): " + telloOne.get_temperature())
+print("Battery Percent (%): " + str(telloOne.get_battery()))
+print("Absolute Height (cm): " + str(telloOne.get_barometer()))
+print("Highest Temp (C):" + str(telloOne.get_highest_temperature()))
+print("Average Temp (C): " + str(telloOne.get_temperature()))
 print("Signal Noise Ratio (dB): " + telloOne.query_wifi_signal_noise_ratio())
 
 # Conditional Statements to run through the static telemetry checks
@@ -36,7 +36,8 @@ if flag == True: # called launch function with flag input
     telloOne.takeoff()
     time.sleep(1)
     telloOne.set_speed(100)
-    time.sleep(1)
+    time.sleep(5)
+
     telloOne.move_up(300)
     time.sleep(1)
 
