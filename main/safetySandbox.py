@@ -22,32 +22,38 @@ elif telloOne.get_temperature() > 60:
 else:
     flag = True
 
-telloOne.launch(flag)  # called launch function with flag input
+if flag == True: # called launch function with flag input
+    print("Launch success")
+    telloOne.streamon()
+    telloOne.takeoff()
 
-# Creating list of status variables
-column_list = ["Time (s)", "Average Temp(C)", "Highest Temp(C)", "Battery Charge"]
-data = [[] for x in range(len(column_list))]
+    # Creating list of status variables
+    column_list = ["Time (s)", "Average Temp(C)", "Highest Temp(C)", "Battery Charge"]
+    data = [[] for x in range(len(column_list))]
 
-while telloOne.get_battery() > 10:
+    while telloOne.get_battery() > 10:
 
-    telloOne.move_forward(30)
-    telloOne.get_status()
-    telloOne.rotate_clockwise(180)
-    telloOne.get_status()
-    telloOne.move_forward(30)
-    telloOne.get_status()
-    telloOne.rotate_clockwise(180)
-    telloOne.get_status()
+        telloOne.move_forward(30)
+        telloOne.get_status()
+        telloOne.rotate_clockwise(180)
+        telloOne.get_status()
+        telloOne.move_forward(30)
+        telloOne.get_status()
+        telloOne.rotate_clockwise(180)
+        telloOne.get_status()
 
-    if telloOne.get_battery() < 10:
-        break
+        if telloOne.get_battery() < 10:
+            break
 
-telloOne.land()
+    telloOne.land()
 
-df = pd.DataFrame(list, columns = column_list)
-filepath = Path("C:\\Users\\prestokp\\OneDrive\\College Career\\Senior Year Two\\MDS Capstone\\Data\\FlightData.csv")
-filepath.parent.mkdir(parents=True, exist_ok=True)
-df.to_csv(filepath)
+    df = pd.DataFrame(list, columns = column_list)
+    filepath = Path("C:\\Users\\prestokp\\OneDrive\\College Career\\Senior Year Two\\MDS Capstone\\Data\\FlightData.csv")
+    filepath.parent.mkdir(parents=True, exist_ok=True)
+    df.to_csv(filepath)
+
+if flag == False:
+    print("Launch failed")
 
 # Telemetry 'Get' Functions are getting static telemetry data to be used in Safety checks before the drones is allowed
 # to take off
