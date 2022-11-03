@@ -2,14 +2,14 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QWidget, QPushBut
 from PyQt5.QtGui import QPixmap, QColor
 from PyQt5.QtCore import QThread, Qt, pyqtSignal,pyqtSlot
 from PyQt5 import QtGui
-import djitellopy as tel
+import djitellopy as tello
 from threading import Thread
 import cv2
 import time as t
 import sys
 import numpy as np
 
-class ourTello(tel.Tello):
+class ourTello(tello.Tello):
     vidCap = []
     def __init__(self,name):
         super().__init__()
