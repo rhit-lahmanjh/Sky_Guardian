@@ -43,41 +43,29 @@ if flag == True: # called launch function with flag input
 
     # Creating list of status variables
     column_list = ["Time (s)", "Average Temp(C)", "Highest Temp(C)", "Battery Charge", "Wi-Fi SNR"]
-    data = [[] for x in range(len(column_list))]
+    data = []
 
     time.sleep(1)
     while telloOne.get_battery() > 10:
 
         telloOne.move_forward(300)
-        data[0].append(time.time())  # appends time to list
-        data[1].append(telloOne.get_temperature())  # appends average temp to list
-        data[2].append(telloOne.get_highest_temperature())  # appends highest temperature to list
-        data[3].append(telloOne.get_battery())  # appends battery charge to list
-        data[4].append(telloOne.query_wifi_signal_noise_ratio())  # appends the Wi-Fi SNR value to list
+        data.append([time.time(), telloOne.get_temperature(), telloOne.get_highest_temperature(), telloOne.get_battery(),
+             telloOne.query_wifi_signal_noise_ratio()])  # appends time to list
         time.sleep(1)
 
         telloOne.rotate_clockwise(180)
-        data[0].append(time.time())  # appends time to list
-        data[1].append(telloOne.get_temperature())  # appends average temp to list
-        data[2].append(telloOne.get_highest_temperature())  # appends highest temperature to list
-        data[3].append(telloOne.get_battery())  # appends battery charge to list
-        data[4].append(telloOne.query_wifi_signal_noise_ratio())  # appends the Wi-Fi SNR value to list
+        data.append([time.time(),telloOne.get_temperature(), telloOne.get_highest_temperature(), telloOne.get_battery(),
+                    telloOne.query_wifi_signal_noise_ratio()])  # appends time to list
         time.sleep(1)
 
         telloOne.move_forward(300)
-        data[0].append(time.time())  # appends time to list
-        data[1].append(telloOne.get_temperature())  # appends average temp to list
-        data[2].append(telloOne.get_highest_temperature())  # appends highest temperature to list
-        data[3].append(telloOne.get_battery())  # appends battery charge to list
-        data[4].append(telloOne.query_wifi_signal_noise_ratio())  # appends the Wi-Fi SNR value to list
+        data.append([time.time(), telloOne.get_temperature(), telloOne.get_highest_temperature(), telloOne.get_battery(),
+             telloOne.query_wifi_signal_noise_ratio()])  # appends time to list
         time.sleep(1)
 
         telloOne.rotate_clockwise(180)
-        data[0].append(time.time())  # appends time to list
-        data[1].append(telloOne.get_temperature())  # appends average temp to list
-        data[2].append(telloOne.get_highest_temperature())  # appends highest temperature to list
-        data[3].append(telloOne.get_battery())  # appends battery charge to list
-        data[4].append(telloOne.query_wifi_signal_noise_ratio())  # appends the Wi-Fi SNR value to list
+        data.append([time.time(), telloOne.get_temperature(), telloOne.get_highest_temperature(), telloOne.get_battery(),
+             telloOne.query_wifi_signal_noise_ratio()])  # appends time to list
         time.sleep(1)
 
         time.sleep(1)
