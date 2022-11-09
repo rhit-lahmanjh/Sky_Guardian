@@ -1,8 +1,8 @@
 from djitellopy import Tello
-import csv
 import pandas as pd
 from pathlib import Path
 import time
+import keyboard
 
 # Connect to Tello Drone
 telloOne = Tello()
@@ -38,7 +38,7 @@ if flag == True: # called launch function with flag input
     telloOne.set_speed(100)
     time.sleep(5)
 
-    telloOne.move_up(300)
+    telloOne.move_up(200)
     time.sleep(1)
 
     # Creating list of status variables
@@ -48,7 +48,7 @@ if flag == True: # called launch function with flag input
     time.sleep(1)
     while telloOne.get_battery() > 10:
 
-        telloOne.move_forward(300)
+        telloOne.move_forward(100)
         data.append([time.time(), telloOne.get_temperature(), telloOne.get_highest_temperature(), telloOne.get_battery(),
              telloOne.query_wifi_signal_noise_ratio()])  # appends time to list
         time.sleep(1)
@@ -58,18 +58,22 @@ if flag == True: # called launch function with flag input
                     telloOne.query_wifi_signal_noise_ratio()])  # appends time to list
         time.sleep(1)
 
-        telloOne.move_forward(300)
+        telloOne.move_forward(100)
         data.append([time.time(), telloOne.get_temperature(), telloOne.get_highest_temperature(), telloOne.get_battery(),
              telloOne.query_wifi_signal_noise_ratio()])  # appends time to list
         time.sleep(1)
 
-        telloOne.rotate_clockwise(180)
+        telloOne.rotate_counter_clockwise(180)
         data.append([time.time(), telloOne.get_temperature(), telloOne.get_highest_temperature(), telloOne.get_battery(),
              telloOne.query_wifi_signal_noise_ratio()])  # appends time to list
         time.sleep(1)
 
         time.sleep(1)
         if telloOne.get_battery() < 10:
+            break
+
+        if keyboard.is_pressed("q"):
+            print('Test run aborted, proceeding to collect data')
             break
 
     df = pd.DataFrame(data, columns=column_list)
@@ -136,7 +140,7 @@ def launch(flag):
 def get_status(data):
     data[0].append(time.time())  # appends time to list
     data[1].append(telloOne.get_temperature())  # appends average temp to list
-    data[2].append(telloOne.get_highest_temperature())  # appends highest temperature to list
+    data[2].append(telloOne.get_highest_temperature())  # appends the highest temperature to list
     data[3].append(telloOne.get_battery())  # appends battery charge to list
     data[4].append(telloOne.query_wifi_signal_noise_ratio())  # appends the Wi-Fi SNR value to list
 
