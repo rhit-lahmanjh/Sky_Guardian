@@ -19,7 +19,7 @@ print("Signal Noise Ratio (dB): " + telloOne.query_wifi_signal_noise_ratio())
 flag = False
 if telloOne.get_battery() < 50:
     flag = False
-elif telloOne.get_barometer() > 10000:
+elif telloOne.get_barometer() > 100000:
     flag = False
 elif telloOne.get_highest_temperature() > 100:
     flag = False
@@ -72,12 +72,9 @@ if flag == True: # called launch function with flag input
         if telloOne.get_battery() < 10:
             break
 
-    time.sleep(1)
-    telloOne.streamoff()
-    telloOne.land()
-
-    df = pd.DataFrame(data, columns = column_list)
-    filepath = Path("C:\\Users\\prestokp\\OneDrive\\College Career\\Senior Year Two\\MDS Capstone\\Data\\FlightData.csv")
+    df = pd.DataFrame(data, columns=column_list)
+    filepath = Path(
+        "C:\\Users\\prestokp\\OneDrive\\College Career\\Senior Year Two\\MDS Capstone\\Data\\FlightData.csv")
     filepath.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(filepath)
 
@@ -86,6 +83,10 @@ if flag == True: # called launch function with flag input
     print("Highest Temp (C):" + telloOne.get_highest_temperature())
     print("Average Temp (C): " + telloOne.get_temperature())
     print("Signal Noise Ratio (dB): " + telloOne.query_wifi_signal_noise_ratio())
+
+    time.sleep(1)
+    telloOne.streamoff()
+    telloOne.land()
 
 if flag == False:
     print("Launch failed")
