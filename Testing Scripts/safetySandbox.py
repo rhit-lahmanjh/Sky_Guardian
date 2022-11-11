@@ -1,8 +1,8 @@
 from djitellopy import Tello
-import csv
 import pandas as pd
 from pathlib import Path
 import time
+import keyboard
 
 # Connect to Tello Drone
 telloOne = Tello()
@@ -19,7 +19,7 @@ print("Signal Noise Ratio (dB): " + telloOne.query_wifi_signal_noise_ratio())
 flag = False
 if telloOne.get_battery() < 50:
     flag = False
-elif telloOne.get_barometer() > 10000:
+elif telloOne.get_barometer() > 100000:
     flag = False
 elif telloOne.get_highest_temperature() > 100:
     flag = False
@@ -38,7 +38,7 @@ if flag == True: # called launch function with flag input
     telloOne.set_speed(100)
     time.sleep(5)
 
-    telloOne.move_up(300)
+    telloOne.move_up(200)
     time.sleep(1)
 
     # Creating list of status variables
@@ -48,36 +48,32 @@ if flag == True: # called launch function with flag input
     time.sleep(1)
     while telloOne.get_battery() > 10:
 
-        telloOne.move_forward(300)
+        print("Battery Percent (%): " + str(telloOne.get_battery()))
+        telloOne.move_forward(100)
         data.append([time.time(), telloOne.get_temperature(), telloOne.get_highest_temperature(), telloOne.get_battery(),
              telloOne.query_wifi_signal_noise_ratio()])  # appends time to list
         time.sleep(1)
 
-        telloOne.rotate_clockwise(180)
-        data.append([time.time(),telloOne.get_temperature(), telloOne.get_highest_temperature(), telloOne.get_battery(),
-                    telloOne.query_wifi_signal_noise_ratio()])  # appends time to list
-        time.sleep(1)
-
-        telloOne.move_forward(300)
+        print("Battery Percent (%): " + str(telloOne.get_battery()))
+        telloOne.move_back(100)
         data.append([time.time(), telloOne.get_temperature(), telloOne.get_highest_temperature(), telloOne.get_battery(),
              telloOne.query_wifi_signal_noise_ratio()])  # appends time to list
         time.sleep(1)
 
-        telloOne.rotate_clockwise(180)
-        data.append([time.time(), telloOne.get_temperature(), telloOne.get_highest_temperature(), telloOne.get_battery(),
-             telloOne.query_wifi_signal_noise_ratio()])  # appends time to list
+        print("Battery Percent (%): " + str(telloOne.get_battery()))
         time.sleep(1)
-
-        time.sleep(1)
-        if telloOne.get_battery() < 10:
+        if telloOne.get_battery() < 50:
             break
 
-    time.sleep(1)
-    telloOne.streamoff()
-    telloOne.land()
+        if keyboard.is_pressed("q"):
+            print('Test run aborted, proceeding to collect data')
+            break
 
-    df = pd.DataFrame(data, columns = column_list)
-    filepath = Path("C:\\Users\\prestokp\\OneDrive\\College Career\\Senior Year Two\\MDS Capstone\\Data\\FlightData.csv")
+        telloOne.land()
+
+    df = pd.DataFrame(data, columns=column_list)
+    filepath = Path(
+        "C:\\Users\\prestokp\\OneDrive\\College Career\\Senior Year Two\\MDS Capstone\\Data\\FlightData.csv")
     filepath.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(filepath)
 
@@ -86,6 +82,10 @@ if flag == True: # called launch function with flag input
     print("Highest Temp (C):" + telloOne.get_highest_temperature())
     print("Average Temp (C): " + telloOne.get_temperature())
     print("Signal Noise Ratio (dB): " + telloOne.query_wifi_signal_noise_ratio())
+
+    time.sleep(1)
+    telloOne.streamoff()
+    telloOne.land()
 
 if flag == False:
     print("Launch failed")
@@ -135,7 +135,7 @@ def launch(flag):
 def get_status(data):
     data[0].append(time.time())  # appends time to list
     data[1].append(telloOne.get_temperature())  # appends average temp to list
-    data[2].append(telloOne.get_highest_temperature())  # appends highest temperature to list
+    data[2].append(telloOne.get_highest_temperature())  # appends the highest temperature to list
     data[3].append(telloOne.get_battery())  # appends battery charge to list
     data[4].append(telloOne.query_wifi_signal_noise_ratio())  # appends the Wi-Fi SNR value to list
 
