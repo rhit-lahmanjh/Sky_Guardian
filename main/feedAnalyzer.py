@@ -4,7 +4,7 @@ FONTFACE = cv2.FONT_HERSHEY_SIMPLEX
 FONT_SCALE = 0.7
 THICKNESS = 1
 
-class feedAnalyzer():
+class FeedAnalyzer():
     # load and define model
     ssdNet = []
 
@@ -14,34 +14,32 @@ class feedAnalyzer():
     objectClassFile = "CV_testing/coco_class_labels.txt"
     objectLabels = []
 
-    # wind = []
+    wind = []
 
     def __init__(self):
         
-        setUpObjectNet()
+        self.setUpObjectNet()
 
-        
         # win_name = 'Analyzer Feed'
         # self.wind = cv2.namedWindow(win_name, cv2.WINDOW_NORMAL)
     
-    def setUpObjectNet():
+    def setUpObjectNet(self):
         #read class labels
-        with open(self.classFile) as fp:
+        with open(self.objectClassFile) as fp:
             self.objectLabels = fp.read().split("\n")
 
         #read TF network and create net object (can load different networks)
         self.ssdNet = cv2.dnn.readNetFromTensorflow(self.objectModelFile, self.objectConfigFile)
 
-        
     def process(self,cv_img):
         objectsInfo = self.detect_objects(cv_img)
-        self.display_objects(cv_img,objectsInfo, threshold = .5)
+        self.display_objects(cv_img,objectsInfo, threshold = .8)
         # cv2.imshow(self.wind, cv_img)
         
     def detect_objects(self,im = None):
         if im is None:
             print('No image to read')
-            return null
+            return None
 
         # define frame size
         yPix = im.shape[0]
@@ -51,10 +49,10 @@ class feedAnalyzer():
         blob = cv2.dnn.blobFromImage(im,1.0, size = (yPix,xPix), mean = (0,0,0), swapRB=True, crop=False)
 
         #Pass blob to network
-        self.net.setInput(blob)
+        self.ssdNet.setInput(blob)
 
         # Perform Prediction
-        objects = self.net.forward()
+        objects = self.ssdNet.forward()
 
         return objects
 
@@ -70,7 +68,7 @@ class feedAnalyzer():
         # Display text inside the rectangle
         cv2.putText(im, text, (x, y-5 ), FONTFACE, FONT_SCALE, (0, 255, 255), THICKNESS, cv2.LINE_AA)
 
-    def display_objects(self,im, objects, threshold = 0.25):
+    def display_objects(self,im, objects, threshold = 0.80):
         rows = im.shape[0]; cols = im.shape[1]
 
         #loop through all objects
@@ -87,6 +85,9 @@ class feedAnalyzer():
 
             # check detection quality
             if score > threshold:
-                self.display_text(im, "{}".format(self.labels[classId]),x,y)
+                self.display_text(im, "{}".format(self.objectLabels[classId]),x,y)
                 cv2.rectangle(im,(x,y), (x+w,y+h),(255,255,255),2)
+                # print(self.objectLabels[classId])
+                # print(classId)
+                # print(score)
 
