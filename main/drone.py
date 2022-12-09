@@ -9,6 +9,7 @@ import time as t
 import socket 
 
 DEBUG_PRINTS = False
+WITH_DRONE = False
 
 class State(Enum):
     Landed = 1
@@ -36,14 +37,15 @@ class Drone(tel.Tello):
         super().__init__()
         self.name = name
         self.state = State.Landed
-        self.connect()
-        self.set_speed(self.MAXSPEED)
+        if WITH_DRONE:
+            # This is where we will implement connecting to a drone through the router
+            self.connect()
+            self.set_speed(self.MAXSPEED)
 
-        #setup video
-        self.streamon()
-        self.vidCap = self.get_video_capture()
-        self.VID_UDP_ADD = self.get_udp_video_address()
-        # self.vidCap = self.get_frame_read()
+            #setup video
+            self.streamon()
+            self.vidCap = self.get_video_capture()
+            self.VID_UDP_ADD = self.get_udp_video_address()
 
         #setup useful classes
         self.noise = PerlinNoise()
@@ -54,7 +56,7 @@ class Drone(tel.Tello):
         while True:
             start_time = t.time()
             grabbed = cap.grab()
-            if t.time()-start_time > .03:
+            if t.time()-start_time > .02:
                 break
             
     def getFrame(self):
@@ -85,30 +87,68 @@ class Drone(tel.Tello):
         """
         if prevDirection == None:
             prevDirection = [0,self.MAXSPEED/2,0,0] # this is not default argument bc using self
-        direction = self.noise(prevDirection)
+        print(f'Previous {prevDirection}')
+        noise = self.noise(prevDirection)
+        print(f'Noise{noise}')
+        direction = prevDirection + noise
+        print(f'Sum{direction}')
         return direction
     
     def fullScan(self):
         self.moveDirection([0,0,0,10])
 
-    def vibe(self):
-        cv2.namedWindow('test', cv2.WINDOW_NORMAL)
-        #region WEBCAM SOURCE
-        # s = 0
-        # if len(sys.argv) > 1:
-        #     s = sys.argv[1]
+    def handleUserInput(self):
+        # land interrupt
+        if(key.is_pressed('l')):
+            self.land()
+            self.state = State.Landed
+            return
+        moveDist = 30
+        if key.is_pressed('up'):
+            self.move_up(60)
+            return
+        if key.is_pressed('f'):
+            self.flip_back()
+            return
+        if key.is_pressed('down'):
+            self.move_down(moveDist)
+            return
+        if key.is_pressed('a'):
+            self.move_left(moveDist)
+            return
+        if key.is_pressed('d'):
+            self.move_right(moveDist)
+            return
+        if key.is_pressed('w'):
+            self.move_forward(moveDist)
+            return
+        if key.is_pressed('s'):
+            self.move_back(moveDist)
+            return
+        if key.is_pressed('left'):
+            self.rotate_counter_clockwise(45)
+            return
+        if key.is_pressed('right'):
+            self.rotate_clockwise(45)
+            return
 
-        # source = cv2.VideoCapture(s)
-        #endregion
-        cellPhoneCounter = 0
+    def test(self):
         while cv2.waitKey(20) != 27: # Escape
+            self.randomWander()
 
-            # land interrupt
-            if(key.is_pressed('l')):
-                self.land()
-                self.state = State.Landed
+
+    def operate(self):
+        # creating window
+        if(WITH_DRONE):
+            cv2.namedWindow('test', cv2.WINDOW_NORMAL)
+     
+
+        # general loop
+        while cv2.waitKey(20) != 27: # Escape
             if DEBUG_PRINTS:
                 print("looping")
+
+            #INSERT TELEMETRY CHECKS
             
             # get and analyze visual stimulus
             returned, img = self.getFrame()
@@ -118,9 +158,8 @@ class Drone(tel.Tello):
                 self.vision.display_objects(img, objects,threshold=.9)
                 cv2.imshow('test', img)
 
-                #if a person is visible, pause
+                # initial demo IO, soon to be removed
                 for object in objects[0,0,:,:]:
-                    # print(object)
                     if object[2] < .8:
                         break
                     if object[1] == 77:
@@ -128,33 +167,14 @@ class Drone(tel.Tello):
                     if object[1] == 77 and cellPhoneCounter == 2:
                         # self.prevState = self.state
                         # self.state = State.Hover
-                        self.flip_back()
+                        # self.flip_back()
                         print(f'Cell Phone detected. Flipping')
                         cellPhoneCounter = 0
                         break
 
-            #region user adjustment control
-            moveDist = 30
-            if key.is_pressed('up'):
-                self.move_up(60)
-            if key.is_pressed('f'):
-                self.flip_back()
-            if key.is_pressed('down'):
-                self.move_down(moveDist)
-            if key.is_pressed('a'):
-                self.move_left(moveDist)
-            if key.is_pressed('d'):
-                self.move_right(moveDist)
-            if key.is_pressed('w'):
-                self.move_forward(moveDist)
-            if key.is_pressed('s'):
-                self.move_back(moveDist)
-            if key.is_pressed('left'):
-                self.rotate_counter_clockwise(45)
-            if key.is_pressed('right'):
-                self.rotate_clockwise(45)
-            #endregion
-            
+            self.handleUserInput()
+
+            #State Switching SIILL IN DEV
             match self.state:
                 case State.Landed:
                     if key.is_pressed('t'):
@@ -172,8 +192,7 @@ class Drone(tel.Tello):
                 case State.Hover():
                     self.moveDirection(self.STOP)
         self.stop()
-        # source.release()
         cv2.destroyAllWindows()
 
 drone1 = Drone('chuck')
-drone1.vibe()
+drone1.test()
