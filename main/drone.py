@@ -196,7 +196,55 @@ class Drone(tel.Tello):
             if DEBUG_PRINTS:
                 print("looping")
 
-            #INSERT TELEMETRY CHECKS
+            #Static Telemetry Checks before Takeoff
+            if self.getSensorReading("bat") > 50:
+                BatCheck = True
+            else:
+                BatCheck = False
+                BatReason = "Battery Charge Too Low"
+
+            if self.getSensorReading("temph") < 100:
+                TemphCheck = True
+            else:
+                TemphCheck = False
+                TemphReason = "Battery Temperature Too High"
+
+            if self.getSensorReading("templ") < 90:
+                TemplCheck = True
+            else:
+                TemplCheck = False
+                TemplReason = "Baseline Low Temperature Too High"
+
+            signalStrength = self.query_wifi_signal_noise_ratio()
+            signalStrengthInt = int(signalStrength)
+            if signalStrengthInt > 15:
+                SignalCheck = True
+            else:
+                SignalCheck = False
+                SignalReason = "SNR below 15dB. Weak Connection"
+
+            pitch = self.getSensorReading("pitch")
+            if pitch < 3 or pitch > -3:
+                pitchCheck = True
+            else:
+                pitchCheck = False
+                pitchReason = "Pitch is Off Center. Unstable Takeoff."
+
+            roll = self.getSensorReading("roll")
+            if roll < 3 or roll > -3:
+                rollCheck = True
+            else:
+                rollCheck = False
+                rollReason = "Roll is Off Center. Unstable Takeoff."
+
+            # Comment out function as needed until testing can confirm desired threshold value
+            if self.getSensorReading("h") < 1000:
+                HeightCheck = True
+            else:
+                HeightCheck = False
+                HeightReason = ("Drone is Too High")
+
+
             
             # get and analyze visual stimulus
             returned, img = self.getFrame()
