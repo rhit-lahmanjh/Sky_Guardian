@@ -6,10 +6,12 @@ from feedAnalyzer import FeedAnalyzer
 import cv2
 import keyboard as key
 import time as t
+from collections import deque
 import socket 
 
 DEBUG_PRINTS = False
-WITH_DRONE = False
+WITH_DRONE = True
+RECORD_SENSOR_STATE = True
 
 class State(Enum):
     Landed = 1
@@ -25,27 +27,29 @@ class State(Enum):
 class Drone(tel.Tello):
     vidCap = None
     MAXSPEED = 10
-    state = None
+    opState = None
     prevState = None
     noise = None
     vision = None
     STOP = [0,0,0,0]
+    sensorState = dict()
     
     
     def __init__(self,name):
         cv2.VideoCapture()
         super().__init__()
         self.name = name
-        self.state = State.Landed
+        self.opState = State.Landed
         if WITH_DRONE:
             # This is where we will implement connecting to a drone through the router
             self.connect()
             self.set_speed(self.MAXSPEED)
+            self.initializeSensorState()
 
             #setup video
             self.streamon()
             self.vidCap = self.get_video_capture()
-            self.VID_UDP_ADD = self.get_udp_video_address()
+            # self.VID_UDP_ADD = self.get_udp_video_address()
 
         #setup useful classes
         self.noise = PerlinNoise()
@@ -82,8 +86,49 @@ class Drone(tel.Tello):
         cmd = f'rc {direction[1]} {direction[0]} {direction[2]} {direction[3]}'    
         self.send_command_without_return(cmd)
 
+    def initializeSensorState(self):
+        states = self.get_current_state()
+        if(DEBUG_PRINTS):
+            print(f'Sensor readings are{states}')
+            print(f'Sensor readings are returning {type(states.get("bat"))}')
+            print(f'Sensor key list is: {states.keys()}')
+        for key in states:
+            queue = deque()
+            queue.append(states.get(key))
+            self.sensorState.update({key:queue})
+            
+    def updateSensorState(self):
+        currentStates = self.get_current_state()
+        for key in currentStates:
+            queue = self.sensorState.get(key)
+            queue.append(currentStates.get(key))
+            if(len(queue) > 10):
+                queue.popleft()
+
+    def getSensorReading(self,sensor, average = False):
+        """Reads most recent appropriate sensor reading, either most recent value or most recent averaged value
+            NOTE: mpry key is not supported, this function assumes integer values
+        Args:
+            sensor (_type_): _description_
+            average (bool, optional): _description_. Defaults to False.
+
+        Returns:
+            float: _description_
+        """
+        if(average):
+            pastXreadings = list(self.sensorState.get(sensor))
+            return sum(pastXreadings)/len(pastXreadings)
+        else:
+            return self.sensorState.get(sensor)[-1]
+
     def randomWander(self,prevDirection = None):
-        """Shifts a random movement vector smoothly by applying Perlin noise
+        """Shifts a random movement vector smoothly by applying Perlin noise.
+
+        Args:
+            prevDirection (_type_, optional): _description_. Defaults to None.
+
+        Returns:
+            _type_: _description_
         """
         if prevDirection == None:
             prevDirection = [0,self.MAXSPEED/2,0,0] # this is not default argument bc using self
@@ -101,7 +146,7 @@ class Drone(tel.Tello):
         # land interrupt
         if(key.is_pressed('l')):
             self.land()
-            self.state = State.Landed
+            self.opState = State.Landed
             return
         moveDist = 30
         if key.is_pressed('up'):
@@ -132,10 +177,13 @@ class Drone(tel.Tello):
             self.rotate_clockwise(45)
             return
 
-    def test(self):
+    def dronelessTest(self):
         while cv2.waitKey(20) != 27: # Escape
             self.randomWander()
-
+    
+    def testFunction(self):
+        while cv2.waitKey(20) != 27: # Escape
+            print(self.get_battery())
 
     def operate(self):
         # creating window
@@ -165,8 +213,8 @@ class Drone(tel.Tello):
                     if object[1] == 77:
                         cellPhoneCounter = cellPhoneCounter + 1
                     if object[1] == 77 and cellPhoneCounter == 2:
-                        # self.prevState = self.state
-                        # self.state = State.Hover
+                        # self.prevState = self.opState
+                        # self.opState = State.Hover
                         # self.flip_back()
                         print(f'Cell Phone detected. Flipping')
                         cellPhoneCounter = 0
@@ -175,14 +223,14 @@ class Drone(tel.Tello):
             self.handleUserInput()
 
             #State Switching SIILL IN DEV
-            match self.state:
+            match self.opState:
                 case State.Landed:
                     if key.is_pressed('t'):
-                        self.state = State.Takeoff
+                        self.opState = State.Takeoff
                     print('Landed')
                 case State.Takeoff:
                     self.takeoff()
-                    self.state = State.Scan
+                    self.opState = State.Scan
                     print('Takeoff')
                 case State.Scan:
                     # self.fullScan()
@@ -194,5 +242,14 @@ class Drone(tel.Tello):
         self.stop()
         cv2.destroyAllWindows()
 
+
 drone1 = Drone('chuck')
-drone1.test()
+# drone1.dronelessTest()
+
+drone1.initializeSensorState()
+print(drone1.sensorState.keys())
+for i in range(0,12):
+    drone1.updateSensorState()
+print(drone1.getSensorReading('tof',average=True))
+print('stop')
+# drone1.testFunction()
