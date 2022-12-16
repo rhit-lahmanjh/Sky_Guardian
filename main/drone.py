@@ -189,62 +189,81 @@ class Drone(tel.Tello):
         # creating window
         if(WITH_DRONE):
             cv2.namedWindow('test', cv2.WINDOW_NORMAL)
-     
+
+        #Static Telemetry Checks before Takeoff
+
+        # Checks the battery charge before takeoff
+        if self.getSensorReading("bat") > 50:
+            BatCheck = True
+        else:
+            BatCheck = False
+            BatReason = "Battery Charge Too Low"
+
+        # Checks the highest battery temperature before takeoff
+        if self.getSensorReading("temph") < 100:
+            TemphCheck = True
+        else:
+            TemphCheck = False
+            TemphReason = "Battery Temperature Too High"
+
+        # Checks the baseline low temperature before takeoff
+        if self.getSensorReading("templ") < 90:
+            TemplCheck = True
+        else:
+            TemplCheck = False
+            TemplReason = "Baseline Low Temperature Too High"
+
+        # Turns the string SNR value into an integer
+        # Checks the Wi-Fi SNR value to determine signal strength
+        signalStrength = self.query_wifi_signal_noise_ratio()
+        signalStrengthInt = int(signalStrength)
+        if signalStrengthInt > 15:
+            SignalCheck = True
+        else:
+            SignalCheck = False
+            SignalReason = "SNR below 15dB. Weak Connection"
+
+        # Checks to make sure the pitch is not too far off
+        # If the drone is too far from 0 degrees on pitch the takeoff
+        # could be unsafe
+        pitch = self.getSensorReading("pitch")
+        if pitch < 3 or pitch > -3:
+            pitchCheck = True
+        else:
+            pitchCheck = False
+            pitchReason = "Pitch is Off Center. Unstable Takeoff."
+
+        # Checks to make sure the roll is not too far off
+        # If the drone is too far from 0 degrees on roll the takeoff
+        # could be unsafe
+        roll = self.getSensorReading("roll")
+        if roll < 3 or roll > -3:
+            rollCheck = True
+        else:
+            rollCheck = False
+            rollReason = "Roll is Off Center. Unstable Takeoff."
+
+        # Comment out function as needed until testing can confirm desired threshold value
+        # Checks to ensure the drone is at a low enough height to ensure room during takeoff for safe ascent
+        if self.getSensorReading("h") < 1000:
+            HeightCheck = True
+        else:
+            HeightCheck = False
+            HeightReason = ("Drone is Too High")
+
+        # Dictionary of Boolean values to
 
         # general loop
         while cv2.waitKey(20) != 27: # Escape
             if DEBUG_PRINTS:
                 print("looping")
 
-            #Static Telemetry Checks before Takeoff
-            if self.getSensorReading("bat") > 50:
-                BatCheck = True
-            else:
-                BatCheck = False
-                BatReason = "Battery Charge Too Low"
+            # Dynamic Telemetry Checks to monitor while in flight
 
-            if self.getSensorReading("temph") < 100:
-                TemphCheck = True
-            else:
-                TemphCheck = False
-                TemphReason = "Battery Temperature Too High"
-
-            if self.getSensorReading("templ") < 90:
-                TemplCheck = True
-            else:
-                TemplCheck = False
-                TemplReason = "Baseline Low Temperature Too High"
-
-            signalStrength = self.query_wifi_signal_noise_ratio()
-            signalStrengthInt = int(signalStrength)
-            if signalStrengthInt > 15:
-                SignalCheck = True
-            else:
-                SignalCheck = False
-                SignalReason = "SNR below 15dB. Weak Connection"
-
-            pitch = self.getSensorReading("pitch")
-            if pitch < 3 or pitch > -3:
-                pitchCheck = True
-            else:
-                pitchCheck = False
-                pitchReason = "Pitch is Off Center. Unstable Takeoff."
-
-            roll = self.getSensorReading("roll")
-            if roll < 3 or roll > -3:
-                rollCheck = True
-            else:
-                rollCheck = False
-                rollReason = "Roll is Off Center. Unstable Takeoff."
-
-            # Comment out function as needed until testing can confirm desired threshold value
-            if self.getSensorReading("h") < 1000:
-                HeightCheck = True
-            else:
-                HeightCheck = False
-                HeightReason = ("Drone is Too High")
-
-
+            # Dynamic Battery Temp
+            # Dynamic Battery Charge
+            # Dynamic Wi-Fi SNR
+            # Dynamic Pitch and Roll Controls
             
             # get and analyze visual stimulus
             returned, img = self.getFrame()
