@@ -189,12 +189,14 @@ class Drone(tel.Tello):
         # creating window
         if(WITH_DRONE):
             cv2.namedWindow('test', cv2.WINDOW_NORMAL)
+            self.initializeSensorState()
      
 
         # general loop
         while cv2.waitKey(20) != 27: # Escape
             if DEBUG_PRINTS:
                 print("looping")
+            self.updateSensorState()
 
             #INSERT TELEMETRY CHECKS
             
@@ -244,12 +246,12 @@ class Drone(tel.Tello):
 
 
 drone1 = Drone('chuck')
-# drone1.dronelessTest()
 
 drone1.initializeSensorState()
 print(drone1.sensorState.keys())
-for i in range(0,12):
+while cv2.waitKey(20) != 27:
     drone1.updateSensorState()
-print(drone1.getSensorReading('tof',average=True))
+    print(f"Average: {drone1.getSensorReading('tof',average=True)}")
+    print(f"Recent: {drone1.getSensorReading('tof')}")
 print('stop')
 # drone1.testFunction()
