@@ -190,7 +190,7 @@ class Drone(tel.Tello):
         if(WITH_DRONE):
             cv2.namedWindow('test', cv2.WINDOW_NORMAL)
 
-        #Static Telemetry Checks before Takeoff
+        #Static Telemetry Checks before Takeoff NEED TO BE IN A SINGLE FUNCTION
 
         # Checks the battery charge before takeoff
         if self.getSensorReading("bat") > 50:
@@ -251,14 +251,12 @@ class Drone(tel.Tello):
             HeightCheck = False
             HeightReason = ("Drone is Too High")
 
-        # Dictionary of Boolean values to
-
         # general loop
         while cv2.waitKey(20) != 27: # Escape
             if DEBUG_PRINTS:
                 print("looping")
 
-            # Dynamic Telemetry Checks to monitor while in flight
+            # Dynamic Telemetry Checks to monitor while in flight NEED TO BE IN SINGLE FUNCTION
 
             # Dynamic Battery Temp
             # Dynamic Battery Charge
