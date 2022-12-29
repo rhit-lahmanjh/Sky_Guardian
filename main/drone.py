@@ -227,7 +227,7 @@ class Drone(tel.Tello):
         # If the drone is too far from 0 degrees on pitch the takeoff
         # could be unsafe
         pitch = self.getSensorReading("pitch")
-        if pitch < 10 or pitch > -10:
+        if pitch < 3 or pitch > -3:
             pitchCheck = True
         else:
             pitchCheck = False
@@ -237,7 +237,7 @@ class Drone(tel.Tello):
         # If the drone is too far from 0 degrees on roll the takeoff
         # could be unsafe
         roll = self.getSensorReading("roll")
-        if roll < 10 or roll > -10:
+        if roll < 3 or roll > -3:
             rollCheck = True
         else:
             rollCheck = False
@@ -251,24 +251,7 @@ class Drone(tel.Tello):
             HeightCheck = False
             HeightReason = ("Drone is Too High")
 
-        # Dictionary of Boolean values to check over prior to takeoff
-        telemetryCheck = {'bat':[BatCheck], 'temph':[TemphCheck], 'templ':[TemplCheck],
-                          'SignalStrength':[SignalCheck], 'pitch':[pitchCheck], 'roll':[rollCheck], 'h':[HeightCheck]}
-        res = True
-        for key, value in telemetryCheck.items():
-            print(key, value)
-            # Test Boolean Value of Dictionary
-            # Using all() + values()
-            # all() function checks if all the keys are true, not the values
-            # Do the key value pairs need to be flipped for the 'all' method?
-            res = all(telemetryCheck.values())
-            if not res:
-                #self.end()
-                #self.stop()
-                self.land()
-            else:
-                self.takeoff()
-
+        # Dictionary of Boolean values to
 
         # general loop
         while cv2.waitKey(20) != 27: # Escape
@@ -276,18 +259,12 @@ class Drone(tel.Tello):
                 print("looping")
 
             # Dynamic Telemetry Checks to monitor while in flight
-            # Checks Battery Temp, Charge, Wi-Fi SNR, Pitch & Roll values, if any boolean is returned as false, the drone lands
-            # If the dictionary of values is already created, and I test that dictionary in the while loop, isn't it
-            # dynamic because it will be checked as the While loop continues to run??
-            res = True
-            for key, value in telemetryCheck.items():
-                print(key, value)
-                res = all(telemetryCheck.values())
-                if not res:
-                    self.land()
 
-            # Dynamic controls for the visual response will need to be developed independent of dictionary
-
+            # Dynamic Battery Temp
+            # Dynamic Battery Charge
+            # Dynamic Wi-Fi SNR
+            # Dynamic Pitch and Roll Controls
+            
             # get and analyze visual stimulus
             returned, img = self.getFrame()
             if returned:
