@@ -227,7 +227,7 @@ class Drone(tel.Tello):
         # If the drone is too far from 0 degrees on pitch the takeoff
         # could be unsafe
         pitch = self.getSensorReading("pitch")
-        if pitch < 3 or pitch > -3:
+        if pitch < 10 or pitch > -10:
             pitchCheck = True
         else:
             pitchCheck = False
@@ -237,7 +237,7 @@ class Drone(tel.Tello):
         # If the drone is too far from 0 degrees on roll the takeoff
         # could be unsafe
         roll = self.getSensorReading("roll")
-        if roll < 3 or roll > -3:
+        if roll < 10 or roll > -10:
             rollCheck = True
         else:
             rollCheck = False
@@ -251,20 +251,49 @@ class Drone(tel.Tello):
             HeightCheck = False
             HeightReason = ("Drone is Too High")
 
-        # Dictionary of Boolean values to
+        # Dictionary of Boolean values to check through static telemetry
+        telemetryCheck = {"bat":[BatCheck], "temph":[TemphCheck], "templ":[TemplCheck],
+                          "SignalStrength":[SignalCheck], "pitch":[pitchCheck], "roll":[rollCheck],
+                          "height":[HeightCheck]}
+
+        telemetryReason = {"bat":[BatReason], "temph":[TemphReason], "templ":[TemplReason],
+                          "SignalStrength":[SignalReason], "pitch":[pitchReason], "roll":[rollReason],
+                          "height":[HeightReason]}
+        res = True
+        for key, value in telemetryCheck.items():
+            print(key, value)
+            # Test Boolean Value of Dictionary
+            # Using all() + values()
+            # Do key value pairs need to be flipped to use the all method
+            res = all(telemetryCheck.values())
+            if not res:
+                self.land()
+                self.stop()
+                self.end()
+                print("A Telemetry threshold has been violated. Please review dictionary output. ")
+            else:
+                self.takeoff()
 
         # general loop
         while cv2.waitKey(20) != 27: # Escape
             if DEBUG_PRINTS:
                 print("looping")
 
-            # Dynamic Telemetry Checks to monitor while in flight
+            # Dynamic Telemetry Checks to monitor while in flight, is it possible to reuse the dictionary?
+            # Dynamic Battery Temp, Dynamic Battery Charge, Dynamic Wi-Fi SNR, Dynamic Pitch and Roll Controls
+            res = True
+            for key, value in telemetryCheck.items():
+                print(key, value)
+                # Test Boolean Value of Dictionary
+                # Using all() + values()
+                # Do key value pairs need to be flipped to use the all method
+                res = all(telemetryCheck.values())
+                if not res:
+                    self.land()
+                    print("A Telemetry threshold has been violated. Please review dictionary output. ")
 
-            # Dynamic Battery Temp
-            # Dynamic Battery Charge
-            # Dynamic Wi-Fi SNR
-            # Dynamic Pitch and Roll Controls
-            
+            # Dynamic Safety functions to respond to visual input
+
             # get and analyze visual stimulus
             returned, img = self.getFrame()
             if returned:
