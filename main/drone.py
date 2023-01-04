@@ -33,6 +33,8 @@ class Drone(tel.Tello):
     vision = None
     STOP = [0,0,0,0]
     sensorState = dict()
+    staticTelemetryCheck = dict()
+    staticTelemetryReason = dict()
     
     
     def __init__(self,name):
@@ -185,43 +187,40 @@ class Drone(tel.Tello):
         while cv2.waitKey(20) != 27: # Escape
             print(self.get_battery())
 
-    def operate(self):
-        # creating window
-        if(WITH_DRONE):
-            cv2.namedWindow('test', cv2.WINDOW_NORMAL)
-
-        #Static Telemetry Checks before Takeoff
-
+    def staticTelemetryCheck(self):
         # Checks the battery charge before takeoff
         if self.getSensorReading("bat") > 50:
             BatCheck = True
         else:
             BatCheck = False
-            BatReason = "Battery Charge Too Low"
+            self.staticTelemetryReason["bat"] = "Battery Charge Too Low"
 
         # Checks the highest battery temperature before takeoff
         if self.getSensorReading("temph") < 100:
             TemphCheck = True
         else:
             TemphCheck = False
-            TemphReason = "Battery Temperature Too High"
+            self.staticTelemetryReason["temph"] = "Battery Temperature Too High"
 
         # Checks the baseline low temperature before takeoff
         if self.getSensorReading("templ") < 90:
             TemplCheck = True
         else:
             TemplCheck = False
-            TemplReason = "Baseline Low Temperature Too High"
+            self.staticTelemetryReason["templ"] = "Baseline Low Temperature Too High"
 
         # Turns the string SNR value into an integer
         # Checks the Wi-Fi SNR value to determine signal strength
         signalStrength = self.query_wifi_signal_noise_ratio()
-        signalStrengthInt = int(signalStrength)
-        if signalStrengthInt > 15:
+        if signalStrength != 'okay':
+            signalStrengthInt = int(signalStrength)
+        if signalStrength == 'ok':
+            SignalCheck = True
+        elif signalStrengthInt > 15:
             SignalCheck = True
         else:
             SignalCheck = False
-            SignalReason = "SNR below 15dB. Weak Connection"
+            self.staticTelemetryReason["SignalStrength"] = "SNR below 15dB. Weak Connection"
 
         # Checks to make sure the pitch is not too far off
         # If the drone is too far from 0 degrees on pitch the takeoff
@@ -231,7 +230,7 @@ class Drone(tel.Tello):
             pitchCheck = True
         else:
             pitchCheck = False
-            pitchReason = "Pitch is Off Center. Unstable Takeoff."
+            self.staticTelemetryReason["pitch"] = "Pitch is Off Center. Unstable Takeoff."
 
         # Checks to make sure the roll is not too far off
         # If the drone is too far from 0 degrees on roll the takeoff
@@ -241,7 +240,7 @@ class Drone(tel.Tello):
             rollCheck = True
         else:
             rollCheck = False
-            rollReason = "Roll is Off Center. Unstable Takeoff."
+            self.staticTelemetryReason["roll"] = "Roll is Off Center. Unstable Takeoff."
 
         # Comment out function as needed until testing can confirm desired threshold value
         # Checks to ensure the drone is at a low enough height to ensure room during takeoff for safe ascent
@@ -249,48 +248,41 @@ class Drone(tel.Tello):
             HeightCheck = True
         else:
             HeightCheck = False
-            HeightReason = ("Drone is Too High")
+            self.staticTelemetryReason["h"] = "Drone is too High"
 
         # Dictionary of Boolean values to check through static telemetry
-        telemetryCheck = {"bat":[BatCheck], "temph":[TemphCheck], "templ":[TemplCheck],
-                          "SignalStrength":[SignalCheck], "pitch":[pitchCheck], "roll":[rollCheck],
-                          "height":[HeightCheck]}
+        self.staticTelemetryCheck = {"bat":BatCheck, "temph":TemphCheck, "templ":TemplCheck,
+                        "SignalStrength":SignalCheck, "pitch":pitchCheck, "roll":rollCheck,
+                        "height":HeightCheck}
 
-        telemetryReason = {"bat":[BatReason], "temph":[TemphReason], "templ":[TemplReason],
-                          "SignalStrength":[SignalReason], "pitch":[pitchReason], "roll":[rollReason],
-                          "height":[HeightReason]}
-        res = True
-        for key, value in telemetryCheck.items():
-            print(key, value)
-            # Test Boolean Value of Dictionary
-            # Using all() + values()
-            # Do key value pairs need to be flipped to use the all method
-            res = all(telemetryCheck.values())
-            if not res:
-                self.land()
-                self.stop()
-                self.end()
-                print("A Telemetry threshold has been violated. Please review dictionary output. ")
-            else:
-                self.takeoff()
+        # print("Completed Static Checks")
+        # print(self.staticTelemetryCheck.values())
+        return all(self.staticTelemetryCheck.values())
+
+    def operate(self):
+        # creating window
+        if(WITH_DRONE):
+            cv2.namedWindow('test', cv2.WINDOW_NORMAL)
 
         # general loop
         while cv2.waitKey(20) != 27: # Escape
             if DEBUG_PRINTS:
                 print("looping")
+            
+            self.updateSensorState()
 
-            # Dynamic Telemetry Checks to monitor while in flight, is it possible to reuse the dictionary?
-            # Dynamic Battery Temp, Dynamic Battery Charge, Dynamic Wi-Fi SNR, Dynamic Pitch and Roll Controls
-            res = True
-            for key, value in telemetryCheck.items():
-                print(key, value)
-                # Test Boolean Value of Dictionary
-                # Using all() + values()
-                # Do key value pairs need to be flipped to use the all method
-                res = all(telemetryCheck.values())
-                if not res:
-                    self.land()
-                    print("A Telemetry threshold has been violated. Please review dictionary output. ")
+            # # Dynamic Telemetry Checks to monitor while in flight, is it possible to reuse the dictionary?
+            # # Dynamic Battery Temp, Dynamic Battery Charge, Dynamic Wi-Fi SNR, Dynamic Pitch and Roll Controls
+            # res = True
+            # for key, value in telemetryCheck.items():
+            #     print(key, value)
+            #     # Test Boolean Value of Dictionary
+            #     # Using all() + values()
+            #     # Do key value pairs need to be flipped to use the all method
+            #     res = all(telemetryCheck.values())
+            #     if not res:
+            #         self.land()
+            #         print("A Telemetry threshold has been violated. Please review dictionary output. ")
 
             # Dynamic Safety functions to respond to visual input
 
@@ -321,31 +313,42 @@ class Drone(tel.Tello):
             #State Switching SIILL IN DEV
             match self.opState:
                 case State.Landed:
+                    print('Landed')
                     if key.is_pressed('t'):
                         self.opState = State.Takeoff
-                    print('Landed')
+                        print("Attempting to take off")
                 case State.Takeoff:
-                    self.takeoff()
-                    self.opState = State.Scan
-                    print('Takeoff')
+                    res = self.staticTelemetryCheck()
+                    if res:
+                        print("Static Checks Successful")
+                        print('Taking off') 
+                        # self.takeoff()
+                        self.opState = State.Hover # Hover for now, eventually scanning
+                    if not res:
+                        self.opState = State.Landed
+                        print("A Static Telemetry threshold has been violated.")
+                        for dictkey, value in self.staticTelemetryReason.items():
+                            print(f"{dictkey} test failed \n Reason: {value}")
                 case State.Scan:
                     # self.fullScan()
-                    print('do nothing')
+                    continue
                 case State.Explore:
                     self.moveDirection(self.randomWander())
-                case State.Hover():
+                case State.Hover:
                     self.moveDirection(self.STOP)
+
+
         self.stop()
         cv2.destroyAllWindows()
 
-
 drone1 = Drone('chuck')
+drone1.operate()
 # drone1.dronelessTest()
 
-drone1.initializeSensorState()
-print(drone1.sensorState.keys())
-for i in range(0,12):
-    drone1.updateSensorState()
-print(drone1.getSensorReading('tof',average=True))
-print('stop')
+# drone1.initializeSensorState()
+# print(drone1.sensorState.keys())
+# for i in range(0,12):
+    # drone1.updateSensorState()
+# print(drone1.getSensorReading('tof',average=True))
+# print('stop')
 # drone1.testFunction()
