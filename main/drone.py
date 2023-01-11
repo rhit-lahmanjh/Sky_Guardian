@@ -33,8 +33,8 @@ class Drone(tel.Tello):
     vision = None
     STOP = [0,0,0,0]
     sensorState = dict()
-    staticTelemetryCheck = dict()
-    staticTelemetryReason = dict()
+    telemetryCheck = dict()
+    telemetryReason = dict()
     
     
     def __init__(self,name):
@@ -187,27 +187,36 @@ class Drone(tel.Tello):
         while cv2.waitKey(20) != 27: # Escape
             print(self.get_battery())
 
-    def staticTelemetryCheck(self):
+    def telemetryCheck(self):
         # Checks the battery charge before takeoff
-        if self.getSensorReading("bat") > 50:
-            BatCheck = True
-        else:
-            BatCheck = False
-            self.staticTelemetryReason["bat"] = "Battery Charge Too Low"
+        if self.opState.Landed:
+            if self.getSensorReading("bat") > 50:
+                BatCheck = True
+            else:
+                BatCheck = False
+                self.telemetryReason["bat"] = "Battery Charge Too Low"
+
+
+        if not self.opState.Landed:
+            if self.getSensorReading("bat") > 11:
+                BatCheck = True
+            else:
+                BatCheck = False
+                self.telemetryReason["bat"] = "Battery Charge Too Low"
 
         # Checks the highest battery temperature before takeoff
         if self.getSensorReading("temph") < 100:
             TemphCheck = True
         else:
             TemphCheck = False
-            self.staticTelemetryReason["temph"] = "Battery Temperature Too High"
+            self.telemetryReason["temph"] = "Battery Temperature Too High"
 
         # Checks the baseline low temperature before takeoff
         if self.getSensorReading("templ") < 90:
             TemplCheck = True
         else:
             TemplCheck = False
-            self.staticTelemetryReason["templ"] = "Baseline Low Temperature Too High"
+            self.telemetryReason["templ"] = "Baseline Low Temperature Too High"
 
         # Turns the string SNR value into an integer
         # Checks the Wi-Fi SNR value to determine signal strength
@@ -220,7 +229,7 @@ class Drone(tel.Tello):
             SignalCheck = True
         else:
             SignalCheck = False
-            self.staticTelemetryReason["SignalStrength"] = "SNR below 15dB. Weak Connection"
+            self.telemetryReason["SignalStrength"] = "SNR below 15dB. Weak Connection"
 
         # Checks to make sure the pitch is not too far off
         # If the drone is too far from 0 degrees on pitch the takeoff
@@ -230,7 +239,7 @@ class Drone(tel.Tello):
             pitchCheck = True
         else:
             pitchCheck = False
-            self.staticTelemetryReason["pitch"] = "Pitch is Off Center. Unstable Takeoff."
+            self.telemetryReason["pitch"] = "Pitch is Off Center. Unstable Takeoff."
 
         # Checks to make sure the roll is not too far off
         # If the drone is too far from 0 degrees on roll the takeoff
@@ -240,7 +249,7 @@ class Drone(tel.Tello):
             rollCheck = True
         else:
             rollCheck = False
-            self.staticTelemetryReason["roll"] = "Roll is Off Center. Unstable Takeoff."
+            self.telemetryReason["roll"] = "Roll is Off Center. Unstable Takeoff."
 
         # Comment out function as needed until testing can confirm desired threshold value
         # Checks to ensure the drone is at a low enough height to ensure room during takeoff for safe ascent
@@ -248,16 +257,16 @@ class Drone(tel.Tello):
             HeightCheck = True
         else:
             HeightCheck = False
-            self.staticTelemetryReason["h"] = "Drone is too High"
+            self.telemetryReason["h"] = "Drone is too High"
 
-        # Dictionary of Boolean values to check through static telemetry
-        self.staticTelemetryCheck = {"bat":BatCheck, "temph":TemphCheck, "templ":TemplCheck,
+        # Dictionary of Boolean values to check through telemetry while the drone is in various states
+        self.telemetryCheck = {"bat":BatCheck, "temph":TemphCheck, "templ":TemplCheck,
                         "SignalStrength":SignalCheck, "pitch":pitchCheck, "roll":rollCheck,
                         "height":HeightCheck}
 
-        # print("Completed Static Checks")
-        # print(self.staticTelemetryCheck.values())
-        return all(self.staticTelemetryCheck.values())
+        print("Completed Static Checks")
+        print(self.telemetryCheck.values())
+        return all(self.telemetryCheck.values())
 
     def operate(self):
         # creating window
@@ -271,8 +280,8 @@ class Drone(tel.Tello):
             
             self.updateSensorState()
 
-            # # Dynamic Telemetry Checks to monitor while in flight, is it possible to reuse the dictionary?
-            # # Dynamic Battery Temp, Dynamic Battery Charge, Dynamic Wi-Fi SNR, Dynamic Pitch and Roll Controls
+            # # Telemetry Checks to monitor while in flight, is it possible to reuse the dictionary?
+            # # Battery Temp, Battery Charge, Wi-Fi SNR, Pitch and Roll Controls
             # res = True
             # for key, value in telemetryCheck.items():
             #     print(key, value)
@@ -318,7 +327,7 @@ class Drone(tel.Tello):
                         self.opState = State.Takeoff
                         print("Attempting to take off")
                 case State.Takeoff:
-                    res = self.staticTelemetryCheck()
+                    res = self.telemetryCheck()
                     if res:
                         print("Static Checks Successful")
                         print('Taking off') 
@@ -326,8 +335,8 @@ class Drone(tel.Tello):
                         self.opState = State.Hover # Hover for now, eventually scanning
                     if not res:
                         self.opState = State.Landed
-                        print("A Static Telemetry threshold has been violated.")
-                        for dictkey, value in self.staticTelemetryReason.items():
+                        print("A Telemetry threshold has been violated.")
+                        for dictkey, value in self.telemetryReason.items():
                             print(f"{dictkey} test failed \n Reason: {value}")
                 case State.Scan:
                     # self.fullScan()
