@@ -336,6 +336,7 @@ class Drone(tel.Tello):
             #     res = all(telemetryCheck.values())
             #     if not res:
             #         self.land()
+            #         self.opState = State.Landed
             #         print("A Telemetry threshold has been violated. Please review dictionary output. ")
 
             # Dynamic Safety functions to respond to visual input
@@ -372,9 +373,10 @@ class Drone(tel.Tello):
                         self.opState = State.Takeoff
                         print("Attempting to take off")
                 case State.Takeoff:
+                    print("Checking Telemetry")
                     res = self.telemetryCheck()
                     if res:
-                        print("Static Checks Successful")
+                        print("Telemetry Checks Successful")
                         print('Taking off') 
                         self.takeoff()
                         self.opState = State.Hover # Hover for now, eventually scanning
