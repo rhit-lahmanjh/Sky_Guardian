@@ -24,11 +24,11 @@ class FeedAnalyzer():
         # self.wind = cv2.namedWindow(win_name, cv2.WINDOW_NORMAL)
     
     def setUpObjectNet(self):
-        #read class labels
+        # read class labels
         with open(self.objectClassFile) as fp:
             self.objectLabels = fp.read().split("\n")
 
-        #read TF network and create net object (can load different networks)
+        # read TF network and create net object (can load different networks)
         self.ssdNet = cv2.dnn.readNetFromTensorflow(self.objectModelFile, self.objectConfigFile)
 
     def process(self,cv_img):
