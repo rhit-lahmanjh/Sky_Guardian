@@ -308,8 +308,9 @@ class Drone(tel.Tello):
                         "SignalStrength":SignalCheck, "pitch":pitchCheck, "roll":rollCheck,
                         "height":HeightCheck}
 
-        print("Completed Static Checks")
-        print(self.staticTelemetryCheck.values())
+        print("Completed Telemetry Checks")
+        # Prints the final true/false value after checking of all the sensor data conditional statements
+        print(self.telemetryCheck.values())
         return all(self.telemetryCheck.values())
 
     def operate(self):
