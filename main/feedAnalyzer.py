@@ -11,7 +11,7 @@ class FeedAnalyzer():
     # this structure a dictionary??
     objectModelFile = "CV_testing/models/ssd_mobilenet_v2_coco_2018_03_29/frozen_inference_graph.pb"
     objectConfigFile = "CV_testing/models/ssd_mobilenet_v2_coco_2018_03_29.pbtxt"
-    objectClassFile = "CV_testing/coco_class_labels.txt"
+    objectClassFile = "CV_testing/models/coco_class_labels.txt"
     objectLabels = []
 
     wind = []

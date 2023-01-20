@@ -299,8 +299,8 @@ class Drone(tel.Tello):
                         "SignalStrength":SignalCheck, "pitch":pitchCheck, "roll":rollCheck,
                         "height":HeightCheck}
 
-        # print("Completed Static Checks")
-        # print(self.staticTelemetryCheck.values())
+        print("Completed Static Checks")
+        print(self.staticTelemetryCheck.values())
         return all(self.telemetryCheck.values())
 
     def operate(self):
