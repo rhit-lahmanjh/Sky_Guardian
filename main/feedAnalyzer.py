@@ -45,7 +45,7 @@ class FeedAnalyzer():
         yPix = im.shape[0]
         xPix = im.shape[1]
 
-        # Create a "Blob?" whatever that is
+        # Create a "Blob", Binary Large Object; Contains data in a readable raw format
         blob = cv2.dnn.blobFromImage(im,1.0, size = (yPix,xPix), mean = (0,0,0), swapRB=True, crop=False)
 
         #Pass blob to network
