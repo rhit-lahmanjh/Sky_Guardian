@@ -1,125 +1,115 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QWidget, QPushButton, QGridLayout
-from PyQt5.QtGui import QPixmap, QColor
-from PyQt5.QtCore import QThread, Qt, pyqtSignal,pyqtSlot
-from PyQt5 import QtGui
-import djitellopy as tel
-from threading import Thread
-import cv2
-import time as t
-import sys
-import numpy as np
-from drone import Drone
-from feedAnalyzer import feedAnalyzer
+#!/bin/env python
+# import drone
+import flet as ft
+# import djitellopy
+from flet import (
+    Column,
+    Container,
+    ElevatedButton,
+    Page,
+    Row,
+    Text,
+    border_radius,
+    colors,
+    CrossAxisAlignment,
+)
 
 
-class VideoThread(QThread):
-    change_pixmap_signal = pyqtSignal(np.ndarray)
-    drone = []
-    feedAnalyzer = []
+def main(page: ft.Page):
+    # # drone connection
+    # tello = Tello()
+    # tello.connect()
 
-    def __init__(self,drone,feedAnalyzer):
-        super().__init__()
-        self._run_flag = True
-        self.drone = drone
-        self.feedAnalyzer = feedAnalyzer
+    # drone1 = Drone('test')
+    # drone1.operate()
 
-    def run(self):
-        while self._run_flag:
-            returned, cv_img = self.drone.getFrame()
-            if returned:
-                self.feedAnalyzer.process(cv_img)
-                self.change_pixmap_signal.emit(cv_img)
+    page.title = "Drone Basic Functions"
+    # page.vertical_alignment = ft.MainAxisAlignment.CENTER
+
+    # Button functions
+    def drone1_launch(e):
+        print("Drone 1 State: Takeoff")
+    #     drone1.opState = State.Takeoff
+        page.update()
     
-    # shut down capture system
-    def stop(self):
-        """Sets run flag to False and waits for thread to finish"""
-        self._run_flag = False
-        self.wait()
+    def drone2_launch(e):
+        print("Drone 2 State: Takeoff")
+    #     drone2.opState = State.Takeoff
+        page.update()
 
-class vidFeed(QWidget):
-    counter = 0
-    drone = []
-    image_label = []
-    # feedAnalyzer = []
-
-    #constructor that takes in an individual drone, extended in the class above
-    def __init__(self,drone,layout,feedAnalyzer):
-        super().__init__()
-        self.setWindowTitle('')
-        self.drone = drone
-        self.display_width = 720
-        self.display_height = 960
-        self.textLabel = QLabel(drone.name)
-        # self.feedAnalyzer = feedAnalyzer
-
-        #label which contains image
-        self.image_label = QLabel(self)
-        self.image_label.resize(self.display_width,self.display_height)
-
-        #assign to space in layout
-        layout.addWidget(self.image_label,0,0)
-        layout.addWidget(self.textLabel, 1, 0)
-
-        #create Thread
-        self.thread = VideoThread(drone,feedAnalyzer)
-        self.thread.change_pixmap_signal.connect(self.update_image)
-        self.thread.start()
-
-    @pyqtSlot(np.ndarray)
-    def update_image(self,cv_img):
-        # self.feedAnalyzer.process(cv_img) # could also be run in the separate thread
-        self.image_label.setPixmap(self.convert_cv_qt(cv_img))
-        self.counter += 1
-        print(self.counter)
-
-    def convert_cv_qt(self,cv_img):
-        rgb_image = cv2.cvtColor(cv_img,cv2.COLOR_BGR2RGB)
-        h, w, ch = rgb_image.shape
-        bytes_per_line = ch*w
-        convert_to_Qt_format = QtGui.QImage(rgb_image.data,w,h,bytes_per_line, QtGui.QImage.Format_RGB888)
-        p = convert_to_Qt_format.scaled(self.display_width,self.display_height,Qt.KeepAspectRatio)
-        return QPixmap.fromImage(p)
+    def drone1_land(e):
+        print("Drone 1 State: Landed")
+    #     drone1.opState = State.Landed
+        page.update(e)
     
-    def convert_rgb_qt(self,rgb_img):
-        h, w, ch = rgb_img.shape
-        bytes_per_line = ch*w
-        convert_to_Qt_format = QtGui.QImage(rgb_img.data,w,h,bytes_per_line, QtGui.QImage.Format_RGB888)
-        p = convert_to_Qt_format.scaled(self.display_width,self.display_height,Qt.KeepAspectRatio)
-        return QPixmap.fromImage(p)
+    def drone2_land(e):
+        print("Drone 2 State: Landed")           
+    #     drone2.opState = State.Landed
+        page.update()
 
-    def closeEvent(self, event):
-        self.thread.stop()
-        event.accept()
-        self.drone.stop()
+    def drone1_hover(e):
+        print("Drone 1 State: Hover")           
+        #     drone1.opState = State.Hover
+        page.update()
+    
+    def drone2_hover(e):
+        print("Drone 2 State: Hover")           
+        #     drone2.opState = State.Hover
+        page.update()
+    
+    def order66(e):
+        print("Drone 1 State: Hover")           
+        print("Drone 2 State: Hover")
 
-# initial connection
-chuck = Drone('Chuck')
-feedAnalyzer = feedAnalyzer()
-app = QApplication([])
-cam_layout = QGridLayout()
-win = vidFeed(chuck, cam_layout,feedAnalyzer)
-win.setGeometry(200,200,720,960)
-win.setWindowTitle("Sky Guardian")
-win.show()
-app.exec()
+        #     drone1.opState = State.Hover
+        #     drone2.opState = State.Hover
+        page.update()        
 
-# feed = feedAnalyzer()
+    drone1_items = [
+        ft.Container( width=200, height=75, content=ft.Text("Launch"), on_click=drone1_launch, bgcolor = ft.colors.GREEN_200, alignment=ft.alignment.center), 
+        ft.Container(width=200, height=75, content=ft.Text("Land"), on_click=drone1_land, bgcolor = ft.colors.CYAN_200, alignment=ft.alignment.center),
+        ft.Container(width=200, height=75, content=ft.Text("Hover"), on_click=drone1_hover, bgcolor = ft.colors.AMBER, alignment=ft.alignment.center),
+    ]
 
-# s = 0
-# if len(sys.argv) > 1:
-#     s = sys.argv[1]
+    drone1_column = ft.Column(
+        [
+            ft.Text(value="Drone #1", style=ft.TextThemeStyle.DISPLAY_SMALL, text_align = ft.TextAlign.CENTER),
+            ft.Container(
+                content=ft.Column(
+                    drone1_items, 
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER)
+            ),
+        ]
+    )
 
-# source = cv2.VideoCapture(s)
+    drone2_items = [
+        ft.Container( width=200, height=75, content=ft.Text("Launch"), on_click=drone2_launch, bgcolor = ft.colors.GREEN_200, alignment=ft.alignment.center), 
+        ft.Container(width=200, height=75, content=ft.Text("Land"), on_click=drone2_land, bgcolor = ft.colors.CYAN_200, alignment=ft.alignment.center),
+        ft.Container(width=200, height=75, content=ft.Text("Hover"), on_click=drone2_hover, bgcolor = ft.colors.AMBER, alignment=ft.alignment.center),
+    ]
 
-# win_name = 'Video Feed'
-# cv2.namedWindow(win_name, cv2.WINDOW_NORMAL)
+    drone2_column = ft.Column(
+        [
+            ft.Text(value="Drone #2", style=ft.TextThemeStyle.DISPLAY_SMALL, text_align = ft.TextAlign.CENTER),
+            ft.Container(
+                content=ft.Column(
+                    drone2_items, 
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER)
+            ), 
+        ]
+    )
 
-# while cv2.waitKey(1) != 27: # Escape
-#     has_frame, frame = source.read()
-#     if not has_frame:
-#         break
-#     feed.process(frame)
-#     cv2.imshow(win_name, frame)
+    page.add(
+        ft.Row(
+            [
+                drone1_column,
+                drone2_column,
+            ],
+            spacing=30,
+            alignment=ft.MainAxisAlignment.START,
+        )
+    )
 
-# source.release()
-# cv2.destroyWindow(win_name)
+ft.app(target=main)

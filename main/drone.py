@@ -311,6 +311,7 @@ class Drone(tel.Tello):
     def checkTelemetry(self):
         # Checks the battery charge before takeoff
         if self.opState.Landed:
+            print("Battery Charge: " + self.getSensorReading("bat"))
             if self.getSensorReading("bat") > 50:
                 BatCheck = True
             else:
@@ -318,6 +319,7 @@ class Drone(tel.Tello):
                 self.telemetryReason["bat"] = "Battery Charge Too Low"
 
         if not self.opState.Landed:
+            print("Battery Charge: " + self.getSensorReading("bat"))
             if self.getSensorReading("bat") > 11:
                 BatCheck = True
             else:
@@ -325,6 +327,7 @@ class Drone(tel.Tello):
                 self.telemetryReason["bat"] = "Battery Charge Too Low"
 
         # Checks the highest battery temperature before takeoff
+        print("Highest Battery Temperature: " + self.getSensorReading("temph"))
         if self.getSensorReading("temph") < 100:
             TemphCheck = True
         else:
@@ -332,6 +335,7 @@ class Drone(tel.Tello):
             self.telemetryReason["temph"] = "Battery Temperature Too High"
 
         # Checks the baseline low temperature before takeoff
+        print("Baseline Battery Temperature: " + self.getSensorReading("templ"))
         if self.getSensorReading("templ") < 90:
             TemplCheck = True
         else:
@@ -340,6 +344,7 @@ class Drone(tel.Tello):
 
         # Turns the string SNR value into an integer
         # Checks the Wi-Fi SNR value to determine signal strength
+        print("Signal Strength: " + self.query_wifi_signal_noise_ratio())
         signalStrength = self.query_wifi_signal_noise_ratio()
         if signalStrength != 'ok' and signalStrength != 'okay':
             signalStrengthInt = int(signalStrength)
@@ -354,6 +359,7 @@ class Drone(tel.Tello):
         # Checks to make sure the pitch is not too far off
         # If the drone is too far from 0 degrees on pitch the takeoff
         # could be unsafe
+        print("Pitch: " + self.getSensorReading("pitch"))
         pitch = self.getSensorReading("pitch")
         if pitch < 10 or pitch > -10:
             pitchCheck = True
@@ -364,6 +370,7 @@ class Drone(tel.Tello):
         # Checks to make sure the roll is not too far off
         # If the drone is too far from 0 degrees on roll the takeoff
         # could be unsafe
+        print("Roll: " + self.getSensorReading("roll"))
         roll = self.getSensorReading("roll")
         if roll < 10 or roll > -10:
             rollCheck = True
@@ -373,6 +380,7 @@ class Drone(tel.Tello):
 
         # Comment out function as needed until testing can confirm desired threshold value
         # Checks to ensure the drone is at a low enough height to ensure room during takeoff for safe ascent
+        print("Height: " + self.getSensorReading("h"))
         if self.getSensorReading("h") < 1000:
             HeightCheck = True
         else:
@@ -411,6 +419,7 @@ class Drone(tel.Tello):
             #     res = all(telemetryCheck.values())
             #     if not res:
             #         self.land()
+            #         self.opState = State.Landed
             #         print("A Telemetry threshold has been violated. Please review dictionary output. ")
 
             # Dynamic Safety functions to respond to visual input
