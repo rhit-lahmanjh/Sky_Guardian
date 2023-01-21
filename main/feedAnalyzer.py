@@ -1,5 +1,12 @@
 import cv2
+import numpy as np
 
+# YOLOv5 Model Thresholds
+SCORE_THRESHOLD = 0.5 # filter low probability class scores
+NMS_THRESHOLD = 0.45 # remove overlapping boundary boxes
+CONFIDENCE_THRESHOLD = 0.45 # filters low probability detections
+
+# Text Parameters
 FONTFACE = cv2.FONT_HERSHEY_SIMPLEX
 FONT_SCALE = 0.7
 THICKNESS = 1
@@ -7,7 +14,13 @@ THICKNESS = 1
 class FeedAnalyzer():
     # load and define model
     ssdNet = []
+    # TO-DO, load YOLOv5 model here
 
+    # GUI Drop Down Model Switching Planning/Notes
+    # Conditional statements that take in input from GUI settings page and choose proper objectFile assignments
+
+
+    # objectFile assignments
     # this structure a dictionary??
     objectModelFile = "CV_testing/models/ssd_mobilenet_v2_coco_2018_03_29/frozen_inference_graph.pb"
     objectConfigFile = "CV_testing/models/ssd_mobilenet_v2_coco_2018_03_29.pbtxt"
@@ -17,9 +30,8 @@ class FeedAnalyzer():
     wind = []
 
     def __init__(self):
-        
-        self.setUpObjectNet()
 
+        self.setUpObjectNet()
         # win_name = 'Analyzer Feed'
         # self.wind = cv2.namedWindow(win_name, cv2.WINDOW_NORMAL)
     
