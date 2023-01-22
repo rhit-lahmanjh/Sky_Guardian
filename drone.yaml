@@ -27,6 +27,7 @@ dependencies:
       - decorator==5.1.1
       - djitellopy==2.4.0
       - executing==1.0.0
+      - flet==0.3.2
       - fonttools==4.37.1
       - ipython==8.5.0
       - jedi==0.18.1
@@ -36,7 +37,7 @@ dependencies:
       - matplotlib-inline==0.1.6
       - numpy==1.23.3
       - opencv-python==4.6.0.66
-      - packaging==21.3
+      - packaging==22
       - parso==0.8.3
       - perlin-noise==1.12
       - pickleshare==0.7.5
