@@ -58,11 +58,11 @@ def main(page: ft.Page):
         page.update()
     
     def order66(e):
-        print("Drone 1 State: Hover")           
-        print("Drone 2 State: Hover")
+        print("Drone 1 State: Landed")
+        print("Drone 2 State: Landed")
 
-        #     drone1.opState = State.Hover
-        #     drone2.opState = State.Hover
+        #     drone1.opState = State.Landed
+        #     drone2.opState = State.Landed
         page.update()        
 
     drone1_items = [
