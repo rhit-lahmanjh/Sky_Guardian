@@ -311,7 +311,7 @@ class Drone(tel.Tello):
     def checkTelemetry(self):
         # Checks the battery charge before takeoff
         if self.opState.Landed:
-            print("Battery Charge: " + self.getSensorReading("bat"))
+            print("Battery Charge: " + str(self.getSensorReading("bat")))
             if self.getSensorReading("bat") > 50:
                 BatCheck = True
             else:
@@ -319,7 +319,7 @@ class Drone(tel.Tello):
                 self.telemetryReason["bat"] = "Battery Charge Too Low"
 
         if not self.opState.Landed:
-            print("Battery Charge: " + self.getSensorReading("bat"))
+            print("Battery Charge: " + str(self.getSensorReading("bat")))
             if self.getSensorReading("bat") > 11:
                 BatCheck = True
             else:
@@ -327,7 +327,7 @@ class Drone(tel.Tello):
                 self.telemetryReason["bat"] = "Battery Charge Too Low"
 
         # Checks the highest battery temperature before takeoff
-        print("Highest Battery Temperature: " + self.getSensorReading("temph"))
+        print("Highest Battery Temperature: " + str(self.getSensorReading("temph")))
         if self.getSensorReading("temph") < 100:
             TemphCheck = True
         else:
@@ -335,7 +335,7 @@ class Drone(tel.Tello):
             self.telemetryReason["temph"] = "Battery Temperature Too High"
 
         # Checks the baseline low temperature before takeoff
-        print("Baseline Battery Temperature: " + self.getSensorReading("templ"))
+        print("Baseline Battery Temperature: " + str(self.getSensorReading("templ")))
         if self.getSensorReading("templ") < 90:
             TemplCheck = True
         else:
@@ -359,9 +359,9 @@ class Drone(tel.Tello):
         # Checks to make sure the pitch is not too far off
         # If the drone is too far from 0 degrees on pitch the takeoff
         # could be unsafe
-        print("Pitch: " + self.getSensorReading("pitch"))
-        pitch = self.getSensorReading("pitch")
-        if pitch < 10 or pitch > -10:
+        print("Pitch: " + str(self.getSensorReading("pitch")))
+        pitch = abs(self.getSensorReading("pitch"))
+        if pitch < 10:
             pitchCheck = True
         else:
             pitchCheck = False
@@ -370,9 +370,9 @@ class Drone(tel.Tello):
         # Checks to make sure the roll is not too far off
         # If the drone is too far from 0 degrees on roll the takeoff
         # could be unsafe
-        print("Roll: " + self.getSensorReading("roll"))
-        roll = self.getSensorReading("roll")
-        if roll < 10 or roll > -10:
+        print("Roll: " + str(self.getSensorReading("roll")))
+        roll = abs(self.getSensorReading("roll"))
+        if roll < 10:
             rollCheck = True
         else:
             rollCheck = False
@@ -380,8 +380,8 @@ class Drone(tel.Tello):
 
         # Comment out function as needed until testing can confirm desired threshold value
         # Checks to ensure the drone is at a low enough height to ensure room during takeoff for safe ascent
-        print("Height: " + self.getSensorReading("h"))
-        if self.getSensorReading("h") < 1000:
+        print("Height: " + str(self.getSensorReading("h")))
+        if self.getSensorReading("h") < 500:
             HeightCheck = True
         else:
             HeightCheck = False
@@ -392,8 +392,8 @@ class Drone(tel.Tello):
                         "SignalStrength":SignalCheck, "pitch":pitchCheck, "roll":rollCheck,
                         "height":HeightCheck}
 
-        # print("Completed Static Checks")
-        # print(self.telemetryCheck.values())
+        print("Completed Telemetry Checks")
+        print("Final Dictionary Value: " + str(self.telemetryCheck.values()))
         return all(self.telemetryCheck.values())
 
     def operate(self):
@@ -422,13 +422,14 @@ class Drone(tel.Tello):
             #         self.opState = State.Landed
             #         print("A Telemetry threshold has been violated. Please review dictionary output. ")
 
-            # Dynamic Safety functions to respond to visual input
-
             # objects = self.look()
             self.refreshTracker.update()
             # self.refreshTracker.print()
             
             self.handleUserInput()
+
+            # # Dynamic Telemetry Checks to monitor while in flight, is it possible to reuse the dictionary?
+            # # Dynamic Battery Charge, Dynamic Wi-Fi SNR, Dynamic Pitch and Roll Controls
 
             #State Switching SIILL IN DEV
             match self.opState:
@@ -441,13 +442,13 @@ class Drone(tel.Tello):
                     safeToTakeOff = self.checkTelemetry()
                     
                     if safeToTakeOff:
-                        print("Static Checks Successful")
+                        print("Telemetry Checks Successful")
                         print('Taking off') 
                         self.takeoff()
                         self.opState = State.Hover # Hover for now, eventually scanning
                     else:
                         self.opState = State.Landed
-                        print("A Static Telemetry threshold has been violated.")
+                        print("A Telemetry threshold has been violated. Unsafe takeoff/flight conditions")
                         for dictkey, value in self.telemetryReason.items():
                             print(f"{dictkey} test failed \n Reason: {value}")
                 case State.Scan:
