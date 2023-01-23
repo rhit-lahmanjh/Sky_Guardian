@@ -250,19 +250,11 @@ class Drone(tel.Tello):
             for object in objects[0,0,:,:]:
                 if object[2] < self.CONFIDENCE_LEVEL:
                     break
+                objectsSeen.append(object)
                 if(reactions != None):
                     for reaction in reaction:
-                        reaction(object)
+                        reaction(object[1])
 
-                # if object[1] == 77:
-                    cellPhoneCounter = cellPhoneCounter + 1
-                # if object[1] == 77 and cellPhoneCounter == 2:
-                    # self.prevState = self.opState
-                    # self.opState = State.Hover
-                    # self.flip_back()
-                    # print(f'Cell Phone detected. Flipping')
-                    # cellPhoneCounter = 0
-                    # break
             return objectsSeen
 
     def getSensorReading(self,sensor, average = False):
@@ -288,7 +280,6 @@ class Drone(tel.Tello):
         #     else:
         #         return self.distanceSensorState.get(sensor)[-1]
 
-    
     def checkTelemetry(self):
         # Checks the battery charge before takeoff
         if self.opState.Landed:
@@ -381,64 +372,14 @@ class Drone(tel.Tello):
     def stopOnCellPhone(self, object = None):
         if(object != None and object[1] == 77):
             self.hover()
+
+    def pauseOnPerson(self, object = None):
+        # add in logic to get back to previous state
+        if(object != None and object[1] == 1):
+            self.prevState = self.opState
+            self.opState = State.Hover
     #endregion
-
-    def operate(self):
-        # creating window
-        if(WITH_DRONE):
-            cv2.namedWindow('test', cv2.WINDOW_NORMAL)
-
-        # general loop
-        while cv2.waitKey(20) != 27: # Escape
-            if DEBUG_PRINTS:
-                print("looping")
-            
-            #sensing
-            self.__updateSensorState__()
-            self.visibleObjects = self.look()
-            self.refreshTracker.update()
-            # self.refreshTracker.print()
-            
-            self.operatorOverride()
-
-            #State Switching SIILL IN DEV
-            match self.opState:
-                case State.Landed:
-                    if(DEBUG_PRINTS):
-                        print('Landed')
-                    if key.is_pressed('t'):
-                        self.opState = State.Takeoff
-                        print("Attempting to take off")
-                case State.Takeoff:
-                    safeToTakeOff = self.checkTelemetry()
-                    if safeToTakeOff:
-                        print("Telemetry Checks Successful")
-                        print('Taking off') 
-                        self.takeoff()
-                        self.opState = State.Hover # Hover for now, eventually scanning
-                    else:
-                        self.opState = State.Landed
-                        print("A Telemetry threshold has been violated. Unsafe takeoff/flight conditions")
-                        for dictkey, value in self.telemetryReason.items():
-                            print(f"{dictkey} test failed \n Reason: {value}")
-                case State.Scan:
-                    if(DEBUG_PRINTS):
-                        print('Scanning')
-                    # self.fullScan()
-                    continue
-                case State.Wander:
-                    if(DEBUG_PRINTS)
-                        print("Wandering")
-                    self.moveDirection(self.__randomWander__())
-                    # self.moveDirection(np.add(self.__randomWander2__(),self.avoidObstacle())) # when obstacle avoidance implemented
-                case State.Hover:
-                    self.hover()
-
-
-        self.stop()
-        cv2.destroyAllWindows()
-
-    #region
+    #region TESTING
     def dronelessTest(self):
         while cv2.waitKey(20) != 27: # Escape
             t.sleep(.01)
@@ -484,6 +425,58 @@ class Drone(tel.Tello):
         t.sleep(3) # Let it coast to a stop
         self.land()
     #endregion
+
+    def operate(self):
+        # creating window
+        if(WITH_DRONE):
+            cv2.namedWindow('test', cv2.WINDOW_NORMAL)
+
+        # general loop
+        while cv2.waitKey(20) != 27: # Escape            
+            #sensing
+            self.__updateSensorState__()
+            self.visibleObjects = self.look(reactions=list([self.pauseOnPerson,self.stopOnCellPhone]))
+            self.refreshTracker.update()
+            # self.refreshTracker.print()
+            
+            self.operatorOverride()
+
+            #State Control
+            match self.opState:
+                case State.Landed:
+                    if(DEBUG_PRINTS):
+                        print('Landed')
+                    if key.is_pressed('t'):
+                        self.opState = State.Takeoff
+                        print("Attempting to take off")
+                case State.Takeoff:
+                    safeToTakeOff = self.checkTelemetry()
+                    if safeToTakeOff:
+                        print("Telemetry Checks Successful")
+                        print('Taking off') 
+                        self.takeoff()
+                        self.opState = State.Hover # Hover for now, eventually scanning
+                    else:
+                        self.opState = State.Landed
+                        print("A Telemetry threshold has been violated. Unsafe takeoff/flight conditions")
+                        for dictkey, value in self.telemetryReason.items():
+                            print(f"{dictkey} test failed \n Reason: {value}")
+                        self.telemetryReason.clear()
+                        self.telemetryCheck.clear()
+                case State.Scan:
+                    if(DEBUG_PRINTS):
+                        print('Scanning')
+                    # self.fullScan()
+                    continue
+                case State.Wander:
+                    if(DEBUG_PRINTS)
+                        print("Wandering")
+                    self.moveDirection(self.__randomWander__())
+                case State.Hover:
+                    self.hover()      # HOVER NEEDS A GOOD DEAL MORE DESIGN SO IT CAN BE ACCESSED FROM OTHER PARTS OF THE PROGRAM
+
+        self.stop()
+        cv2.destroyAllWindows()
 
 drone1 = Drone(identifier = 'chuck')
 # drone1.operate()
