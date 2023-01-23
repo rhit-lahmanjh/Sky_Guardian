@@ -393,8 +393,8 @@ class Drone(tel.Tello):
                         "height":HeightCheck}
 
         # print("Completed Static Checks")
-        # print(self.staticTelemetryCheck.values())
-        return all(self.telemetry.values())
+        # print(self.telemetryCheck.values())
+        return all(self.telemetryCheck.values())
 
     def operate(self):
         # creating window
