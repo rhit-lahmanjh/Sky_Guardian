@@ -492,7 +492,7 @@ class Drone(tel.Tello):
                     # self.fullScan()
                     continue
                 case State.Wander:
-                    if(DEBUG_PRINTS)
+                    if(DEBUG_PRINTS):
                         print("Wandering")
                     self.moveDirection(self.__randomWander__())
                 case State.Hover:
