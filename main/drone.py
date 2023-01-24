@@ -11,7 +11,7 @@ import numpy as np
 import math
 import random as rand
 
-DEBUG_PRINTS = False
+DEBUG_PRINTS = True
 WITH_DRONE = True
 WITH_CAMERA = True
 RECORD_SENSOR_STATE = True
@@ -79,6 +79,7 @@ class Drone(tel.Tello):
     wanderCounter = 10
     STOP = np.array([0.0,0.0,0.0,0.0])
     prevDirection = None
+    recentlySentLandCommand = False
 
     #sensor Data
     onboardSensorState = dict()
@@ -125,7 +126,7 @@ class Drone(tel.Tello):
         return self.vidCap.retrieve()
     
     def __randomWander__(self):
-        if self.wanderCounter >= 5:
+        if self.wanderCounter >= 2:
             self.xyNoiseStorage = self.noiseGenerator(self.xyNoiseStorage)
             print(f"Noise: {self.xyNoiseStorage}")
             self.thetaStorage = clamp(n=(self.thetaStorage + (math.pi/2 * self.xyNoiseStorage)),minn=-math.pi/3,maxn=math.pi/3)
@@ -169,9 +170,10 @@ class Drone(tel.Tello):
 
     def operatorOverride(self):
         # land interrupt
-        if(key.is_pressed('l')):
+        if(key.is_pressed('l') and  not self.recentlySentLandCommand):
             self.land()
             self.opState = State.Landed
+            self.recentlySentLandCommand = True
             return
         moveDist = 30
         if key.is_pressed('up'):
@@ -252,7 +254,7 @@ class Drone(tel.Tello):
                     break
                 objectsSeen.append(object)
                 if(reactions != None):
-                    for reaction in reaction:
+                    for reaction in reactions:
                         reaction(object[1])
 
             return objectsSeen
@@ -435,7 +437,8 @@ class Drone(tel.Tello):
         while cv2.waitKey(20) != 27: # Escape            
             #sensing
             self.__updateSensorState__()
-            self.visibleObjects = self.look(reactions=list([self.pauseOnPerson,self.stopOnCellPhone]))
+            self.visibleObjects = self.look()
+            #reactions=list([self.pauseOnPerson,self.stopOnCellPhone])
             self.refreshTracker.update()
             # self.refreshTracker.print()
             
@@ -469,16 +472,16 @@ class Drone(tel.Tello):
                     # self.fullScan()
                     continue
                 case State.Wander:
-                    if(DEBUG_PRINTS)
+                    if(DEBUG_PRINTS):
                         print("Wandering")
                     self.moveDirection(self.__randomWander__())
                 case State.Hover:
                     self.hover()      # HOVER NEEDS A GOOD DEAL MORE DESIGN SO IT CAN BE ACCESSED FROM OTHER PARTS OF THE PROGRAM
-
+                    continue
         self.stop()
         cv2.destroyAllWindows()
 
 drone1 = Drone(identifier = 'chuck')
-# drone1.operate()
+drone1.operate()
 # drone1.dronelessTest()
-drone1.testFunction()
+# drone1.testFunction()
