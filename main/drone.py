@@ -449,25 +449,40 @@ class Drone(tel.Tello):
             # # Dynamic Battery Charge, Dynamic Wi-Fi SNR, Dynamic Pitch and Roll Controls
 
             # If the drone breaks the max ceiling, it will lower itself below the threshold
-            if self.getSensorReading("h") > 345:
-                self.move_down(30) # move is in cm
+            if self.getSensorReading("h") > 180:
                 print("Drone height is breaking the altitude ceiling.")
+                self.move_down(15) # move is in cm
 
+            # If the drone starts to get bad SNR values, it will move backwards one foot
             if self.query_wifi_signal_noise_ratio() < 25:
-                self.move_back(20) # move is in cm
                 print("Drone height is breaking the altitude ceiling.")
+                self.move_back(30) # move is in cm
 
+            # If the drone battery gets below 12%, the drone will land
+            # Additional Battery Charge safety measure with a higher level implementation
+            # Adds diversity, in addition to Tello hardware safety features, to how battery temp is monitored
             if self.getSensorReading("bat") < 12:
-                self.land()
                 print("Drone battery charge is very low. Landing...")
+                self.land()
+                self.opState = State.Landed
 
-            #if abs(self.getSensorReading("pitch")) < 30:
+            # If the drone pitch is too high or low in flight, it will hover for 5 seconds to reorient itself
+            if abs(self.getSensorReading("pitch")) < 45:
+                print("Drone pitch is not level. Hovering to regain stability...")
+                for i in range(5):
+                    self.hover()
+                    break
 
+            # If the drone pitch is too high or low in flight, it will hover for 5 seconds to reorient itself
+            if abs(self.getSensorReading("roll")) < 45:
+                print("Drone roll is not level. Hovering to regain stability...")
+                for i in range(5):
+                    self.hover()
+                    break
 
-            #if abs(self.getSensorReading("roll")) < 30:
+            # Acceleration Safety Check
 
-
-                #State Switching SIILL IN DEV
+            # State Switching STILL IN DEV
             match self.opState:
                 case State.Landed:
                     if(DEBUG_PRINTS):
