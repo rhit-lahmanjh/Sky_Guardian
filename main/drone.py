@@ -20,10 +20,10 @@ clamp = lambda n, minn, maxn: max(min(maxn, n), minn)
 
 class RefreshTracker():
     refreshRateQueue = None
-    lasTimeMark = None
+    lastTimeMark = None
     maxRefresh = 0
     minRefresh = 0
-    NUM_STORED_POINTS = 100
+    NUM_STORED_POINTS = 50
 
     def __init__(self) -> None:
         self.refreshRateQueue = deque()
@@ -31,10 +31,12 @@ class RefreshTracker():
     
     def update(self):
         currentTimeMark = t.time()
+        # print(f"Current Period: {currentTimeMark-self.lastTimeMark}")
         currentRate = 1/(currentTimeMark - self.lastTimeMark)
         self.refreshRateQueue.append(currentRate)
         if(len(self.refreshRateQueue) > self.NUM_STORED_POINTS):
             self.refreshRateQueue.popleft()
+        self.lastTimeMark = currentTimeMark
 
     def getRate(self, max = False, average = False):
         if max:
@@ -44,7 +46,7 @@ class RefreshTracker():
         return self.refreshRateQueue[-1]
 
     def print(self):
-        print(f"Last Refresh Rate: {self.refreshRateQueue[-1]}\nMax Refresh Rate: {np.max(self.refreshRateQueue)}\nAverage Refresh Rate: {np.average(self.refreshRateQueue)}")
+        print(f"Last Refresh Rate: {self.refreshRateQueue[-1]}\nMax Refresh Rate: {np.max(self.refreshRateQueue)}\nMinimum Refresh Rate: {np.min(self.refreshRateQueue)}\nAverage Refresh Rate: {np.average(self.refreshRateQueue)}")
 
 class State(Enum):
     Landed = 1
@@ -241,10 +243,14 @@ class Drone(tel.Tello):
 
     def look(self, reactions = None):
     # get and analyze visual stimulus
+        t2 = t.time()
         returned, img = self.__getFrame__()
+        print(f"getFrame: {t.time()-t2}")
         if returned:
             print('Seeing')
+            t2 = t.time()
             objects = self.vision.detect_objects(img)
+            print(f"Straight Inference: {t.time()-t2}")
             self.vision.display_objects(img, objects,threshold=.9)
             cv2.imshow('test', img)
 
@@ -335,7 +341,7 @@ class Drone(tel.Tello):
         # could be unsafe
         print("Pitch: " + str(self.getSensorReading("pitch")))
         pitch = abs(self.getSensorReading("pitch"))
-        if pitch < 30:
+        if pitch < 15:
             pitchCheck = True
         else:
             pitchCheck = False
@@ -346,7 +352,7 @@ class Drone(tel.Tello):
         # could be unsafe
         print("Roll: " + str(self.getSensorReading("roll")))
         roll = abs(self.getSensorReading("roll"))
-        if roll < 30:
+        if roll < 25:
             rollCheck = True
         else:
             rollCheck = False
@@ -436,11 +442,17 @@ class Drone(tel.Tello):
         # general loop
         while cv2.waitKey(20) != 27: # Escape
             #sensing
+
+            t1 = t.time()
             self.__updateSensorState__()
+            print(f"Update Sensors: {t.time()-t1}")
+
+            t1 = t.time()
             self.visibleObjects = self.look()
+            print(f"Look function: {t.time()-t1}")
             #reactions=list([self.pauseOnPerson,self.stopOnCellPhone])
             self.refreshTracker.update()
-            # self.refreshTracker.print()
+            self.refreshTracker.print()
             
             self.operatorOverride()
 
@@ -449,17 +461,17 @@ class Drone(tel.Tello):
             # # Dynamic Battery Charge, Dynamic Wi-Fi SNR, Dynamic Pitch and Roll Controls
 
             # If the drone breaks the max ceiling, it will lower itself below the threshold
-            if self.getSensorReading("h") > 345:
-                self.move_down(30) # move is in cm
-                print("Drone height is breaking the altitude ceiling.")
+            # if self.getSensorReading("h") > 180:
+            #     self.move_down(15) # move is in cm
+            #     print("Drone height is breaking the altitude ceiling.")
 
-            if self.query_wifi_signal_noise_ratio() < 25:
-                self.move_back(20) # move is in cm
-                print("Drone height is breaking the altitude ceiling.")
+            # if self.query_wifi_signal_noise_ratio() < 25:
+            #     self.move_back(20) # move is in cm
+            #     print("Drone height is breaking the altitude ceiling.")
 
-            if self.getSensorReading("bat") < 12:
-                self.land()
-                print("Drone battery charge is very low. Landing...")
+            # if self.getSensorReading("bat") < 12:
+            #     self.land()
+            #     print("Drone battery charge is very low. Landing...")
 
             #if abs(self.getSensorReading("pitch")) < 30:
 
@@ -499,8 +511,9 @@ class Drone(tel.Tello):
                         print("Wandering")
                     self.moveDirection(self.__randomWander__())
                 case State.Hover:
+                    t1 = t.time()
                     self.hover()      # HOVER NEEDS A GOOD DEAL MORE DESIGN SO IT CAN BE ACCESSED FROM OTHER PARTS OF THE PROGRAM
-                    continue
+                    print(f"Hover command: {t.time()-t1}")
         self.stop()
         cv2.destroyAllWindows()
 
