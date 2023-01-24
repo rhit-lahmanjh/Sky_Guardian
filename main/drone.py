@@ -87,7 +87,7 @@ class Drone(tel.Tello):
     telemetry = dict()
     telemetryReason = dict()
     refreshTracker = None
-       
+
     def __init__(self,identifier = None):
         cv2.VideoCapture()
         super().__init__()
@@ -218,7 +218,7 @@ class Drone(tel.Tello):
         self.vidCap.release()
         self.streamoff()
         self.end()
-    
+
     def moveDirection(self,direction = np.array([0, 0, 0, 0])):
         """Set the speed of the drone based on xyz and yaw
         direction is:
@@ -227,8 +227,8 @@ class Drone(tel.Tello):
         up and down      : z or element 3
         yaw              : turn or element 4
         """
-        
-        cmd = f'rc {round(direction[0],1)} {round(direction[1],1)} {round(direction[2],1)} {round(direction[3],1)}'    
+
+        cmd = f'rc {round(direction[0],1)} {round(direction[1],1)} {round(direction[2],1)} {round(direction[3],1)}'
         self.send_command_without_return(cmd)
 
     def fullScan(self):
@@ -239,7 +239,7 @@ class Drone(tel.Tello):
     #endregion
     #region SENSORY FUNCTIONS
 
-    def look(self, reactions = None): 
+    def look(self, reactions = None):
     # get and analyze visual stimulus
         returned, img = self.__getFrame__()
         if returned:
@@ -290,76 +290,76 @@ class Drone(tel.Tello):
                 BatCheck = True
             else:
                 BatCheck = False
-                self.telemetryReason["bat"] = "Battery Charge Too Low"
+                self.telemetryReason["bat"] = "Battery requires more charging."
 
         if not self.opState.Landed:
             print("Battery Charge: " + str(self.getSensorReading("bat")))
-            if self.getSensorReading("bat") > 11:
+            if self.getSensorReading("bat") > 12:
                 BatCheck = True
             else:
                 BatCheck = False
-                self.telemetryReason["bat"] = "Battery Charge Too Low"
+                self.telemetryReason["bat"] = "Battery charge too low."
 
         # Checks the highest battery temperature before takeoff
         print("Highest Battery Temperature: " + str(self.getSensorReading("temph")))
-        if self.getSensorReading("temph") < 100:
+        if self.getSensorReading("temph") < 140:
             TemphCheck = True
         else:
             TemphCheck = False
-            self.telemetryReason["temph"] = "Battery Temperature Too High"
+            self.telemetryReason["temph"] = "Battery temperature too high."
 
         # Checks the baseline low temperature before takeoff
-        print("Baseline Battery Temperature: " + str(self.getSensorReading("templ")))
-        if self.getSensorReading("templ") < 90:
+        print("Average Battery Temperature: " + str(self.getSensorReading("templ")))
+        if self.getSensorReading("templ") < 95:
             TemplCheck = True
         else:
             TemplCheck = False
-            self.telemetryReason["templ"] = "Baseline Low Temperature Too High"
+            self.telemetryReason["templ"] = "Average temperature too high."
 
         # Turns the string SNR value into an integer
         # Checks the Wi-Fi SNR value to determine signal strength
-        # print("Signal Strength: " + self.query_wifi_signal_noise_ratio())
+        print("Signal Strength: " + self.query_wifi_signal_noise_ratio())
         signalStrength = self.query_wifi_signal_noise_ratio()
         if signalStrength != 'ok' and signalStrength != 'okay':
             signalStrengthInt = int(signalStrength)
         if signalStrength == 'ok':
             SignalCheck = True
-        elif signalStrengthInt > 15:
+        elif signalStrengthInt > 25:
             SignalCheck = True
         else:
             SignalCheck = False
-            self.telemetryReason["SignalStrength"] = "SNR below 15dB. Weak Connection"
+            self.telemetryReason["SignalStrength"] = "SNR below 25dB. Weak Connection."
 
         # Checks to make sure the pitch is not too far off
         # If the drone is too far from 0 degrees on pitch the takeoff
         # could be unsafe
         print("Pitch: " + str(self.getSensorReading("pitch")))
         pitch = abs(self.getSensorReading("pitch"))
-        if pitch < 10:
+        if pitch < 30:
             pitchCheck = True
         else:
             pitchCheck = False
-            self.telemetryReason["pitch"] = "Pitch is Off Center. Unstable Takeoff."
+            self.telemetryReason["pitch"] = "Pitch is off center. Unstable takeoff."
 
         # Checks to make sure the roll is not too far off
         # If the drone is too far from 0 degrees on roll the takeoff
         # could be unsafe
         print("Roll: " + str(self.getSensorReading("roll")))
         roll = abs(self.getSensorReading("roll"))
-        if roll < 10:
+        if roll < 30:
             rollCheck = True
         else:
             rollCheck = False
-            self.telemetryReason["roll"] = "Roll is Off Center. Unstable Takeoff."
+            self.telemetryReason["roll"] = "Roll is off center. Unstable takeoff."
 
         # Comment out function as needed until testing can confirm desired threshold value
         # Checks to ensure the drone is at a low enough height to ensure room during takeoff for safe ascent
         print("Height: " + str(self.getSensorReading("h")))
-        if self.getSensorReading("h") < 500:
+        if self.getSensorReading("h") < 90:
             HeightCheck = True
         else:
             HeightCheck = False
-            self.telemetryReason["h"] = "Drone is too High"
+            self.telemetryReason["h"] = "Drone is too high."
 
         # Dictionary of Boolean values to check through static telemetry
         self.telemetryCheck = {"bat":BatCheck, "temph":TemphCheck, "templ":TemplCheck,
@@ -386,7 +386,7 @@ class Drone(tel.Tello):
         while cv2.waitKey(20) != 27: # Escape
             t.sleep(.01)
             self.__randomWander__()
-    
+
     def testFunction(self):
         # while cv2.waitKey(20) != 27: # Escape
         self.takeoff()
@@ -411,7 +411,7 @@ class Drone(tel.Tello):
                 self.land()
                 self.refreshTracker.print()
                 break
-                
+
     def visualStopping(self):
         t.sleep(3)
         self.takeoff()
@@ -434,7 +434,7 @@ class Drone(tel.Tello):
             cv2.namedWindow('test', cv2.WINDOW_NORMAL)
 
         # general loop
-        while cv2.waitKey(20) != 27: # Escape            
+        while cv2.waitKey(20) != 27: # Escape
             #sensing
             self.__updateSensorState__()
             self.visibleObjects = self.look()
@@ -445,6 +445,29 @@ class Drone(tel.Tello):
             self.operatorOverride()
 
             #State Control
+            # # Dynamic Telemetry Checks to monitor while in flight, is it possible to reuse the dictionary?
+            # # Dynamic Battery Charge, Dynamic Wi-Fi SNR, Dynamic Pitch and Roll Controls
+
+            # If the drone breaks the max ceiling, it will lower itself below the threshold
+            if self.getSensorReading("h") > 345:
+                self.move_down(30) # move is in cm
+                print("Drone height is breaking the altitude ceiling.")
+
+            if self.query_wifi_signal_noise_ratio() < 25:
+                self.move_back(20) # move is in cm
+                print("Drone height is breaking the altitude ceiling.")
+
+            if self.getSensorReading("bat") < 12:
+                self.land()
+                print("Drone battery charge is very low. Landing...")
+
+            #if abs(self.getSensorReading("pitch")) < 30:
+
+
+            #if abs(self.getSensorReading("roll")) < 30:
+
+
+                #State Switching SIILL IN DEV
             match self.opState:
                 case State.Landed:
                     if(DEBUG_PRINTS):
