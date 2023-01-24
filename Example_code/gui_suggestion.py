@@ -25,7 +25,6 @@ class ourTello(tello.Tello):
         self.vidCap.release()
         self.streamoff()
         self.end()
-
     
 class VideoThread(QThread):
     change_pixmap_signal = pyqtSignal(np.ndarray)
