@@ -52,15 +52,17 @@ class RefreshTracker():
         print(f"Average Refresh Rate: {np.average(self.refreshRateQueue)}")
 
 class State(Enum):
-    Landed = 1
+    Grounded = 1
     Takeoff = 2
-    Wander = 3
-    FollowWalkway = 4
-    FollowHallway = 5
-    TrackPerson = 6
-    Doorway = 7
-    Scan = 8
-    Hover = 9
+    Land = 3
+    Wander = 4
+    FollowWalkway = 5
+    FollowHallway = 6
+    TrackPerson = 7
+    Doorway = 8
+    Scan = 9
+    Hover = 10
+
     
 class Drone(tel.Tello):
     #video
@@ -82,6 +84,7 @@ class Drone(tel.Tello):
     recentlySentLandCommand = False
 
     #sensor Data
+    globalPosition = np.ones((2,1))
     onboardSensorState = dict()
     distanceSensorState = dict()
     telemetry = dict()
@@ -92,7 +95,7 @@ class Drone(tel.Tello):
         cv2.VideoCapture()
         super().__init__()
         self.identifier = identifier
-        self.opState = State.Landed
+        self.opState = State.Grounded
         if WITH_DRONE:
             # This is where we will implement connecting to a drone through the router
             self.connect()
@@ -174,7 +177,7 @@ class Drone(tel.Tello):
         # land interrupt
         if(key.is_pressed('l') and  not self.recentlySentLandCommand):
             self.land()
-            self.opState = State.Landed
+            self.opState = State.Grounded
             self.recentlySentLandCommand = True
             return
         if key.is_pressed('h'):
@@ -268,7 +271,7 @@ class Drone(tel.Tello):
 
     def checkTelemetry(self):
         # Checks the battery charge before takeoff
-        if self.opState.Landed:
+        if self.opState.Grounded:
             print("Battery Charge: " + str(self.getSensorReading("bat")))
             if self.getSensorReading("bat") > 50:
                 BatCheck = True
@@ -276,7 +279,7 @@ class Drone(tel.Tello):
                 BatCheck = False
                 self.telemetryReason["bat"] = "Battery requires more charging."
 
-        if not self.opState.Landed:
+        if not self.opState.Grounded:
             print("Battery Charge: " + str(self.getSensorReading("bat")))
             if self.getSensorReading("bat") > 12:
                 BatCheck = True
@@ -494,7 +497,7 @@ class Drone(tel.Tello):
 
             # State Switching STILL IN DEV
             match self.opState:
-                case State.Landed:
+                case State.Grounded:
                     if(DEBUG_PRINTS):
                         print('Landed')
                     if key.is_pressed('t'):
@@ -508,12 +511,15 @@ class Drone(tel.Tello):
                         self.takeoff()
                         self.opState = State.Hover # Hover for now, eventually scanning
                     else:
-                        self.opState = State.Landed
+                        self.opState = State.Grounded
                         print("A Telemetry threshold has been violated. Unsafe takeoff/flight conditions")
                         for dictkey, value in self.telemetryReason.items():
                             print(f"{dictkey} test failed \n Reason: {value}")
                         self.telemetryReason.clear()
                         self.telemetryCheck.clear()
+                case State.Land:
+                    self.land()
+                    self.opState = State.Grounded
                 case State.Scan:
                     if(DEBUG_PRINTS):
                         print('Scanning')
