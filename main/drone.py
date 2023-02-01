@@ -456,7 +456,6 @@ class Drone(tel.Tello):
             self.operatorOverride()
 
             #State Control
-            # # Dynamic Telemetry Checks to monitor while in flight, is it possible to reuse the dictionary?
             # # Dynamic Battery Charge, Dynamic Wi-Fi SNR, Dynamic Pitch and Roll Controls
 
             # # If the drone breaks the max ceiling, it will lower itself below the threshold

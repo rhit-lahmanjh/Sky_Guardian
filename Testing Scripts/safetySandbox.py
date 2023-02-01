@@ -14,8 +14,21 @@ print("Highest Temp (C):" + str(telloOne.get_highest_temperature()))
 print("Average Temp (C): " + str(telloOne.get_temperature()))
 print("Signal Noise Ratio (dB): " + telloOne.query_wifi_signal_noise_ratio())
 
+telloOne.takeoff()
+while telloOne.is_flying:
+    print("Acceleration X: " + str(telloOne.get_acceleration_x()))
+    telloOne.streamon()
+    print("Acceleration X: " + str(telloOne.get_acceleration_x()))
+    telloOne.move_forward(200)
+    print("Acceleration X: " + str(telloOne.get_acceleration_x()))
+    telloOne.move_back(200)
+    print("Acceleration X: " + str(telloOne.get_acceleration_x()))
+
+
+
 # Conditional Statements to run through the static telemetry checks
 # In the main code base, will likely use the get methods directly rather than recreating them
+"""
 flag = False
 if telloOne.get_battery() < 50:
     flag = False
@@ -138,5 +151,5 @@ def get_status(data):
     data[2].append(telloOne.get_highest_temperature())  # appends the highest temperature to list
     data[3].append(telloOne.get_battery())  # appends battery charge to list
     data[4].append(telloOne.query_wifi_signal_noise_ratio())  # appends the Wi-Fi SNR value to list
-
+"""
 
