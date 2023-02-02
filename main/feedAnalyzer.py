@@ -25,6 +25,8 @@ class FeedAnalyzer():
     objectModelFile = "CV_testing/models/ssd_mobilenet_v2_coco_2018_03_29/frozen_inference_graph.pb"
     objectConfigFile = "CV_testing/models/ssd_mobilenet_v2_coco_2018_03_29.pbtxt"
     objectClassFile = "CV_testing/models/coco_class_labels.txt"
+    #"C:/Users/prestokp/PycharmProjects/Sky_Guardian/main/coco_class_labels.txt"
+    #
     objectLabels = []
 
     wind = []

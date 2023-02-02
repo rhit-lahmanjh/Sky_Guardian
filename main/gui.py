@@ -101,10 +101,8 @@ def main(page: ft.Page):
         print("Drone 1 State: Hover")           
         print("Drone 2 State: Hover")
 
-        # drone1_hover(e)
-        # drone2_hover(e)
-        #     drone1.opState = State.Hover
-        #     drone2.opState = State.Hover
+        drone1.opState = State.Hover
+        drone2.opState = State.Hover
         page.update()        
 
     drone1_items = [
