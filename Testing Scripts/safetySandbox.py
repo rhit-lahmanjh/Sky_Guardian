@@ -8,6 +8,9 @@ import keyboard
 telloOne = Tello()
 telloOne.connect()
 
+telloTwo = Tello()
+telloTwo.connect()
+
 print("Battery Percent (%): " + str(telloOne.get_battery()))
 print("Absolute Height (cm): " + str(telloOne.get_barometer()))
 print("Highest Temp (C):" + str(telloOne.get_highest_temperature()))
@@ -15,6 +18,15 @@ print("Average Temp (C): " + str(telloOne.get_temperature()))
 print("Signal Noise Ratio (dB): " + telloOne.query_wifi_signal_noise_ratio())
 
 telloOne.takeoff()
+telloOne.enable_mission_pads()
+
+droneOneIDlocation = telloOne.get_mission_pad_id()
+droneTwoIDlocation = telloTwo.get_mission_pad_id()
+if droneTwoIDlocation == droneTwoIDlocation:
+
+
+
+"""
 while telloOne.is_flying:
     print("Acceleration X: " + str(telloOne.get_acceleration_x()))
     telloOne.streamon()
@@ -23,8 +35,7 @@ while telloOne.is_flying:
     print("Acceleration X: " + str(telloOne.get_acceleration_x()))
     telloOne.move_back(200)
     print("Acceleration X: " + str(telloOne.get_acceleration_x()))
-
-
+"""
 
 # Conditional Statements to run through the static telemetry checks
 # In the main code base, will likely use the get methods directly rather than recreating them
