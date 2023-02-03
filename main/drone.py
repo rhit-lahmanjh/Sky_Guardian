@@ -15,6 +15,7 @@ DEBUG_PRINTS = True
 WITH_DRONE = True
 WITH_CAMERA = True
 RECORD_SENSOR_STATE = True
+DISTANCE_BETWEEN_MISSION_PADS = 100
 
 clamp = lambda n, minn, maxn: max(min(maxn, n), minn)
 
@@ -84,7 +85,16 @@ class Drone(tel.Tello):
     recentlySentLandCommand = False
 
     #sensor Data
-    globalPosition = np.ones((2,1))
+    globalPosition = np.ones((3,1))
+
+    missionPadShift = np.array([[0,0],
+                                [0,DISTANCE_BETWEEN_MISSION_PADS],
+                                [0,2*DISTANCE_BETWEEN_MISSION_PADS],
+                                [0,3*DISTANCE_BETWEEN_MISSION_PADS],
+                                [DISTANCE_BETWEEN_MISSION_PADS,0]
+                                [DISTANCE_BETWEEN_MISSION_PADS,DISTANCE_BETWEEN_MISSION_PADS],
+                                [DISTANCE_BETWEEN_MISSION_PADS,2*DISTANCE_BETWEEN_MISSION_PADS],
+                                [DISTANCE_BETWEEN_MISSION_PADS,3*DISTANCE_BETWEEN_MISSION_PADS],])
     onboardSensorState = dict()
     distanceSensorState = dict()
     telemetry = dict()
@@ -171,7 +181,11 @@ class Drone(tel.Tello):
             queue.append(currentStates.get(key))
             if(len(queue) > 10):
                 queue.popleft()
-        # add in here to update the distance sensors
+        padID = currentStates.get('mid')
+        if(padID > 0):
+            self.globalPosition[1] = currentStates.get('x') + self.missionPadShift[padID,1]
+            self.globalPosition[2] = currentStates.get('y') + self.missionPadShift[padID,2]
+            self.globalPosition[3] = currentStates.get('z')
 
     def operatorOverride(self):
         # land interrupt
@@ -213,6 +227,10 @@ class Drone(tel.Tello):
 
         cmd = f'rc {round(direction[0],1)} {round(direction[1],1)} {round(direction[2],1)} {round(direction[3],1)}'
         self.send_command_without_return(cmd)
+
+    def potential_fields(self):
+        #todo
+        return
 
     def fullScan(self):
         self.moveDirection([0,0,0,10])
