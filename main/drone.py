@@ -15,7 +15,13 @@ DEBUG_PRINTS = True
 WITH_DRONE = True
 WITH_CAMERA = True
 RECORD_SENSOR_STATE = True
+
+# update dependent on pad layout
 DISTANCE_BETWEEN_MISSION_PADS = 100
+X_MIN_BOUNDARY = -50
+X_MAX_BOUNDARY = 150
+Y_MIN_BOUNDARY = -50
+Y_MAX_BOUNDARY = 350
 
 clamp = lambda n, minn, maxn: max(min(maxn, n), minn)
 
@@ -85,13 +91,13 @@ class Drone(tel.Tello):
     recentlySentLandCommand = False
 
     #sensor Data
-    globalPosition = np.ones((3,1))
+    globalPose = np.ones((4,1))
 
     missionPadShift = np.array([[0,0],
                                 [0,DISTANCE_BETWEEN_MISSION_PADS],
                                 [0,2*DISTANCE_BETWEEN_MISSION_PADS],
                                 [0,3*DISTANCE_BETWEEN_MISSION_PADS],
-                                [DISTANCE_BETWEEN_MISSION_PADS,0]
+                                [DISTANCE_BETWEEN_MISSION_PADS,0],
                                 [DISTANCE_BETWEEN_MISSION_PADS,DISTANCE_BETWEEN_MISSION_PADS],
                                 [DISTANCE_BETWEEN_MISSION_PADS,2*DISTANCE_BETWEEN_MISSION_PADS],
                                 [DISTANCE_BETWEEN_MISSION_PADS,3*DISTANCE_BETWEEN_MISSION_PADS],])
@@ -183,9 +189,26 @@ class Drone(tel.Tello):
                 queue.popleft()
         padID = currentStates.get('mid')
         if(padID > 0):
-            self.globalPosition[1] = currentStates.get('x') + self.missionPadShift[padID,1]
-            self.globalPosition[2] = currentStates.get('y') + self.missionPadShift[padID,2]
-            self.globalPosition[3] = currentStates.get('z')
+            self.globalPose[0] = currentStates.get('x') + self.missionPadShift[padID-1,0]
+            self.globalPose[1] = currentStates.get('y') + self.missionPadShift[padID-1,1]
+            self.globalPose[2] = currentStates.get('z')
+            self.globalPose[3] = currentStates.get('yaw')
+        if DEBUG_PRINTS:
+            print(f"Pad: {padID} X: {self.globalPose[0]} Y: {self.globalPose[1]} Z: {self.globalPose[2]}")
+            print(f"Shifting by: {self.missionPadShift[padID-1,:]}")
+
+    def __avoidBoundary__(self):
+        xBoundaryForceDroneFrame = 0
+        yBoundaryForceDroneFrame = 0
+        movementForceMagnitude = 10
+        if self.globalPose[0] < X_MIN_BOUNDARY:
+            error = math.abs(self.globalPose[0]-X_MIN_BOUNDARY)
+            xBoundaryForce = error*movementForceMagnitude
+            xBoundaryForceDroneFrame = 
+
+        elif self.globalPose[0] > X_MAX_BOUNDARY:
+
+
 
     def operatorOverride(self):
         # land interrupt
@@ -194,6 +217,9 @@ class Drone(tel.Tello):
             self.opState = State.Grounded
             self.recentlySentLandCommand = True
             return
+        if key.is_pressed('w'):
+            self.move_forward(100)
+            t.sleep(1)
         if key.is_pressed('h'):
             if self.prevState == None :
                 self.prevState = self.opState
@@ -229,7 +255,7 @@ class Drone(tel.Tello):
         self.send_command_without_return(cmd)
 
     def potential_fields(self):
-        #todo
+        
         return
 
     def fullScan(self):
@@ -280,12 +306,6 @@ class Drone(tel.Tello):
             return sum(pastXreadings)/len(pastXreadings)
         else:
             return self.onboardSensorState.get(sensor)[-1]
-        # elif sensor in self.distanceSensorState.keys:
-        #     if(average):
-        #         pastXreadings = list(self.distanceSensorState.get(sensor))
-        #         return sum(pastXreadings)/len(pastXreadings)
-        #     else:
-        #         return self.distanceSensorState.get(sensor)[-1]
 
     def checkTelemetry(self):
         # Checks the battery charge before takeoff
@@ -471,8 +491,8 @@ class Drone(tel.Tello):
             self.visibleObjects = self.look()
             # print(f"Look function: {t.time()-t1}")
             #reactions=list([self.R_backUpFromPerson,self.R_stopOnCellPhone]
-            self.refreshTracker.update()
-            self.refreshTracker.printAVG()
+            # self.refreshTracker.update()
+            # self.refreshTracker.printAVG()
             
             self.operatorOverride()
 
@@ -546,7 +566,8 @@ class Drone(tel.Tello):
                 case State.Wander:
                     if(DEBUG_PRINTS):
                         print("Wandering")
-                    self.moveDirection(self.__randomWander__())
+                    # self.moveDirection(self.__randomWander__())
+                    self.moveDirection(np.add(self.__randomWander__,self.potential_fields()))
                 case State.Hover:
                     t1 = t.time()
                     self.hover()      # HOVER NEEDS A GOOD DEAL MORE DESIGN SO IT CAN BE ACCESSED FROM OTHER PARTS OF THE PROGRAM
