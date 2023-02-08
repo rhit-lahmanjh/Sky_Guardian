@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 
+
 # YOLOv5 Model Thresholds
 SCORE_THRESHOLD = 0.5 # filter low probability class scores
 NMS_THRESHOLD = 0.45 # remove overlapping boundary boxes
@@ -11,7 +12,7 @@ FONTFACE = cv2.FONT_HERSHEY_SIMPLEX
 FONT_SCALE = 0.7
 THICKNESS = 1
 
-class FeedAnalyzer():
+class VideoAnalyzer():
     # load and define model
     ssdNet = []
     # TO-DO, load YOLOv5 model here
@@ -47,7 +48,7 @@ class FeedAnalyzer():
 
     def process(self,cv_img):
         objectsInfo = self.detect_objects(cv_img)
-        self.display_objects(cv_img,objectsInfo, threshold = .8)
+        self.outline_objects_on_image(cv_img,objectsInfo, threshold = .8)
         # cv2.imshow(self.wind, cv_img)
         
     def detect_objects(self,im = None):
@@ -82,7 +83,7 @@ class FeedAnalyzer():
         # Display text inside the rectangle
         cv2.putText(im, text, (x, y-5 ), FONTFACE, FONT_SCALE, (0, 255, 255), THICKNESS, cv2.LINE_AA)
 
-    def display_objects(self,im, objects, threshold = 0.80):
+    def outline_objects_on_image(self,im, objects, threshold = 0.80):
         rows = im.shape[0]; cols = im.shape[1]
 
         #loop through all objects
