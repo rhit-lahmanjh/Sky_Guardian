@@ -4,6 +4,8 @@ import flet as ft
 import djitellopy
 import socket
 import time
+import cv2
+import base64
 import threading
 from flet import (
     Column,
@@ -19,51 +21,24 @@ from flet import (
 
 # tello_address = ('192.168.10.1', 8889)
 # local_address = ('', 9000)
-
-# sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-# sock.bind(local_address)
-
-# def send(message, delay):
-#     try:
-#         sock.sendto(message.encode(), tello_address)
-#         print("Sending message: " + message)
-#     except Exception as exp:
-#         print("Error sending: " + str(exp))
-
-#     time.sleep(delay)
-    
-# def recieve():
-#     while True:
-#         try:
-#             response, ip_address = sock.recvfrom(128)
-#             print("Recieved message: " + response.decode(encoding='utf-8'))
-#         except Exception as exp:
-#             sock.close()
-#             print("Error recieving: " + str(exp))
-#             break
         
 def main(page: ft.Page):
     # drone connection
     drone1 = Drone('test')
-    # time.sleep(5)
+    cap = drone1.get_video_capture()
+
+    # Setting up threading
     threads = []
     FSM_thread = threading.Thread(target=drone1.operate)
     threads.append(FSM_thread)
     FSM_thread.start()
 
     page.title = "Drone Basic Functions"
-    # page.vertical_alignment = ft.MainAxisAlignment.CENTER
 
     # Button functions
     def drone1_launch(e):
         print("Drone 1 State: Takeoff")
-        # send("command", 3)
-        # send("takeoff", 5)
-
         drone1.opState = State.Takeoff
-        # drone1.operate()
-        # t1 = threading.Thread(target=drone1.operate)
-        # threads.append(t1)
         page.update()
     
     def drone2_launch(e):
@@ -73,8 +48,6 @@ def main(page: ft.Page):
 
     def drone1_land(e):
         print("Drone 1 State: Landed")
-        # send("land", 5)
-        # drone1.land()
         drone1.opState = State.Landed
         page.update()
     
@@ -85,10 +58,7 @@ def main(page: ft.Page):
 
     def drone1_hover(e):
         print("Drone 1 State: Hover")  
-        # send("hover", 3)         
         drone1.opState = State.Hover
-        # h1 = threading.Thread(target=drone1.operate)
-        # threads.append(h1)
         page.update()
     
     def drone2_hover(e):
@@ -102,8 +72,31 @@ def main(page: ft.Page):
         print("Drone 2 State: Hover")
 
         drone1.opState = State.Hover
-        drone2.opState = State.Hover
+        # drone2.opState = State.Hover
         page.update()        
+
+    # CV2 Window 
+    class Countdown(ft.UserControl):
+        def __init__(self):
+            super().__init__()
+
+        def did_mount(self):
+            self.update_timer()
+
+        def update_timer(self):
+            while True:
+                _, frame = cap.read()
+                # frame = cv2.resize(frame,(400,400))
+                _, im_arr = cv2.imencode('.png', frame)
+                im_b64 = base64.b64encode(im_arr)
+                self.img.src_base64 = im_b64.decode("utf-8")
+                self.update()
+
+        def build(self):
+            self.img = ft.Image(
+                border_radius=ft.border_radius.all(20)
+            )
+            return self.img
 
     drone1_items = [
         ft.Container(width=200, height=75, content=ft.Text("Launch"), on_click=drone1_launch, bgcolor = ft.colors.GREEN_200, alignment=ft.alignment.center), 
@@ -141,6 +134,22 @@ def main(page: ft.Page):
         ]
     )
 
+    cv2window = ft.Card(
+            elevation=30,
+            content=ft.Container(
+                bgcolor=ft.colors.WHITE24,
+                padding=10,
+                border_radius = ft.border_radius.all(20),
+                content=ft.Column([
+                    Countdown(),
+                    ft.Text("OPENCV WITH FLET",
+                         size=20, weight="bold",
+                         color=ft.colors.WHITE),
+                ]
+                ),
+            )
+    )
+
     page.add(
         ft.Row(
             [
@@ -156,6 +165,5 @@ def main(page: ft.Page):
             ft.Container(width=415, height=75, content=ft.Text("ORDER 66"), on_click=order66, bgcolor = ft.colors.RED, alignment=ft.alignment.center)]
         )
     )
-    # FSM_thread.start()
 
 ft.app(target=main)

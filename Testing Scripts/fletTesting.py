@@ -1,5 +1,6 @@
 import flet as ft
 import time
+import chardet
 
 import flet as ft
 
@@ -39,10 +40,10 @@ def main(page: ft.Page):
     page.go(page.route)
 
 
-ft.app(target=main, view=ft.WEB_BROWSER)
+ft.app(target=main)
 
-# Page Reference Error
 """
+# Page Reference Error
 def view_pop(view):
     page.views.pop()
     top_view = page.views[-1]
@@ -130,7 +131,7 @@ def main(page: ft.Page):
 
 ft.app(target=main)
 
-"""
+
 def main(page):
 
     first_name = ft.Ref[ft.TextField]()
@@ -154,9 +155,9 @@ def main(page):
     )
 
 ft.app(target=main)
-"""
 
-"""
+
+
 def main(page):
     def add_clicked(e):
         page.add(ft.Checkbox(label=new_task.value))
@@ -165,8 +166,8 @@ def main(page):
     page.add(ft.Row([new_task, ft.ElevatedButton("Add", on_click=add_clicked)]))
 
 ft.app(target=main)
-"""
-"""
+
+
 def main(page: ft.Page):
     t = ft.Text(value="Hello, world!", color="green")
     page.controls.append(t)
@@ -200,4 +201,4 @@ def main(page: ft.Page):
     def button_clicked(e):
         page.add(ft.Text("Clicked!"))
 
-    page.add(ft.ElevatedButton(text="Click me", on_click=button_clicked))"""
+    page.add(ft.ElevatedButton(text="Click me", on_click=button_clicked))
