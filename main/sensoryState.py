@@ -6,10 +6,10 @@ import time as t
 
 # update dependent on pad layout
 DISTANCE_BETWEEN_MISSION_PADS = 100
-X_MIN_BOUNDARY = -50
-X_MAX_BOUNDARY = 150
+X_MIN_BOUNDARY = -25
+X_MAX_BOUNDARY = 25
 Y_MIN_BOUNDARY = -50
-Y_MAX_BOUNDARY = 350
+Y_MAX_BOUNDARY = 250
 DEBUG_PRINTS = True
 
 #CV Settings
@@ -32,11 +32,12 @@ class SensoryState():
     image = None
     objectsVisible = None
 
-    def __init__(self, initialReadings,videoCapture = None):
-        for key in initialReadings:
-            queue = deque()
-            queue.append(initialReadings.get(key))
-            self.sensorReadings.update({key:queue})
+    def __init__(self, initialReadings = None,videoCapture = None):
+        if initialReadings != None:
+            for key in initialReadings:
+                queue = deque()
+                queue.append(initialReadings.get(key))
+                self.sensorReadings.update({key:queue})
         
         if videoCapture != None:
             self.videoCapture = videoCapture
@@ -53,10 +54,10 @@ class SensoryState():
             self.globalPose[0] = currentReadings.get('x') + self.missionPadShift[padID-1,0]
             self.globalPose[1] = currentReadings.get('y') + self.missionPadShift[padID-1,1]
             self.globalPose[2] = currentReadings.get('z')
-            self.globalPose[3] = currentReadings.get('yaw')
+            self.globalPose[3] = currentReadings.get('yaw') - 45
         if DEBUG_PRINTS:
-            print(f"Pad: {padID} X: {self.globalPose[0]} Y: {self.globalPose[1]} Z: {self.globalPose[2]}")
-            print(f"Shifting by: {self.missionPadShift[padID-1,:]}")
+            print(f"Pad: {padID} X: {self.globalPose[0]} Y: {self.globalPose[1]} Z: {self.globalPose[2]} YAW : {self.globalPose[3]}")
+            # print(f"Shifting by: {self.missionPadShift[padID-1,:]}")
         if self.videoCapture != None:
             self.__clearBuffer__(self.videoCapture)
             self.returnedImage, self.image = self.videoCapture.retrieve()

@@ -9,8 +9,7 @@ from collections import deque
 import numpy as np
 import math
 import random as rand
-from sensoryState import SensoryState
-
+import sensoryState 
 
 DEBUG_PRINTS = True
 WITH_DRONE = True
@@ -63,8 +62,7 @@ class State(Enum):
     Doorway = 8
     Scan = 9
     Hover = 10
-
-    
+ 
 class Drone(tel.Tello):
     #video
     vidCap = None
@@ -91,10 +89,10 @@ class Drone(tel.Tello):
 
     def __init__(self,identifier = None):
         cv2.VideoCapture()
-        super().__init__()
         self.identifier = identifier
         self.opState = State.Grounded
         if WITH_DRONE:
+            super().__init__()
             # This is where we will implement connecting to a drone through the router
             self.connect()
             self.set_speed(self.MAXSPEED)
@@ -103,9 +101,11 @@ class Drone(tel.Tello):
             #setup video
             if WITH_CAMERA:
                 self.streamon()
-                self.sensoryState = SensoryState(self.get_current_state(),self.get_video_capture())
+                self.sensoryState = sensoryState.SensoryState(self.get_current_state(),self.get_video_capture())
             else:
-                self.sensoryState = SensoryState(self.get_current_state())
+                self.sensoryState = sensoryState.SensoryState(self.get_current_state())
+        else:
+            self.sensoryState = sensoryState.SensoryState()
 
         #setup useful classes
         self.noiseGenerator = PerlinNoise(octaves=1, seed=7)
@@ -123,37 +123,64 @@ class Drone(tel.Tello):
         else:
             self.xyNoiseStorage = self.noiseGenerator(self.xyNoiseStorage)
 
-        print(f"Noise: {self.xyNoiseStorage}")
+        # print(f"Noise: {self.xyNoiseStorage}")
         self.thetaStorage = clamp(n=(self.thetaStorage + (math.pi * self.xyNoiseStorage)),minn=-math.pi/2,maxn=math.pi/2)
-        print(f"Theta: {self.thetaStorage}")
+        # print(f"Theta: {self.thetaStorage}")
         
         xDir = math.sin(self.thetaStorage)
         yDir = math.cos(self.thetaStorage)
 
-        newDirection = np.array([xDir,yDir,0,xDir]) # this is not default argument bc using self
+        newDirection = np.array([[xDir],[yDir],[0],[xDir]]) # this is not default argument bc using self
 
         movementVec = newDirection*self.MAXSPEED
-        print(f'Sum {movementVec}')
+        # print(f'Sum {movementVec}')
         self.prevDirection = movementVec
         self.wanderCounter += 1
         return self.prevDirection
 
-    # def __avoidBoundary__(self):
-    #     xBoundaryForceDroneFrame = 0
-    #     yBoundaryForceDroneFrame = 0
-    #     movementForceMagnitude = 10
-    #     if self.globalPose[0] < X_MIN_BOUNDARY:
-    #         error = math.abs(self.globalPose[0]-X_MIN_BOUNDARY)
-    #         xBoundaryForce = error*movementForceMagnitude
-    #         xBoundaryForceDroneFrame = 
+    def __avoidBoundary__(self):
+        xBoundaryForceDroneFrame = 0
+        yBoundaryForceDroneFrame = 0
+        movementForceMagnitude = 1
+        yaw = math.radians(self.sensoryState.globalPose[3])
+        if self.sensoryState.globalPose[0] < sensoryState.X_MIN_BOUNDARY:
+            error = abs(self.sensoryState.globalPose[0]-sensoryState.X_MIN_BOUNDARY)
+            xBoundaryForce = error*movementForceMagnitude
+            xBoundaryForceDroneFrame = xBoundaryForce*math.cos(yaw)
+            yBoundaryForceDroneFrame = xBoundaryForce*math.sin(yaw)
 
-    #     elif self.globalPose[0] > X_MAX_BOUNDARY:
+        elif self.sensoryState.globalPose[0] > sensoryState.X_MAX_BOUNDARY:
+            error = abs(self.sensoryState.globalPose[0]-sensoryState.X_MAX_BOUNDARY)
+            xBoundaryForce = -error*movementForceMagnitude
+            xBoundaryForceDroneFrame = xBoundaryForce*math.cos(yaw)
+            yBoundaryForceDroneFrame = xBoundaryForce*math.sin(yaw)
+        if DEBUG_PRINTS:
+            print(f'Avoidance Force From X boundary: X: {xBoundaryForceDroneFrame} Y: {yBoundaryForceDroneFrame} ')
 
+        if self.sensoryState.globalPose[1] < sensoryState.Y_MIN_BOUNDARY:
+            error = abs(self.sensoryState.globalPose[1]-sensoryState.Y_MIN_BOUNDARY)
+            yBoundaryForce = error*movementForceMagnitude
+            xBoundaryForceDroneFrame = xBoundaryForceDroneFrame - yBoundaryForce*math.sin(yaw)
+            yBoundaryForceDroneFrame = yBoundaryForceDroneFrame + yBoundaryForce*math.cos(yaw)
+            
+        elif self.sensoryState.globalPose[1] > sensoryState.Y_MAX_BOUNDARY:
+            error = abs(self.sensoryState.globalPose[1]-sensoryState.Y_MAX_BOUNDARY)
+            yBoundaryForce = -error*movementForceMagnitude
+            xBoundaryForceDroneFrame = xBoundaryForceDroneFrame - yBoundaryForce*math.sin(yaw)
+            yBoundaryForceDroneFrame = xBoundaryForceDroneFrame + yBoundaryForce*math.cos(yaw)
+        
+        res = np.array([[xBoundaryForceDroneFrame],
+                         [yBoundaryForceDroneFrame],
+                         [0],
+                         [0],])
+        if DEBUG_PRINTS:
+            print(f' Total Boundary Force: X: {res[0,0]} Y: {res[1,0]}')
+        return res
+    
     def operatorOverride(self):
         # land interrupt
-        if(key.is_pressed('l') and  not self.recentlySentLandCommand):
-            self.land()
-            self.opState = State.Grounded
+        if(key.is_pressed('l') and not self.recentlySentLandCommand):
+            self.opState = State.Land
             self.recentlySentLandCommand = True
             return
         if key.is_pressed('w'):
@@ -181,7 +208,7 @@ class Drone(tel.Tello):
         self.streamoff()
         self.end()
 
-    def moveDirection(self,direction = np.array([0, 0, 0, 0])):
+    def moveDirection(self,direction = np.array([[0], [0], [0], [0]])):
         """Set the speed of the drone based on xyz and yaw
         direction is:
         forward/backward : x or element 1
@@ -190,8 +217,11 @@ class Drone(tel.Tello):
         yaw              : turn or element 4
         """
 
-        cmd = f'rc {round(direction[0],1)} {round(direction[1],1)} {round(direction[2],1)} {round(direction[3],1)}'
-        self.send_command_without_return(cmd)
+        cmd = f'rc {np.round_(direction[0,0],1)} {np.round_(direction[1,0],1)} {np.round_(direction[2,0],1)} {np.round_(direction[3,0],1)}'
+        if WITH_DRONE:
+            self.send_command_without_return(cmd)
+        else:
+            print(cmd)
 
     def fullScan(self):
         self.moveDirection([0,0,0,10])
@@ -354,15 +384,15 @@ class Drone(tel.Tello):
 
     def operate(self):
         # creating window
-        if(WITH_DRONE):
+        if WITH_DRONE:
             cv2.namedWindow('test', cv2.WINDOW_NORMAL)
 
         while cv2.waitKey(20) != 27: # Escape
             #sensing
-
-            self.sensoryState.update(self.get_current_state())
-            if self.sensoryState.returnedImage:
-                cv2.imshow('test',self.sensoryState.image)
+            if WITH_DRONE and WITH_CAMERA:
+                self.sensoryState.update(self.get_current_state())
+                if self.sensoryState.returnedImage:
+                    cv2.imshow('test',self.sensoryState.image)
             # self.refreshTracker.update()
             # self.refreshTracker.printAVG()
             
@@ -377,21 +407,26 @@ class Drone(tel.Tello):
                         self.opState = State.Takeoff
                         print("Attempting to take off")
                 case State.Takeoff:
-                    safeToTakeOff = self.checkTelemetry()
-                    if safeToTakeOff:
-                        print("Telemetry Checks Successful")
-                        print('Taking off') 
-                        self.takeoff()
-                        self.opState = State.Hover # Hover for now, eventually scanning
+                    if WITH_DRONE:
+                        safeToTakeOff = self.checkTelemetry()
+                        if safeToTakeOff:
+                            print("Telemetry Checks Successful")
+                            print('Taking off') 
+                            self.takeoff()
+                            self.opState = State.Hover # Hover for now, eventually scanning
+                        else:
+                            self.opState = State.Grounded
+                            print("A Telemetry threshold has been violated. Unsafe takeoff/flight conditions")
+                            for dictkey, value in self.telemetryReason.items():
+                                print(f"{dictkey} test failed \n Reason: {value}")
+                            self.telemetryReason.clear()
+                            self.telemetryCheck.clear()
                     else:
-                        self.opState = State.Grounded
-                        print("A Telemetry threshold has been violated. Unsafe takeoff/flight conditions")
-                        for dictkey, value in self.telemetryReason.items():
-                            print(f"{dictkey} test failed \n Reason: {value}")
-                        self.telemetryReason.clear()
-                        self.telemetryCheck.clear()
+                        self.opState = State.Hover
                 case State.Land:
-                    self.land()
+                    print("Landing")
+                    if WITH_DRONE:
+                        self.land()
                     self.opState = State.Grounded
                 case State.Scan:
                     if(DEBUG_PRINTS):
@@ -401,10 +436,19 @@ class Drone(tel.Tello):
                 case State.Wander:
                     if(DEBUG_PRINTS):
                         print("Wandering")
-                    self.moveDirection(self.__randomWander__())
-                    # self.moveDirection(np.add(self.__randomWander__,self.potential_fields()))
+                    # self.moveDirection(self.__randomWander__())
+                    # self.sensoryState.globalPose[0,0] = -51
+                    # self.sensoryState.globalPose[1,0] = -51
+                    # self.sensoryState.globalPose[3,0] = 90
+                    # self.moveDirection(np.add(self.__randomWander__(),self.__avoidBoundary__()))
+                    self.moveDirection(np.add(np.array([[0],[10],[0],[0]]),self.__avoidBoundary__()))
+                    # t.sleep(1)
+
                 case State.Hover:
-                    self.hover()
+                    if WITH_DRONE:
+                        self.hover()
+                    else:
+                        print('Hovering')
         self.stop()
         cv2.destroyAllWindows()
 
