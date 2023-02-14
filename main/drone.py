@@ -9,10 +9,11 @@ from collections import deque
 import numpy as np
 import math
 import random as rand
-import sensoryState 
+import sensoryState
+import behaviors.behavior
 
 DEBUG_PRINTS = True
-WITH_DRONE = True
+WITH_DRONE = False
 WITH_CAMERA = True
 RECORD_SENSOR_STATE = True
 
@@ -76,10 +77,11 @@ class Drone(tel.Tello):
     noiseGenerator = None
     xyNoiseStorage = .5
     thetaStorage = .1
-    wanderCounter = 10
     STOP = np.array([0.0,0.0,0.0,0.0])
     prevDirection = None
     recentlySentLandCommand = False
+    wanderCounter = 20
+    randomWanderVec = np.zeros((4,1))
 
     #sensor Data
     sensoryState = None
@@ -104,6 +106,10 @@ class Drone(tel.Tello):
                 self.sensoryState = sensoryState.SensoryState(self.get_current_state(),self.get_video_capture())
             else:
                 self.sensoryState = sensoryState.SensoryState(self.get_current_state())
+        elif not WITH_DRONE and WITH_CAMERA:
+            self.sensoryState = sensoryState.SensoryState()
+            self.sensoryState.setupWebcam()
+            print('seupt')
         else:
             self.sensoryState = sensoryState.SensoryState()
 
@@ -138,6 +144,15 @@ class Drone(tel.Tello):
         self.wanderCounter += 1
         return self.prevDirection
 
+    def __randomWander_butworksmaybe__(self):
+        if self.wanderCounter >= 10:
+            self.randomWanderVec[0] = rand.randint(-20,20)
+            self.randomWanderVec[1] = rand.randint(-20,20)
+            self.wanderCounter = 0
+
+        self.wanderCounter += 1
+        return self.randomWanderVec
+
     def __avoidBoundary__(self):
         xBoundaryForceDroneFrame = 0
         yBoundaryForceDroneFrame = 0
@@ -167,7 +182,7 @@ class Drone(tel.Tello):
             error = abs(self.sensoryState.globalPose[1]-sensoryState.Y_MAX_BOUNDARY)
             yBoundaryForce = -error*movementForceMagnitude
             xBoundaryForceDroneFrame = xBoundaryForceDroneFrame - yBoundaryForce*math.sin(yaw)
-            yBoundaryForceDroneFrame = xBoundaryForceDroneFrame + yBoundaryForce*math.cos(yaw)
+            yBoundaryForceDroneFrame = yBoundaryForceDroneFrame + yBoundaryForce*math.cos(yaw)
         
         res = np.array([[xBoundaryForceDroneFrame],
                          [yBoundaryForceDroneFrame],
@@ -204,9 +219,10 @@ class Drone(tel.Tello):
         print('Stopping')
         if self.is_flying:
             self.land()
+        if(WITH_DRONE):
+            self.streamoff()
+            self.end()
         self.sensoryState.videoCapture.release()
-        self.streamoff()
-        self.end()
 
     def moveDirection(self,direction = np.array([[0], [0], [0], [0]])):
         """Set the speed of the drone based on xyz and yaw
@@ -384,13 +400,16 @@ class Drone(tel.Tello):
 
     def operate(self):
         # creating window
-        if WITH_DRONE:
+        if WITH_CAMERA:
             cv2.namedWindow('test', cv2.WINDOW_NORMAL)
 
         while cv2.waitKey(20) != 27: # Escape
             #sensing
-            if WITH_DRONE and WITH_CAMERA:
-                self.sensoryState.update(self.get_current_state())
+            if WITH_CAMERA:
+                if WITH_DRONE:
+                    self.sensoryState.update(self.get_current_state())
+                else:
+                    self.sensoryState.update()
                 if self.sensoryState.returnedImage:
                     cv2.imshow('test',self.sensoryState.image)
             # self.refreshTracker.update()
@@ -437,12 +456,14 @@ class Drone(tel.Tello):
                     if(DEBUG_PRINTS):
                         print("Wandering")
                     # self.moveDirection(self.__randomWander__())
-                    # self.sensoryState.globalPose[0,0] = -51
-                    # self.sensoryState.globalPose[1,0] = -51
-                    # self.sensoryState.globalPose[3,0] = 90
+                    # self.sensoryState.globalPose[0,0] = 35
+                    # self.sensoryState.globalPose[1,0] = 30
+                    # self.sensoryState.globalPose[3,0] = -90
                     # self.moveDirection(np.add(self.__randomWander__(),self.__avoidBoundary__()))
-                    self.moveDirection(np.add(np.array([[0],[10],[0],[0]]),self.__avoidBoundary__()))
-                    # t.sleep(1)
+                    # self.moveDirection(np.add(np.array([[0],[10],[0],[0]]),self.__avoidBoundary__()))
+                    self.moveDirection(np.add(self.__randomWander_butworksmaybe__(),self.__avoidBoundary__()))
+                    # print(self.__randomWander_butworksmaybe__())
+                    t.sleep(.5)
 
                 case State.Hover:
                     if WITH_DRONE:

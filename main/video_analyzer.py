@@ -14,7 +14,7 @@ THICKNESS = 1
 
 class VideoAnalyzer():
     # load and define model
-    ssdNet = []
+    visionNet = []
     # TO-DO, load YOLOv5 model here
 
     # GUI Drop Down Model Switching Planning/Notes
@@ -44,11 +44,11 @@ class VideoAnalyzer():
             self.objectLabels = fp.read().split("\n")
 
         # read TF network and create net object (can load different networks)
-        self.ssdNet = cv2.dnn.readNetFromTensorflow(self.objectModelFile, self.objectConfigFile)
+        self.visionNet = cv2.dnn.readNetFromTensorflow(self.objectModelFile, self.objectConfigFile)
 
     def process(self,cv_img):
         objectsInfo = self.detect_objects(cv_img)
-        self.outline_objects_on_image(cv_img,objectsInfo, threshold = .8)
+        self.outline_objects_on_image(cv_img,objectsInfo, threshold = .1)
         # cv2.imshow(self.wind, cv_img)
         
     def detect_objects(self,im = None):
@@ -64,10 +64,10 @@ class VideoAnalyzer():
         blob = cv2.dnn.blobFromImage(im,1.0, size = (yPix,xPix), mean = (0,0,0), swapRB=True, crop=False)
 
         #Pass blob to network
-        self.ssdNet.setInput(blob)
+        self.visionNet.setInput(blob)
 
         # Perform Prediction
-        objects = self.ssdNet.forward()
+        objects = self.visionNet.forward()
 
         return objects
 

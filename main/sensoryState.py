@@ -8,8 +8,8 @@ import time as t
 DISTANCE_BETWEEN_MISSION_PADS = 100
 X_MIN_BOUNDARY = -25
 X_MAX_BOUNDARY = 25
-Y_MIN_BOUNDARY = -50
-Y_MAX_BOUNDARY = 250
+Y_MIN_BOUNDARY = -25
+Y_MAX_BOUNDARY = 25
 DEBUG_PRINTS = True
 
 #CV Settings
@@ -32,37 +32,48 @@ class SensoryState():
     image = None
     objectsVisible = None
 
+    WITH_DRONE = False
+
     def __init__(self, initialReadings = None,videoCapture = None):
         if initialReadings != None:
             for key in initialReadings:
                 queue = deque()
                 queue.append(initialReadings.get(key))
                 self.sensorReadings.update({key:queue})
+            self.WITH_DRONE = True
         
         if videoCapture != None:
             self.videoCapture = videoCapture
             self.videoAnalyzer = VideoAnalyzer()
 
-    def update(self,currentReadings):
-        for key in currentReadings:
-            queue = self.sensorReadings.get(key)
-            queue.append(currentReadings.get(key))
-            if(len(queue) > 10):
-                queue.popleft()
-        padID = currentReadings.get('mid')
-        if(padID > 0):
-            self.globalPose[0] = currentReadings.get('x') + self.missionPadShift[padID-1,0]
-            self.globalPose[1] = currentReadings.get('y') + self.missionPadShift[padID-1,1]
-            self.globalPose[2] = currentReadings.get('z')
-            self.globalPose[3] = currentReadings.get('yaw') - 45
-        if DEBUG_PRINTS:
-            print(f"Pad: {padID} X: {self.globalPose[0]} Y: {self.globalPose[1]} Z: {self.globalPose[2]} YAW : {self.globalPose[3]}")
-            # print(f"Shifting by: {self.missionPadShift[padID-1,:]}")
+    def setupWebcam(self):
+        self.videoCapture = cv2.VideoCapture(0)
+        self.videoAnalyzer = VideoAnalyzer()
+
+    def update(self,currentReadings = None):
+        if self.WITH_DRONE:
+            for key in currentReadings:
+                queue = self.sensorReadings.get(key)
+                queue.append(currentReadings.get(key))
+                if(len(queue) > 10):
+                    queue.popleft()
+            padID = currentReadings.get('mid')
+            if(padID > 0):
+                self.globalPose[0] = currentReadings.get('x') + self.missionPadShift[padID-1,0]
+                self.globalPose[1] = currentReadings.get('y') + self.missionPadShift[padID-1,1]
+                self.globalPose[2] = currentReadings.get('z')
+                self.globalPose[3] = currentReadings.get('yaw') - 90
+            if DEBUG_PRINTS:
+                print(f"Pad: {padID} X: {self.globalPose[0]} Y: {self.globalPose[1]} Z: {self.globalPose[2]} YAW : {self.globalPose[3]}")
+                # print(f"Shifting by: {self.missionPadShift[padID-1,:]}")
         if self.videoCapture != None:
             self.__clearBuffer__(self.videoCapture)
             self.returnedImage, self.image = self.videoCapture.retrieve()
             if self.returnedImage:
+                tstart = t.time()
                 self.visibleObjects = self.detect_objects(self.image)
+                tend = t.time()
+                print(f'time:{tend-tstart}')
 
     def __clearBuffer__(self, cap):
         """ Emptying buffer frame """
@@ -74,11 +85,8 @@ class SensoryState():
 
     def detect_objects(self,img):
         print('Seeing')
-
         objects = self.videoAnalyzer.detect_objects(img)
-
         self.videoAnalyzer.outline_objects_on_image(img, objects, threshold = CONFIDENCE_THRESHOLD)
-        
         objectsSeen = list()
         for object in objects[0,0,:,:]:
             if object[2] < CONFIDENCE_THRESHOLD:
