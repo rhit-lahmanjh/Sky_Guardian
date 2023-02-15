@@ -8,7 +8,7 @@ import threading
 # tello_address = ('192.168.10.1', 8889)
 # local_address = ('', 9000)
 
-
+# This is updated Connectivity page after the Onnx Github implosion
 def main(page: ft.Page):
 
     page.title = "Drone Connection Page"
