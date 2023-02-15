@@ -1,4 +1,6 @@
 import cv2
+import onnx
+import onnxruntime
 import numpy as np
 
 
@@ -13,21 +15,29 @@ FONT_SCALE = 0.7
 THICKNESS = 1
 
 class VideoAnalyzer():
+
+    #Updated Video Analyzer file after Onnx Github Implosion
+
     # load and define model
     visionNet = []
-    # TO-DO, load YOLOv5 model here
+    # Alternate Onnx Model loading method
+    # Onnx Runtime has the potential to allow models to run faster
+    onnx_model = onnx.load('yolov5n6.onnx')
+    onnx.checker.check_model(onnx_model)
 
-    # GUI Drop Down Model Switching Planning/Notes
-    # Conditional statements that take in input from GUI settings page and choose proper objectFile assignments
-
+    # YOLOv5 model objectFile assignment
+    objectModelFile = "yolov5n6.onnx"
 
     # objectFile assignments
-    # this structure a dictionary??
     objectModelFile = "CV_testing/models/ssd_mobilenet_v2_coco_2018_03_29/frozen_inference_graph.pb"
     objectConfigFile = "CV_testing/models/ssd_mobilenet_v2_coco_2018_03_29.pbtxt"
     objectClassFile = "CV_testing/models/coco_class_labels.txt"
-    #"C:/Users/prestokp/PycharmProjects/Sky_Guardian/main/coco_class_labels.txt"
-    #
+
+    # HP Patch, absolute path references for ssdNet cv model
+    # objectModelFile = "C:/Users/prestokp/PycharmProjects/Sky_Guardian/CV_testing/models/ssd_mobilenet_v2_coco_2018_03_29/frozen_inference_graph.pb"
+    # objectConfigFile = "C:/Users/prestokp/PycharmProjects/Sky_Guardian/CV_testing/models/ssd_mobilenet_v2_coco_2018_03_29.pbtxt"
+    # objectClassFile = "C:/Users/prestokp/PycharmProjects/Sky_Guardian/main/coco_class_labels.txt"
+
     objectLabels = []
 
     wind = []
@@ -42,6 +52,9 @@ class VideoAnalyzer():
         # read class labels
         with open(self.objectClassFile) as fp:
             self.objectLabels = fp.read().split("\n")
+
+        # read the YoloV5 onnx model
+        self.visionNet = cv2.dnn.readNetFromONNX('yolov5n6.onnx')
 
         # read TF network and create net object (can load different networks)
         self.visionNet = cv2.dnn.readNetFromTensorflow(self.objectModelFile, self.objectConfigFile)
