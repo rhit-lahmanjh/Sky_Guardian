@@ -1,66 +1,37 @@
-# Sky_Guardian
-Capstone repository
+# SkyGuardian
 
+[![N|Solid](https://cldup.com/dTxpPi9lDf.thumb.png)](https://nodesource.com/products/nsolid)
 
-Questions we need to agree on:
-    GOAL OF TOP LEVEL README
-        - Installation
-        - Orient to Project
-        - 
+[![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
 
-    Who is this made for????
+SkyGuardian is an open-source codebase for people to learn drone control topics made by senior students at Rose-Hulman Institute of Technology located in Terre Huate, IN.
 
-Novel aspects
+# Table of Contents
 
-Logo
+- [About](#about)
+  - [Purpose](#purpose)
+  - [Features](#features)
+  - [System Components](#system-components)
+- [Getting Started](#getting-started)
+  - [Setting up drones and router](#setting-up-drones-and-router)
+  - [How to run requirements](#how-to-run-requirements)
+- [Supplemental Documentation (UML, Performance Metrics, etc.)](#supplemental-documentation)
+- [Examples](#examples)
+  - [Implementing Reactive Behaviors](#creating-a-reactive-behavior-to-an-object)
+- [Troubleshooting resources](#troublehooting-resources)
+- [References](#references)
+- [Acknowledgements](#acknowledgements)
 
-About
-    Purpose: Why?/Mission Statement
-    Who is this made for?????
-    Novel aspects
-    
-Table of Contents (Hyperlinked)
-
-System Components
-    GUI (flutter)
-    Functional Safety
-    Networking ???? Is there enough here for a separate file
-    FSM - Link to State Transition Diagram
-
-Installation/Getting Started
-    Router Setup (separate primer) and Drone Connection
-    Environment 
-        Describe anaconda
-        how to install requirements
-
-Examples
-    - behavior/reaction (also - )
-    - safety function (also examples in the code)
-
-Troubleshooting Resources
-
-References
-
-Acknowledgements
-
-Files we should include
-    license
-    requirements
-
-LOGO
-About
-    Purpose
-    Novel Aspects
-    System Components
-Getting Started
-    Setting up router and drone
-    how to run requirements
-Examples
-Troubleshooting
-References
-Acknowledgements
-
-Possible Sections
-    Performance Metrics
-    Class Structures
-        UML
+# About
+## Purpose
+## Features
+## System Components
+# Getting Started
+## Setting up drones and router
+## How to run requirements
+# Supplemental Documentation
+# Examples
+## Creating a reactive behavior to an object
+# Troublehooting resources
+# References
+# Acknowledgements 
