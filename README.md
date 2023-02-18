@@ -15,9 +15,9 @@ SkyGuardian is an open-source codebase for people to learn drone control topics 
 - [Getting Started](#getting-started)
   - [Setting up drones and router](#setting-up-drones-and-router)
   - [How to run requirements](#how-to-run-requirements)
-- [Supplemental Documentation (UML, Performance Metrics, etc.)](#supplemental-documentation)
 - [Examples](#examples)
   - [Implementing Reactive Behaviors](#creating-a-reactive-behavior-to-an-object)
+- [Supplemental Documentation (UML, Performance Metrics, etc.)](#supplemental-documentation)
 - [Troubleshooting resources](#troublehooting-resources)
 - [References](#references)
 - [Acknowledgements](#acknowledgements)
@@ -97,9 +97,9 @@ We used the following materials for this project:
 
 ## Setting up drones and router
 ## How to run requirements
-# Supplemental Documentation
 # Examples
 ## Creating a reactive behavior to an object
+# Supplemental Documentation
 # Troublehooting resources
 # References
 # Acknowledgements 
