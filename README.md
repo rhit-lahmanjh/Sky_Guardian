@@ -66,6 +66,9 @@ We use threading to allow the GUI to access drone functions while the drone flig
 <br>
 The code from <a href="https://www.youtube.com/watch?v=58aPh8rKKsk">Azu Technology</a> that creates a modern GUI for an OpenCV window was modified to display the OpenCV Tello video stream through the GUI. This repository is one of few, if not the only, that allows the Tello stremaing window to be viewed through Flet. 
 </details>
+
+While, Flet has a lot of capabilities, please remember it is still in development!
+
 </details>
 
 <details>
