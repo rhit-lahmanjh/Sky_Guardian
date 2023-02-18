@@ -43,25 +43,24 @@ SkyGuardian has the following features:
 SkyGuardian uses <a href="https://flet.dev">Flet</a>, a simplified <a href="https://flutter.dev">Flutter</a> model to build the GUI. Python is currently supported, but Go and C# are <a href="https://flet.dev/roadmap/">coming soon</a>.<br> 
 
 When first starting the program, the GUI brings you to a "landing" page where a user will be able to connect 1 or 2 drones. <br> 
-
+<br> 
 - Insert Landing/Drone Connection Page
 
 After verifying that the drone(s) are connected, the user can continue to a Main Dashboard that displays the OpenCV window output, various sensor readings, text input for chosen object identification, and buttons to Launch, Land, Hover an inidividual drone or both drones simultaneosly. <br> 
-
+<br> 
 - Insert Main Dashboard pic
 
 There is also a window for the User to adjust various settings.<br> 
-
+<br> 
 - Insert pic of settings window
 
 The GUI uses the following components<br> 
-
 <details>
 <summary>Multi-threading</summary>
 <br>
 We use threading to allow the GUI to access drone functions while the drone flight algorithm is running. This becomes a problem if the threads try to read/write the same piece of memory at the exact same time, but the chances of this happening are low for this project. 
-</details>
-<br> 
+</details> 
+
 <details>
 <summary>OpenCV window for Flet</summary>
 <br>
@@ -69,7 +68,30 @@ The code from <a href="https://www.youtube.com/watch?v=58aPh8rKKsk">Azu Technolo
 </details>
 </details>
 
+<details>
+<summary>Perlin-Noise Flight Algorithm</summary>
+<br>
+Overview of Flight Alg. + Finite State Machine (include pix)
+</details> 
+
+<details>
+<summary>Functional Safety Engineering</summary>
+<br>
+Overview of Safety, HARA, etc.
+</details> 
+
+<details>
+<summary>Networking</summary>
+<br>
+Still don't know if we need this lol
+</details> 
+
 # Getting Started
+We used the following materials for this project:
+- 2 Tello EDU drones
+- Router
+- etc. 
+
 ## Setting up drones and router
 ## How to run requirements
 # Supplemental Documentation
