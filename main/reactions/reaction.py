@@ -5,7 +5,6 @@ import time as t
 from enum import Enum
 
 
-
 ### Reaction Format Interfaces
 class movementReaction:
 
@@ -22,8 +21,8 @@ class blockingReaction:
 class flipOnBanana(blockingReaction):
 
     def react(self, drone, input, currentMovement = np.zeros((4,1))):
-        for object in input.objectsVisible[0,0,:,:]:
-            if(object == vision_class.banana):
+        for object in input.objectsVisible:
+            if(object[1] == vision_class.banana):
                 print('Banana Detected: Flipping')
                 drone.flip_left()
 
@@ -31,22 +30,20 @@ class bobOnCellPhone(blockingReaction):
 
     def react(self,drone,input, currentMovement = np.zeros((4,1))):
         for object in input.objectsVisible:
-            if(object[0] == vision_class.banana):
+            if(object[1] == vision_class.cell_phone):
                 print('Banana Detected: Flipping')
                 drone.move_up(20)
                 t.sleep(1)
                 drone.move_down(20)
                 return
 
-        # for object in input.objectsVisible[0,0,:,:]:
-
-
 class followCellPhone(movementReaction):
     
     def react(self, input: SensoryState, currentMovement: np.array):
+        res = np.zeros((4,1))
         for object in input.objectsVisible:
-            if(object[0]) == vision_class.hat()
-
+            if(object[0] == vision_class.hat):
+                pass
 
                 # for object in objects[0,0,:,:]:
                 #     if object[2] < .8:
@@ -60,6 +57,7 @@ class followCellPhone(movementReaction):
                 #         print(f'Cell Phone detected. Flipping')
                 #         cellPhoneCounter = 0
                 #         break
+        return res
 
 
 class vision_class(Enum):
