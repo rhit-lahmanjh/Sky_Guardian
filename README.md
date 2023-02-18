@@ -38,9 +38,9 @@ SkyGuardian has the following features:
 
 ## System Components
 <details>
-<summary>### Graphic User Interface (GUI)</summary>
+<summary>Graphic User Interface (GUI)</summary>
 <br>
-SkyGuardian uses [Flet](https://flet.dev), a simplified [Flutter](https://flutter.dev) model to build the GUI. Python is currently supported, but Go and C# are [coming soon](https://flet.dev/roadmap/).
+SkyGuardian uses <a href="https://flet.dev">Flet</a>, a simplified <a href="https://flutter.dev">Flutter</a> model to build the GUI. Python is currently supported, but Go and C# are <a href="https://flet.dev/roadmap/">coming soon</a>.
 
 When first starting the program, the GUI brings you to a "landing" page where a user will be able to connect 1 or 2 drones. 
 
@@ -65,7 +65,7 @@ We use threading to allow the GUI to access drone functions while the drone flig
 <details>
 <summary>OpenCV window for Flet</summary>
 <br>
-The code from [Azu Technology](https://www.youtube.com/watch?v=58aPh8rKKsk) that creates a modern GUI for an OpenCV window was modified to display the OpenCV Tello video stream through the GUI. This repository is one of few, if not the only, that allows the Tello stremaing window to be viewed through flet. 
+The code from <a href="https://www.youtube.com/watch?v=58aPh8rKKsk">cAzu Technology</a> that creates a modern GUI for an OpenCV window was modified to display the OpenCV Tello video stream through the GUI. This repository is one of few, if not the only, that allows the Tello stremaing window to be viewed through flet. 
 </details>
 </details>
 
