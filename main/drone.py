@@ -10,7 +10,8 @@ import numpy as np
 import math
 import random as rand
 import sensoryState
-import behaviors.behavior
+from behaviors.behavior import behaviorFramework
+from refresh_tracker import RefreshTracker
 
 DEBUG_PRINTS = True
 WITH_DRONE = False
@@ -18,39 +19,6 @@ WITH_CAMERA = True
 RECORD_SENSOR_STATE = True
 
 clamp = lambda n, minn, maxn: max(min(maxn, n), minn)
-
-class RefreshTracker():
-    refreshRateQueue = None
-    lastTimeMark = None
-    maxRefresh = 0
-    minRefresh = 0
-    NUM_STORED_POINTS = 50
-
-    def __init__(self) -> None:
-        self.refreshRateQueue = deque()
-        self.lastTimeMark = t.time()
-    
-    def update(self):
-        currentTimeMark = t.time()
-        # print(f"Current Period: {currentTimeMark-self.lastTimeMark}")
-        currentRate = 1/(currentTimeMark - self.lastTimeMark)
-        self.refreshRateQueue.append(currentRate)
-        if(len(self.refreshRateQueue) > self.NUM_STORED_POINTS):
-            self.refreshRateQueue.popleft()
-        self.lastTimeMark = currentTimeMark
-
-    def getRate(self, max = False, average = False):
-        if max:
-            return max(self.refreshRateQueue)
-        if average:
-            return np.average(self.refreshRateQueue)
-        return self.refreshRateQueue[-1]
-
-    def print(self):
-        print(f"Last Refresh Rate: {self.refreshRateQueue[-1]}\nMax Refresh Rate: {np.max(self.refreshRateQueue)}\nMinimum Refresh Rate: {np.min(self.refreshRateQueue)}\nAverage Refresh Rate: {np.average(self.refreshRateQueue)}")
-
-    def printAVG(self):
-        print(f"Average Refresh Rate: {np.average(self.refreshRateQueue)}")
 
 class State(Enum):
     Grounded = 1
@@ -65,7 +33,7 @@ class State(Enum):
     Hover = 10
  
 class Drone(tel.Tello):
-    #video
+    #video I THINK THIS IS DEPRICATED
     vidCap = None
     vision = None
 
@@ -83,13 +51,15 @@ class Drone(tel.Tello):
     wanderCounter = 20
     randomWanderVec = np.zeros((4,1))
 
+    behavior: behaviorFramework = None
+
     #sensor Data
     sensoryState = None
     telemetry = dict()
     telemetryReason = dict()
     refreshTracker = None
 
-    def __init__(self,identifier = None):
+    def __init__(self,identifier = None, behavior: behaviorFramework = None):
         cv2.VideoCapture()
         self.identifier = identifier
         self.opState = State.Grounded
@@ -99,6 +69,8 @@ class Drone(tel.Tello):
             self.connect()
             self.set_speed(self.MAXSPEED)
             self.enable_mission_pads()
+            if behavior is not None:
+                self.behavior = behavior
 
             #setup video
             if WITH_CAMERA:
@@ -202,7 +174,7 @@ class Drone(tel.Tello):
             self.move_forward(100)
             t.sleep(1)
         if key.is_pressed('h'):
-            if self.prevState == None :
+            if self.prevState == None:
                 self.prevState = self.opState
                 self.opState = State.Hover
                 self.hoverDebounce = t.time();
@@ -425,6 +397,7 @@ class Drone(tel.Tello):
                     if key.is_pressed('t'):
                         self.opState = State.Takeoff
                         print("Attempting to take off")
+                    
                 case State.Takeoff:
                     if WITH_DRONE:
                         safeToTakeOff = self.checkTelemetry()
@@ -442,28 +415,27 @@ class Drone(tel.Tello):
                             self.telemetryCheck.clear()
                     else:
                         self.opState = State.Hover
+                    
                 case State.Land:
                     print("Landing")
                     if WITH_DRONE:
                         self.land()
                     self.opState = State.Grounded
+
                 case State.Scan:
                     if(DEBUG_PRINTS):
                         print('Scanning')
                     # self.fullScan()
                     continue
+
                 case State.Wander:
                     if(DEBUG_PRINTS):
                         print("Wandering")
-                    # self.moveDirection(self.__randomWander__())
-                    # self.sensoryState.globalPose[0,0] = 35
-                    # self.sensoryState.globalPose[1,0] = 30
-                    # self.sensoryState.globalPose[3,0] = -90
-                    # self.moveDirection(np.add(self.__randomWander__(),self.__avoidBoundary__()))
-                    # self.moveDirection(np.add(np.array([[0],[10],[0],[0]]),self.__avoidBoundary__()))
-                    self.moveDirection(np.add(self.__randomWander_butworksmaybe__(),self.__avoidBoundary__()))
-                    # print(self.__randomWander_butworksmaybe__())
-                    t.sleep(.5)
+                    wanderVec = np.add(self.__randomWander_butworksmaybe__(),self.__avoidBoundary__())
+                    if self.behavior is not None:
+                        reactionMovement = self.behavior.runReactions(drone = self, input = self.sensoryState, currentMovement = wanderVec)
+                        wanderVec = np.add(wanderVec, reactionMovement)
+                    self.moveDirection(wanderVec)
 
                 case State.Hover:
                     if WITH_DRONE:
@@ -526,3 +498,11 @@ class Drone(tel.Tello):
     #     if(object != None and object[1] == 1):
     #         self.move_back(40)
     # #endregion
+
+
+    # self.moveDirection(self.__randomWander__())
+    # self.sensoryState.globalPose[0,0] = 35
+    # self.sensoryState.globalPose[1,0] = 30
+    # self.sensoryState.globalPose[3,0] = -90
+    # self.moveDirection(np.add(self.__randomWander__(),self.__avoidBoundary__()))
+    # self.moveDirection(np.add(np.array([[0],[10],[0],[0]]),self.__avoidBoundary__()))
