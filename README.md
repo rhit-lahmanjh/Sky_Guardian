@@ -40,32 +40,32 @@ SkyGuardian has the following features:
 <details>
 <summary>Graphic User Interface (GUI)</summary>
 <br>
-SkyGuardian uses <a href="https://flet.dev">Flet</a>, a simplified <a href="https://flutter.dev">Flutter</a> model to build the GUI. Python is currently supported, but Go and C# are <a href="https://flet.dev/roadmap/">coming soon</a>.
+SkyGuardian uses <a href="https://flet.dev">Flet</a>, a simplified <a href="https://flutter.dev">Flutter</a> model to build the GUI. Python is currently supported, but Go and C# are <a href="https://flet.dev/roadmap/">coming soon</a>.<br> 
 
-When first starting the program, the GUI brings you to a "landing" page where a user will be able to connect 1 or 2 drones. 
+When first starting the program, the GUI brings you to a "landing" page where a user will be able to connect 1 or 2 drones. <br> 
 
 - Insert Landing/Drone Connection Page
 
-After verifying that the drone(s) are connected, the user can continue to a Main Dashboard that displays the OpenCV window output, various sensor readings, text input for chosen object identification, and buttons to Launch, Land, Hover an inidividual drone or both drones simultaneosly. 
+After verifying that the drone(s) are connected, the user can continue to a Main Dashboard that displays the OpenCV window output, various sensor readings, text input for chosen object identification, and buttons to Launch, Land, Hover an inidividual drone or both drones simultaneosly. <br> 
 
 - Insert Main Dashboard pic
 
-There is also a window for the User to adjust various settings.
+There is also a window for the User to adjust various settings.<br> 
 
 - Insert pic of settings window
 
-The GUI uses the following components
+The GUI uses the following components<br> 
 
 <details>
 <summary>Multi-threading</summary>
 <br>
 We use threading to allow the GUI to access drone functions while the drone flight algorithm is running. This becomes a problem if the threads try to read/write the same piece of memory at the exact same time, but the chances of this happening are low for this project. 
 </details>
-
+<br> 
 <details>
 <summary>OpenCV window for Flet</summary>
 <br>
-The code from <a href="https://www.youtube.com/watch?v=58aPh8rKKsk">cAzu Technology</a> that creates a modern GUI for an OpenCV window was modified to display the OpenCV Tello video stream through the GUI. This repository is one of few, if not the only, that allows the Tello stremaing window to be viewed through flet. 
+The code from <a href="https://www.youtube.com/watch?v=58aPh8rKKsk">Azu Technology</a> that creates a modern GUI for an OpenCV window was modified to display the OpenCV Tello video stream through the GUI. This repository is one of few, if not the only, that allows the Tello stremaing window to be viewed through Flet. 
 </details>
 </details>
 
