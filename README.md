@@ -90,11 +90,11 @@ Overview of Flight Alg. + Finite State Machine (include pix)
 -	Using computer vision to detect objects, classify them, and take appropriate actions depending on the object classification. 
 -	Using mission pads to localize and properly constrain the flight environment that the Tello drones use to navigate. </p>
 
-<p>Functional Safety Engineering uses the V-model development process from the ISO26262 standard, which is shown below:
+<p>Functional Safety Engineering uses the <a href="https://www.iso.org/obp/ui/#iso:std:iso:26262:-9:ed-1:v1:en">V-model development process</a> from the ISO26262 standard, which is shown below:
 - Insert V-model photo
 The left side of the V-model is conceptual development and product development at a hardware and software level. The bottom of the V-model is where the hardware and software designs are implemented. The right side of the V-model is where all testing activities of the design happen. </p>
 
-<p>Safety Features are designed during conceptual development in a process called the ‘Hazard Analysis and Risk Assessment’ or HARA. HARA uses an <a href="https://www.synopsys.com/automotive/what-is-asil.html">ASIL risk rating</a> chart to properly classify the specific HARA line item in question. Collisions in this project receive a SIL1 rating based off initial severity (S1), initial exposure (E3), and initial avoidability (C2). </p>
+<p>Safety Features are designed during conceptual development in a process called the ‘<a href="https://arxiv.org/pdf/1704.06140.pdf">Hazard Analysis and Risk Assessment</a>’ or HARA. HARA uses an <a href="https://www.synopsys.com/automotive/what-is-asil.html">ASIL risk rating</a> chart to properly classify the specific HARA line item in question. Collisions in this project receive a SIL1 rating based off initial severity (S1), initial exposure (E3), and initial avoidability (C2). </p>
 
 The HARA consists of the following steps:
 <details>
