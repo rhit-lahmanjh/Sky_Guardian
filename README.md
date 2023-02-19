@@ -4,7 +4,7 @@
 
 SkyGuardian is an open-source codebase for people to learn drone control topics made by senior students at Rose-Hulman Institute of Technology located in Terre Huate, IN.
 
-![Header](header.png)
+![Header](images/header.png)
 
 # Table of Contents
 
@@ -84,20 +84,25 @@ Overview of Flight Alg. + Finite State Machine (include pix)
 
 <p>Safety-Related Systems usually comprise of a sensor that provides information, then there is a processor that provides logic to react to sensor readings, and an actuator or system component provides output based on this logic. These are the types of systems that are studied to identify potential risks and then deliver an appropriate solution that provides the appropriate level of risk reduction, protection, or mitigation.</p>
 
-<p>In this project, or system is the Tello drone which relies on its camera, IMU, barometer, temperature sensor, and battery charge sensor to pull in information.  We have developed safety systems that attempt to mitigate risks when encountering stationary obstacles(like a wall) or moving obstacles(like a human). Some example safety features include: 
--	Monitoring the battery temperature to check if it is overheating in flight and landing the drone if it does overheat. This helps preserve battery life.
--	Checking to see if the drone is oriented properly before takeoff to ensure that it does not launch into a trajectory that could cause it to hit something.
--	Using computer vision to detect objects, classify them, and take appropriate actions depending on the object classification. 
--	Using mission pads to localize and properly constrain the flight environment that the Tello drones use to navigate. </p>
+<p>In this project, or system is the Tello drone which relies on its camera, IMU, barometer, temperature sensor, and battery charge sensor to pull in information.  We have developed safety systems that attempt to mitigate risks when encountering stationary obstacles(like a wall) or moving obstacles(like a human). Some example safety features include: </p>
+<li> Monitoring the battery temperature to check if it is overheating in flight and landing the drone if it does overheat. This helps preserve battery life.</li>
+<li> Checking to see if the drone is oriented properly before takeoff to ensure that it does not launch into a trajectory that could cause it to hit something.</li>
+<li> Using computer vision to detect objects, classify them, and take appropriate actions depending on the object classification. </li> 
+<li> Using mission pads to localize and properly constrain the flight environment that the Tello drones use to navigate. </li> 
 
 <p>Functional Safety Engineering uses the <a href="https://www.iso.org/obp/ui/#iso:std:iso:26262:-9:ed-1:v1:en">V-model development process</a> from the ISO26262 standard, which is shown below:
-- Insert V-model photo
-The left side of the V-model is conceptual development and product development at a hardware and software level. The bottom of the V-model is where the hardware and software designs are implemented. The right side of the V-model is where all testing activities of the design happen. </p>
+
+<details>
+<summary>V-model Example</summary>
+<img src="images/vmodel.png" width="500">
+</details>
+
+The left side of the V-model is conceptual development and product development. The bottom of the V-model is where the hardware and software designs are implemented. The right side of the V-model is where all testing activities of the design happen. </p>
 
 <p>Safety Features are designed during conceptual development in a process called the ‘<a href="https://arxiv.org/pdf/1704.06140.pdf">Hazard Analysis and Risk Assessment</a>’ or HARA. HARA uses an <a href="https://www.synopsys.com/automotive/what-is-asil.html">ASIL risk rating</a> chart to properly classify the specific HARA line item in question. Collisions in this project receive a SIL1 rating based off initial severity (S1), initial exposure (E3), and initial avoidability (C2). </p>
 
 The HARA consists of the following steps:
-<details>
++ <details>
 <summary>Assumptions</summary>
 <br>
 Assumptions are created on how terminology is used and about the environment the product is in.
@@ -105,7 +110,7 @@ Assumptions are created on how terminology is used and about the environment the
 For this project, an example assumption is that the primary obstacles to be avoided will be stationary furniture and walls along with the users of the drones in the testing room.
 </details> 
 
-<details>
++ <details>
 <summary>Existing External Mitigating Measures</summary>
 <br>
 These are risk reducing factors that are already present in an environment. They exist independently of the systems.
@@ -113,19 +118,19 @@ These are risk reducing factors that are already present in an environment. They
 For this project, to prevent the drone from hitting people, the only person(s) that can be present in the testing room are the drone operators. This mitigating measure is not in any drone control systems.
 </details> 
 
-<details>
++ <details>
 <summary>Operational Situations</summary>
 <br>
 These are the scenarios that the designers expect their product to be in regularly while it is operation/active/or in use. The designers will come up with ‘Considered Situational Attributes’ which are guide words that describe ‘motion’, ‘mode’, ‘obstacle exposure’, and ‘control’.
 </details> 
 
-<details>
++ <details>
 <summary>Guide words</summary>
 <br>
 In Functional Safety, guide words are created to produce operational scenarios. For this project some of our guide words were as follows: Mode = Launched, Motion = Forward, Control = Independent (not in swarm configuration), Obstacle Exposure = ‘Static’.An example operational scenario is ‘a single independent drone is launched and in a forward motion surveying a space with static objects.’
 </details> 
 
-<details>
++ <details>
 <summary>Hazard List</summary>
 <br>
 List of potential hazards and their type pulled from a list in the ISO12100 standard. Relevant Mechanical Hazards for the project include:
@@ -133,21 +138,21 @@ List of potential hazards and their type pulled from a list in the ISO12100 stan
 - Impact due to collision with moving object
 </details> 
 
-<details>
++ <details>
 <summary>Hazardous Operation</summary>
 <br>
 Hazerdous Operation combines Tasks and Functions along with suggested guidewords pulled from the SAEJ2980 standard to create potential resulting malfunctions. The resulting malfunctions constitute Hazardous Operation.
 In this project, when the ‘Automated drone(s) is exploring’ an environment ‘as intended’, there is hazard exposure do to obstacles that are present in the environment. The resulting malfunction is an errant flight path if a collision occurs.
 </details> 
 
-<details>
++ <details>
 <summary>Hazardous Events</summary>
 <br>
 Hazerdous events combines Hazardous Operation and Operational Situation to describe the Hazardous Event that needs to be mitigated. 
 In this project when the ‘Automated drone(s) is exploring’ an environment ‘as intended’, and there is hazard exposure do to obstacles that are present in the environment while ‘a single independent drone is launched and in a forward motion surveying a space with static objects’, the hazardous event is that the drone or operator is at risk of being hit by the drone should a malfunction occur because of the collision. 
 </details> 
 
-<details>
++ <details>
 <summary>Risk Reduction Measure</summary>
 <br>
 These are the safety features, which could either be design based or policy/procedural based, that are implemented to reduce the HARA line item to a lower risk rating per the ASIL risk rating chart.
@@ -157,7 +162,7 @@ For this project, we utilized computer vision and coded responses that react bas
 Once these safety features are implemented properly either through hardware or software measures, they are then testing as single units, in integration testing, and regression testing to ensure that everything works properly. From there, the project can be deployed with assurance that there are safety features present to actively mitigate risks.
 </details> 
 
-<details>
++ <details>
 <summary>Networking</summary>
 <br>
 Still don't know if we need this lol
