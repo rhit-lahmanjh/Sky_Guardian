@@ -4,6 +4,7 @@ import flet as ft
 import djitellopy
 import socket
 import time
+import numpy as np
 import cv2
 import base64
 import threading
@@ -85,18 +86,31 @@ def main(page: ft.Page):
 
         def update_timer(self):
             while True:
-                _, frame = cap.read()
+                drone1.sensoryState.__clearBuffer__(drone1.sensoryState.videoCapture)
+                _, frame = drone1.sensoryState.videoCapture
                 # frame = cv2.resize(frame,(400,400))
                 _, im_arr = cv2.imencode('.png', frame)
                 im_b64 = base64.b64encode(im_arr)
                 self.img.src_base64 = im_b64.decode("utf-8")
                 self.update()
 
+                # img_b64 = drone1.sensoryState.image
+                # print(type(drone1.sensoryState.image))
+                # # img_b64 = ndarray_to_b64(np.array(drone1.sensoryState.image).astype('uint8'))
+                # self.img = drone1.sensoryState.image
+                # self.update()
+
         def build(self):
             self.img = ft.Image(
                 border_radius=ft.border_radius.all(20)
             )
             return self.img
+
+    def ndarray_to_b64(ndarray):
+    # converts a np ndarray to a b64 string readable by html-img tags 
+        img = cv2.cvtColor(ndarray, cv2.COLOR_RGB2BGR)
+        _, buffer = cv2.imencode('.png', img)
+        return base64.b64encode(buffer).decode('utf-8')
 
     drone1_items = [
         ft.Container(width=200, height=75, content=ft.Text("Launch"), on_click=drone1_launch, bgcolor = ft.colors.GREEN_200, alignment=ft.alignment.center), 
@@ -134,7 +148,7 @@ def main(page: ft.Page):
         ]
     )
 
-    cv2window = ft.Card(
+    cv2window =  ft.Card(
             elevation=30,
             content=ft.Container(
                 bgcolor=ft.colors.WHITE24,
@@ -155,6 +169,7 @@ def main(page: ft.Page):
             [
                 drone1_column,
                 drone2_column,
+                cv2window
             ],
             spacing=15,
             alignment=ft.MainAxisAlignment.START,
@@ -167,3 +182,4 @@ def main(page: ft.Page):
     )
 
 ft.app(target=main)
+cv2.destroyAllWindows()
