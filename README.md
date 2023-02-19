@@ -89,12 +89,14 @@ Overview of Flight Alg. + Finite State Machine (include pix)
 <li> Checking to see if the drone is oriented properly before takeoff to ensure that it does not launch into a trajectory that could cause it to hit something.</li>
 <li> Using computer vision to detect objects, classify them, and take appropriate actions depending on the object classification. </li> 
 <li> Using mission pads to localize and properly constrain the flight environment that the Tello drones use to navigate. </li> 
+</p>
 
 <p>Functional Safety Engineering uses the <a href="https://www.iso.org/obp/ui/#iso:std:iso:26262:-9:ed-1:v1:en">V-model development process</a> from the ISO26262 standard, which is shown below:
 
 <details>
 <summary>V-model Example</summary>
 <img src="https://about.gitlab.com/images/iso-26262/v-model-iso-26262.png" width="500">
+<br>
 The left side of the V-model is conceptual development and product development. The bottom of the V-model is where the hardware and software designs are implemented. The right side of the V-model is where all testing activities of the design happen. 
 </details>
 </p>
