@@ -1,11 +1,6 @@
-import cv2
-import sys
-import os
-import numpy as np
-import urllib
-import time as t
 from drone import Drone
+from behaviors.behavior import behavior1
 
-drone1 = Drone('chuck')
+drone1 = Drone(identifier = 'chuck',behavior = behavior1)
 drone1.operate()
 # drone1.missionPadProofOfConcept()
