@@ -48,8 +48,8 @@ When first starting the program, the GUI brings you to a "landing" page where a 
 
 After verifying that the drone(s) are connected, the user can continue to a Main Dashboard that displays the OpenCV window output, various sensor readings, text input for chosen object identification, and buttons to Launch, Land, Hover an inidividual drone or both drones simultaneosly. <br> 
 <br> 
-- Insert Main Dashboard pic
-
+<img src="file://./MainDashboard.jpg" width="500">
+<br>
 There is also a window for the User to adjust various settings.<br> 
 <br> 
 - Insert pic of settings window
@@ -66,9 +66,6 @@ We use threading to allow the GUI to access drone functions while the drone flig
 <br>
 The code from <a href="https://www.youtube.com/watch?v=58aPh8rKKsk">Azu Technology</a> that creates a modern GUI for an OpenCV window was modified to display the OpenCV Tello video stream through the GUI. This repository is one of few, if not the only, that allows the Tello stremaing window to be viewed through Flet. 
 </details>
-
-While, Flet has a lot of capabilities, please remember it is still in development!
-
 </details>
 
 <details>
@@ -91,7 +88,7 @@ Overview of Flight Alg. + Finite State Machine (include pix)
 <li> Using mission pads to localize and properly constrain the flight environment that the Tello drones use to navigate. </li> 
 </p>
 
-<p>Functional Safety Engineering uses the <a href="https://www.iso.org/obp/ui/#iso:std:iso:26262:-9:ed-1:v1:en">V-model development process</a> from the ISO26262 standard, which is shown below:
+<p>Functional Safety Engineering uses the <a href="https://www.iso.org/obp/ui/#iso:std:iso:26262:-9:ed-1:v1:en">V-model development process</a> from the <a href="https://www.iso.org/standard/43464.html">ISO26262</a> standard, which is shown below:
 
 <details>
 <summary>V-model Example</summary>
