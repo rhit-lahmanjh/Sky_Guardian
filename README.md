@@ -199,6 +199,8 @@ We used the following materials for this project:
 ## Creating a reactive behavior to an object
 # Supplemental Documentation
 # Troublehooting resources
++ [Tello Drone User Manual](https://dl-cdn.ryzerobotics.com/downloads/Tello/Tello%20User%20Manual%20v1.4.pdf)
 + [Official Flet developer community](https://discord.gg/mMJHgYEqRK)
++ [DJI Tello Online Community](https://tellopilots.com)
 # References
 # Acknowledgements 
