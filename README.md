@@ -204,3 +204,4 @@ We used the following materials for this project:
 + [DJI Tello Online Community](https://tellopilots.com)
 # References
 # Acknowledgements 
+We would like to our Capstone professors, Dr. Shradda Sangelkar, Dr. Jay McCormack, Dr. Sriram Mohan, and Dr. Ryder Winck for their guidance, resources, support throughout this project. We would also like to thank Dr. Sid Stamm, Dr. Amirmasoud Momenipour, Dr. Mark Hays, and Dr. Mellor for their subject-expertise. Lastly, we would like to thank you dear reader as our project only gains value if it is able to benefit the larger community. 
