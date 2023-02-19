@@ -104,6 +104,7 @@ The left side of the V-model is conceptual development and product development. 
 The HARA consists of the following steps:
 + <details>
 <summary>Assumptions</summary>
+
 <br>
 Assumptions are created on how terminology is used and about the environment the product is in.
 <br>
@@ -112,6 +113,7 @@ For this project, an example assumption is that the primary obstacles to be avoi
 
 + <details>
 <summary>Existing External Mitigating Measures</summary>
+
 <br>
 These are risk reducing factors that are already present in an environment. They exist independently of the systems.
 <br>
@@ -120,18 +122,21 @@ For this project, to prevent the drone from hitting people, the only person(s) t
 
 + <details>
 <summary>Operational Situations</summary>
+
 <br>
 These are the scenarios that the designers expect their product to be in regularly while it is operation/active/or in use. The designers will come up with ‘Considered Situational Attributes’ which are guide words that describe ‘motion’, ‘mode’, ‘obstacle exposure’, and ‘control’.
 </details> 
 
 + <details>
 <summary>Guide words</summary>
+
 <br>
 In Functional Safety, guide words are created to produce operational scenarios. For this project some of our guide words were as follows: Mode = Launched, Motion = Forward, Control = Independent (not in swarm configuration), Obstacle Exposure = ‘Static’.An example operational scenario is ‘a single independent drone is launched and in a forward motion surveying a space with static objects.’
 </details> 
 
 + <details>
 <summary>Hazard List</summary>
+
 <br>
 List of potential hazards and their type pulled from a list in the ISO12100 standard. Relevant Mechanical Hazards for the project include:
 - Impact due to collision with stationary object
@@ -140,6 +145,7 @@ List of potential hazards and their type pulled from a list in the ISO12100 stan
 
 + <details>
 <summary>Hazardous Operation</summary>
+
 <br>
 Hazerdous Operation combines Tasks and Functions along with suggested guidewords pulled from the SAEJ2980 standard to create potential resulting malfunctions. The resulting malfunctions constitute Hazardous Operation.
 In this project, when the ‘Automated drone(s) is exploring’ an environment ‘as intended’, there is hazard exposure do to obstacles that are present in the environment. The resulting malfunction is an errant flight path if a collision occurs.
@@ -147,6 +153,7 @@ In this project, when the ‘Automated drone(s) is exploring’ an environment �
 
 + <details>
 <summary>Hazardous Events</summary>
+
 <br>
 Hazerdous events combines Hazardous Operation and Operational Situation to describe the Hazardous Event that needs to be mitigated. 
 In this project when the ‘Automated drone(s) is exploring’ an environment ‘as intended’, and there is hazard exposure do to obstacles that are present in the environment while ‘a single independent drone is launched and in a forward motion surveying a space with static objects’, the hazardous event is that the drone or operator is at risk of being hit by the drone should a malfunction occur because of the collision. 
@@ -154,6 +161,7 @@ In this project when the ‘Automated drone(s) is exploring’ an environment �
 
 + <details>
 <summary>Risk Reduction Measure</summary>
+
 <br>
 These are the safety features, which could either be design based or policy/procedural based, that are implemented to reduce the HARA line item to a lower risk rating per the ASIL risk rating chart.
 For this project, we utilized computer vision and coded responses that react based on the type of object seen, as the basis for collision-based Risk Reduction Measures that lowered our SIL1 rating down to SIL0.
@@ -164,6 +172,7 @@ Once these safety features are implemented properly either through hardware or s
 
 + <details>
 <summary>Networking</summary>
+
 <br>
 Still don't know if we need this lol
 </details> 
