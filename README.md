@@ -44,15 +44,15 @@ SkyGuardian uses <a href="https://flet.dev">Flet</a>, a simplified <a href="http
 
 When first starting the program, the GUI brings you to a "landing" page where a user will be able to connect 1 or 2 drones. <br> 
 <br> 
-- Insert Landing/Drone Connection Page
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/SMPTE_Color_Bars.svg/1200px-SMPTE_Color_Bars.svg.png" width="500">
 
 After verifying that the drone(s) are connected, the user can continue to a Main Dashboard that displays the OpenCV window output, various sensor readings, text input for chosen object identification, and buttons to Launch, Land, Hover an inidividual drone or both drones simultaneosly. <br> 
 <br> 
-<img src="file://./MainDashboard.jpg" width="500">
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/SMPTE_Color_Bars.svg/1200px-SMPTE_Color_Bars.svg.png" width="500">
 <br>
 There is also a window for the User to adjust various settings.<br> 
 <br> 
-- Insert pic of settings window
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/SMPTE_Color_Bars.svg/1200px-SMPTE_Color_Bars.svg.png" width="500">
 
 The GUI uses the following components<br> 
 <details>
