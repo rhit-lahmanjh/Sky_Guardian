@@ -117,9 +117,10 @@ class Drone(tel.Tello):
         return self.prevDirection
 
     def __randomWander_butworksmaybe__(self):
-        if self.wanderCounter >= 10:
+        if self.wanderCounter >= 20:
             self.randomWanderVec[0] = rand.randint(-15,15)
-            self.randomWanderVec[1] = rand.randint(-15,15)
+            self.randomWanderVec[1] = rand.randint(-20,20)
+            self.randomWanderVec[3] = rand.randint(-15,15)
             self.wanderCounter = 0
 
         self.wanderCounter += 1
@@ -128,7 +129,7 @@ class Drone(tel.Tello):
     def __avoidBoundary__(self):
         xBoundaryForceDroneFrame = 0
         yBoundaryForceDroneFrame = 0
-        movementForceMagnitude = 1.2
+        movementForceMagnitude = 2
         yaw = math.radians(self.sensoryState.globalPose[3,0])
         if self.sensoryState.globalPose[0,0] < sensoryState.X_MIN_BOUNDARY:
             error = abs(self.sensoryState.globalPose[0,0]-sensoryState.X_MIN_BOUNDARY)
@@ -431,14 +432,20 @@ class Drone(tel.Tello):
                     continue
 
                 case State.Wander:
+
+                    # self.sensoryState.globalPose[0,0] = 35
+                    # self.sensoryState.globalPose[1,0] = 30
+                    # self.sensoryState.globalPose[3,0] = -90
+                    self.moveDirection(np.array([[0],[20],[0],[0]]))
+                    # self.moveDirection(np.add(np.array([[0],[20],[0],[0]]),self.__avoidBoundary__()))
                     if(DEBUG_PRINTS):
                         print("Wandering")
-                    wanderVec = np.add(self.__randomWander_butworksmaybe__(),self.__avoidBoundary__())
+                    # wanderVec = np.add(self.__randomWander_butworksmaybe__(),self.__avoidBoundary__())
                     # print(wanderVec)
-                    if self.behavior is not None:
-                        reactionMovement = self.behavior.runReactions(drone = self, input = self.sensoryState, currentMovement = wanderVec)
-                        wanderVec = np.add(wanderVec, reactionMovement)
-                    self.moveDirection(wanderVec)
+                    # if self.behavior is not None:
+                    #     reactionMovement = self.behavior.runReactions(drone = self, input = self.sensoryState, currentMovement = wanderVec)
+                    #     wanderVec = np.add(wanderVec, reactionMovement)
+                    # self.moveDirection(wanderVec)
 
                 case State.Hover:
                     if WITH_DRONE:
@@ -486,24 +493,6 @@ class Drone(tel.Tello):
             # Acceleration Safety Check
 
 
-    # #region REACTIONS
-    # def R_stopOnCellPhone(self, object = None):
-    #     if(object != None and object[1] == 77):
-    #         self.hover()
-
-    # def R_pauseOnPerson(self, object = None):
-    #     # add in logic to get back to previous state
-    #     if(object != None and object[1] == 1):
-    #         self.prevState = self.opState
-    #         self.opState = State.Hover
-
-    # def R_backUpFromPerson(self,object = None):
-    #     if(object != None and object[1] == 1):
-    #         self.move_back(40)
-    # #endregion
-
-
-    # self.moveDirection(self.__randomWander__())
     # self.sensoryState.globalPose[0,0] = 35
     # self.sensoryState.globalPose[1,0] = 30
     # self.sensoryState.globalPose[3,0] = -90
