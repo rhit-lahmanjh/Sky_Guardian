@@ -1,6 +1,6 @@
 from sensoryState import SensoryState
 import numpy as np
-from drone import Drone
+# from drone import Drone
 import time as t
 from enum import Enum
 
@@ -12,10 +12,13 @@ import reactions.reaction as rxt
 
 class behaviorFramework:
 
-    blockingReactions = list(type=rxt.blockingReaction)
-    movementReactions = list(type=rxt.movementReaction)
+    blockingReactions = list()
+    movementReactions = list()
+
+    def __init__(self) -> None:
+        pass
     
-    def runReactions(self, drone: Drone, input: SensoryState, currentMovement: np.array) -> np.array():
+    def runReactions(self, drone = None, input: SensoryState = None, currentMovement: np.array = None):
         for reaction in self.blockingReactions:
             reaction.react(drone = drone, input = input, currentMovement = currentMovement)
         res = np.zeros((4,1))
@@ -24,5 +27,5 @@ class behaviorFramework:
         return res
 
 class behavior1(behaviorFramework):
-    blockingReactions = [rxt.flipOnBanana, rxt.bobOnCellPhone]
-    movementReactions = [rxt.followCellPhone]
+    blockingReactions = [rxt.flipOnBanana(), rxt.bobOnShoe()]
+    movementReactions = [rxt.followCellPhone()]

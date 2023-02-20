@@ -14,7 +14,7 @@ from behaviors.behavior import behaviorFramework
 from refresh_tracker import RefreshTracker
 
 DEBUG_PRINTS = True
-WITH_DRONE = False
+WITH_DRONE = True
 WITH_CAMERA = True
 RECORD_SENSOR_STATE = True
 
@@ -63,14 +63,14 @@ class Drone(tel.Tello):
         cv2.VideoCapture()
         self.identifier = identifier
         self.opState = State.Grounded
+        if behavior is not None:
+            self.behavior = behavior
         if WITH_DRONE:
             super().__init__()
             # This is where we will implement connecting to a drone through the router
             self.connect()
             self.set_speed(self.MAXSPEED)
             self.enable_mission_pads()
-            if behavior is not None:
-                self.behavior = behavior
 
             #setup video
             if WITH_CAMERA:
@@ -118,8 +118,8 @@ class Drone(tel.Tello):
 
     def __randomWander_butworksmaybe__(self):
         if self.wanderCounter >= 10:
-            self.randomWanderVec[0] = rand.randint(-20,20)
-            self.randomWanderVec[1] = rand.randint(-20,20)
+            self.randomWanderVec[0] = rand.randint(-15,15)
+            self.randomWanderVec[1] = rand.randint(-15,15)
             self.wanderCounter = 0
 
         self.wanderCounter += 1
@@ -128,30 +128,30 @@ class Drone(tel.Tello):
     def __avoidBoundary__(self):
         xBoundaryForceDroneFrame = 0
         yBoundaryForceDroneFrame = 0
-        movementForceMagnitude = 1
-        yaw = math.radians(self.sensoryState.globalPose[3])
-        if self.sensoryState.globalPose[0] < sensoryState.X_MIN_BOUNDARY:
-            error = abs(self.sensoryState.globalPose[0]-sensoryState.X_MIN_BOUNDARY)
+        movementForceMagnitude = 1.2
+        yaw = math.radians(self.sensoryState.globalPose[3,0])
+        if self.sensoryState.globalPose[0,0] < sensoryState.X_MIN_BOUNDARY:
+            error = abs(self.sensoryState.globalPose[0,0]-sensoryState.X_MIN_BOUNDARY)
             xBoundaryForce = error*movementForceMagnitude
             xBoundaryForceDroneFrame = xBoundaryForce*math.cos(yaw)
             yBoundaryForceDroneFrame = xBoundaryForce*math.sin(yaw)
 
-        elif self.sensoryState.globalPose[0] > sensoryState.X_MAX_BOUNDARY:
-            error = abs(self.sensoryState.globalPose[0]-sensoryState.X_MAX_BOUNDARY)
+        elif self.sensoryState.globalPose[0,0] > sensoryState.X_MAX_BOUNDARY:
+            error = abs(self.sensoryState.globalPose[0,0]-sensoryState.X_MAX_BOUNDARY)
             xBoundaryForce = -error*movementForceMagnitude
             xBoundaryForceDroneFrame = xBoundaryForce*math.cos(yaw)
             yBoundaryForceDroneFrame = xBoundaryForce*math.sin(yaw)
         if DEBUG_PRINTS:
             print(f'Avoidance Force From X boundary: X: {xBoundaryForceDroneFrame} Y: {yBoundaryForceDroneFrame} ')
 
-        if self.sensoryState.globalPose[1] < sensoryState.Y_MIN_BOUNDARY:
-            error = abs(self.sensoryState.globalPose[1]-sensoryState.Y_MIN_BOUNDARY)
+        if self.sensoryState.globalPose[1,0] < sensoryState.Y_MIN_BOUNDARY:
+            error = abs(self.sensoryState.globalPose[1,0]-sensoryState.Y_MIN_BOUNDARY)
             yBoundaryForce = error*movementForceMagnitude
             xBoundaryForceDroneFrame = xBoundaryForceDroneFrame - yBoundaryForce*math.sin(yaw)
             yBoundaryForceDroneFrame = yBoundaryForceDroneFrame + yBoundaryForce*math.cos(yaw)
             
         elif self.sensoryState.globalPose[1] > sensoryState.Y_MAX_BOUNDARY:
-            error = abs(self.sensoryState.globalPose[1]-sensoryState.Y_MAX_BOUNDARY)
+            error = abs(self.sensoryState.globalPose[1,0]-sensoryState.Y_MAX_BOUNDARY)
             yBoundaryForce = -error*movementForceMagnitude
             xBoundaryForceDroneFrame = xBoundaryForceDroneFrame - yBoundaryForce*math.sin(yaw)
             yBoundaryForceDroneFrame = yBoundaryForceDroneFrame + yBoundaryForce*math.cos(yaw)
@@ -405,6 +405,8 @@ class Drone(tel.Tello):
                             print("Telemetry Checks Successful")
                             print('Taking off') 
                             self.takeoff()
+                            # t.sleep(2)
+                            # self.move_up(20)
                             self.opState = State.Hover # Hover for now, eventually scanning
                         else:
                             self.opState = State.Grounded
@@ -432,6 +434,7 @@ class Drone(tel.Tello):
                     if(DEBUG_PRINTS):
                         print("Wandering")
                     wanderVec = np.add(self.__randomWander_butworksmaybe__(),self.__avoidBoundary__())
+                    # print(wanderVec)
                     if self.behavior is not None:
                         reactionMovement = self.behavior.runReactions(drone = self, input = self.sensoryState, currentMovement = wanderVec)
                         wanderVec = np.add(wanderVec, reactionMovement)
