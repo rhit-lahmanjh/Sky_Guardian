@@ -18,14 +18,15 @@ from flet import (
     colors,
     CrossAxisAlignment,
 )
+from behaviors.behavior import behavior1
 
 # tello_address = ('192.168.10.1', 8889)
 # local_address = ('', 9000)
         
 def main(page: ft.Page):
     # drone connection
-    drone1 = Drone('test')
-    cap = drone1.get_video_capture()
+    drone1 = Drone(identifier = 'test',behavior = behavior1)
+    cap = drone1.SensoryState.videoCapture
 
     # Setting up threading
     threads = []
@@ -74,6 +75,45 @@ def main(page: ft.Page):
         drone1.opState = State.Hover
         # drone2.opState = State.Hover
         page.update()        
+
+    class Countdown(ft.UserControl):
+		cv2.namedWindow("Video Stream",cv2.WINDOW_NORMAL)
+		cv2.resizeWindow("Video Stream",400,600)
+
+		# # AND SAVE THE FILE NAME WITH TIME NOW 
+		# timestamp = str(int(time.time()))
+		# myfileface = str("myCumFaceFile" + "_" + timestamp + '.jpg')
+		try:
+			while True:
+				ret,frame = cap.read()
+				cv2.imshow("Webcam",frame)
+				myimage.src = ""
+				page.update()
+
+				# AFTER THAT WAITING YOU INPUT FROM KEYBOARD
+				key = cv2.waitKey(1)
+
+				# AND IF YOU PRESS Q FROM YOU KEYBOARD THEN
+				# THE WEBCAM WINDOW CAN CLOSE 
+				# AND YOU NOT CAPTURE YOU IMAGE
+				if key == ord("q"):
+					break
+				elif key == ord("s"):
+					# AND IF YOU PRESS s FROM YOU KEYBOARD
+					# THE THE YOU CAPTURE WILL SAVE IN FOLDER YOUPHOTO
+					cv2.imwrite(f"youphoto/{myfileface}",frame)
+					# AND SHOW TEXT YOU PICTURE SUCCESS INPUT
+					cv2.putText(frame,"YOU SUCESS CAPTURE GUYS !!!",(10,50),cv2.FONT_HERSHEY_SIMPLEX,1,(0,0,255),2)
+					cv2.imshow("Webcam",frame)
+					cv2.waitKey(3000)
+					folder_path = "youphoto/"
+					myimage.src = folder_path + myfileface
+					page.update()
+					break
+
+			cap.release()
+			cv2.destroyAllWindows()
+			page.update()
 
     # CV2 Window 
     class Countdown(ft.UserControl):
@@ -141,7 +181,7 @@ def main(page: ft.Page):
                 padding=10,
                 border_radius = ft.border_radius.all(20),
                 content=ft.Column([
-                    Countdown(),
+                    Countdown,
                     ft.Text("OPENCV WITH FLET",
                          size=20, weight="bold",
                          color=ft.colors.WHITE),
