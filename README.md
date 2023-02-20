@@ -22,8 +22,8 @@ SkyGuardian is an open-source codebase for people to learn drone control topics 
 - [References](#references)
 - [Acknowledgements](#acknowledgements)
 
-# About
 ## Purpose
+We hope that students or people enthusiastic about learning about drones are able to gain new knowledge through this repository and possible contribute to it. 
 
 ## Features
 SkyGuardian has the following features:
@@ -204,4 +204,4 @@ We used the following materials for this project:
 + [DJI Tello Online Community](https://tellopilots.com)
 # References
 # Acknowledgements 
-We would like to our Capstone professors: Dr. Shradda Sangelkar and Dr. Jay McCormack, and external reviewers: Dr. Sriram Mohan, and Dr. Ryder Winck for their guidance, resources, and support throughout this project. We would also like to thank Dr. Sid Stamm, Dr. Amirmasoud Momenipour, Dr. Mark Hays, and Dr. Mellor for their subject-matter expertise. Lastly, we would like to thank you dear reader as our project only gains value if it is able to benefit someone else.
+We would like to our Capstone professors: Dr. Shradda Sangelkar and Dr. Jay McCormack, and external reviewers: Dr. Sriram Mohan, and Dr. Ryder Winck for their guidance, resources, and support throughout this project. We would also like to thank Dr. Sid Stamm, Dr. Amirmasoud Momenipour, Dr. Mark Hays, and Dr. Mellor for their subject-matter expertise. Lastly, we would like to thank you dear reader for adding value to our project!
