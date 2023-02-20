@@ -5,11 +5,11 @@ from video_analyzer import VideoAnalyzer
 import time as t
 
 # update dependent on pad layout
-DISTANCE_BETWEEN_MISSION_PADS = 100
-X_MIN_BOUNDARY = -25
-X_MAX_BOUNDARY = 25
-Y_MIN_BOUNDARY = -25
-Y_MAX_BOUNDARY = 25
+DISTANCE_BETWEEN_MISSION_PADS = 80
+X_MIN_BOUNDARY = -20
+X_MAX_BOUNDARY = 20
+Y_MIN_BOUNDARY = -20
+Y_MAX_BOUNDARY = 260
 DEBUG_PRINTS = True
 
 #CV Settings
@@ -73,7 +73,7 @@ class SensoryState():
                 tstart = t.time()
                 self.look_for_objects(self.image)
                 tend = t.time()
-                print(f'time:{tend-tstart}')
+                # print(f'time:{tend-tstart}')
 
     def __clearBuffer__(self, cap):
         """ Emptying buffer frame """
@@ -84,7 +84,7 @@ class SensoryState():
                 break
 
     def look_for_objects(self,img):
-        print('Seeing')
+        # print('Seeing')
         objects = self.videoAnalyzer.detect_objects(img)
         if objects is not None:
             self.visibleObjects.clear()
