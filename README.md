@@ -185,6 +185,7 @@ Once these safety features are implemented properly either through hardware or s
 
 <br>
 Still don't know if we need this lol
+![alt text](https://github.com/rhit-lahmanjh/Sky_Guardian/blob/main/Networking/NetworkingDiagram.PNG)
 </details> 
 
 # Getting Started
