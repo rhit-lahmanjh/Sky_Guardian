@@ -1,7 +1,21 @@
 import time as t
 from collections import deque
 import numpy as np
+from enum import Enum
 
+
+class State(Enum):
+    Grounded = 1
+    Takeoff = 2
+    Land = 3
+    Wander = 4
+    FollowWalkway = 5
+    FollowHallway = 6
+    TrackPerson = 7
+    Doorway = 8
+    Scan = 9
+    Hover = 10
+    Drift = 11
 
 class RefreshTracker():
     refreshRateQueue = None

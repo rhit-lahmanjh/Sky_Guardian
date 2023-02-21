@@ -1,6 +1,5 @@
 import sys
 import djitellopy as tel
-from enum import Enum
 from perlin_noise import PerlinNoise
 import cv2
 import keyboard as key
@@ -11,7 +10,7 @@ import math
 import random as rand
 import sensoryState
 from behaviors.behavior import behaviorFramework
-from refresh_tracker import RefreshTracker
+from refresh_tracker import RefreshTracker, State
 
 DEBUG_PRINTS = True
 WITH_DRONE = True
@@ -19,19 +18,6 @@ WITH_CAMERA = True
 RECORD_SENSOR_STATE = True
 
 clamp = lambda n, minn, maxn: max(min(maxn, n), minn)
-
-class State(Enum):
-    Grounded = 1
-    Takeoff = 2
-    Land = 3
-    Wander = 4
-    FollowWalkway = 5
-    FollowHallway = 6
-    TrackPerson = 7
-    Doorway = 8
-    Scan = 9
-    Hover = 10
-    Drift = 11
  
 class Drone(tel.Tello):
     #video I THINK THIS IS DEPRICATED
@@ -414,7 +400,7 @@ class Drone(tel.Tello):
                             print("Telemetry Checks Successful")
                             print('Taking off') 
                             self.takeoff()
-                            self.opState = State.Hover # Hover for now, eventually scanning
+                            self.opState = State.Wander
                         else:
                             self.opState = State.Grounded
                             print("A Telemetry threshold has been violated. Unsafe takeoff/flight conditions")

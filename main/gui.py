@@ -1,5 +1,6 @@
 #!/bin/env python
-from drone import (Drone, State)
+from drone import Drone
+from refresh_tracker import State
 import flet as ft
 import djitellopy
 import socket
@@ -25,8 +26,8 @@ from behaviors.behavior import behavior1
         
 def main(page: ft.Page):
     # drone connection
-    drone1 = Drone(identifier = 'test',behavior = behavior1)
-    cap = drone1.SensoryState.videoCapture
+    drone1 = Drone(identifier = 'test',behavior = behavior1())
+    cap = drone1.sensoryState.videoCapture
 
     # Setting up threading
     threads = []
@@ -48,12 +49,12 @@ def main(page: ft.Page):
         page.update()
 
     def drone1_land(e):
-        print("Drone 1 State: Landed")
-        drone1.opState = State.Landed
+        print("Drone 1 State: Landing")
+        drone1.opState = State.Land ## Fix
         page.update()
     
     def drone2_land(e):
-        print("Drone 2 State: Landed")           
+        print("Drone 2 State: Landing")           
     #     drone2.opState = State.Landed
         page.update()
 
@@ -76,67 +77,67 @@ def main(page: ft.Page):
         # drone2.opState = State.Hover
         page.update()        
 
-    class Countdown(ft.UserControl):
-		cv2.namedWindow("Video Stream",cv2.WINDOW_NORMAL)
-		cv2.resizeWindow("Video Stream",400,600)
+    # class Countdown(ft.UserControl):
+    #     cv2.namedWindow("Video Stream",cv2.WINDOW_NORMAL)
+    #     cv2.resizeWindow("Video Stream",400,600)
 
-		# # AND SAVE THE FILE NAME WITH TIME NOW 
-		# timestamp = str(int(time.time()))
-		# myfileface = str("myCumFaceFile" + "_" + timestamp + '.jpg')
-		try:
-			while True:
-				ret,frame = cap.read()
-				cv2.imshow("Webcam",frame)
-				myimage.src = ""
-				page.update()
+	# 	# # AND SAVE THE FILE NAME WITH TIME NOW 
+	# 	# timestamp = str(int(time.time()))
+	# 	# myfileface = str("myCumFaceFile" + "_" + timestamp + '.jpg')
+    #     try:
+    #         while True:
+    #             ret,frame = cap.read()
+    #             cv2.imshow("Webcam",frame)
+    #             myimage.src = ""
+    #             page.update()
 
-				# AFTER THAT WAITING YOU INPUT FROM KEYBOARD
-				key = cv2.waitKey(1)
+	# 			# AFTER THAT WAITING YOU INPUT FROM KEYBOARD
+	# 			key = cv2.waitKey(1)
 
-				# AND IF YOU PRESS Q FROM YOU KEYBOARD THEN
-				# THE WEBCAM WINDOW CAN CLOSE 
-				# AND YOU NOT CAPTURE YOU IMAGE
-				if key == ord("q"):
-					break
-				elif key == ord("s"):
-					# AND IF YOU PRESS s FROM YOU KEYBOARD
-					# THE THE YOU CAPTURE WILL SAVE IN FOLDER YOUPHOTO
-					cv2.imwrite(f"youphoto/{myfileface}",frame)
-					# AND SHOW TEXT YOU PICTURE SUCCESS INPUT
-					cv2.putText(frame,"YOU SUCESS CAPTURE GUYS !!!",(10,50),cv2.FONT_HERSHEY_SIMPLEX,1,(0,0,255),2)
-					cv2.imshow("Webcam",frame)
-					cv2.waitKey(3000)
-					folder_path = "youphoto/"
-					myimage.src = folder_path + myfileface
-					page.update()
-					break
+	# 			# AND IF YOU PRESS Q FROM YOU KEYBOARD THEN
+	# 			# THE WEBCAM WINDOW CAN CLOSE 
+	# 			# AND YOU NOT CAPTURE YOU IMAGE
+	# 			if key == ord("q"):
+	# 				break
+	# 			elif key == ord("s"):
+	# 				# AND IF YOU PRESS s FROM YOU KEYBOARD
+	# 				# THE THE YOU CAPTURE WILL SAVE IN FOLDER YOUPHOTO
+	# 				cv2.imwrite(f"youphoto/{myfileface}",frame)
+	# 				# AND SHOW TEXT YOU PICTURE SUCCESS INPUT
+	# 				cv2.putText(frame,"YOU SUCESS CAPTURE GUYS !!!",(10,50),cv2.FONT_HERSHEY_SIMPLEX,1,(0,0,255),2)
+	# 				cv2.imshow("Webcam",frame)
+	# 				cv2.waitKey(3000)
+	# 				folder_path = "youphoto/"
+	# 				myimage.src = folder_path + myfileface
+	# 				page.update()
+	# 				break
 
-			cap.release()
-			cv2.destroyAllWindows()
-			page.update()
+			# cap.release()
+			# cv2.destroyAllWindows()
+			# page.update()
 
-    # CV2 Window 
-    class Countdown(ft.UserControl):
-        def __init__(self):
-            super().__init__()
+    # # CV2 Window 
+    # class Countdown(ft.UserControl):
+    #     def __init__(self):
+    #         super().__init__()
 
-        def did_mount(self):
-            self.update_timer()
+    #     def did_mount(self):
+    #         self.update_timer()
 
-        def update_timer(self):
-            while True:
-                _, frame = cap.read()
-                # frame = cv2.resize(frame,(400,400))
-                _, im_arr = cv2.imencode('.png', frame)
-                im_b64 = base64.b64encode(im_arr)
-                self.img.src_base64 = im_b64.decode("utf-8")
-                self.update()
+    #     def update_timer(self):
+    #         while True:
+    #             _, frame = cap.read()
+    #             # frame = cv2.resize(frame,(400,400))
+    #             _, im_arr = cv2.imencode('.png', frame)
+    #             im_b64 = base64.b64encode(im_arr)
+    #             self.img.src_base64 = im_b64.decode("utf-8")
+    #             self.update()
 
-        def build(self):
-            self.img = ft.Image(
-                border_radius=ft.border_radius.all(20)
-            )
-            return self.img
+    #     def build(self):
+    #         self.img = ft.Image(
+    #             border_radius=ft.border_radius.all(20)
+    #         )
+    #         return self.img
 
     drone1_items = [
         ft.Container(width=200, height=75, content=ft.Text("Launch"), on_click=drone1_launch, bgcolor = ft.colors.GREEN_200, alignment=ft.alignment.center), 
@@ -174,21 +175,21 @@ def main(page: ft.Page):
         ]
     )
 
-    cv2window = ft.Card(
-            elevation=30,
-            content=ft.Container(
-                bgcolor=ft.colors.WHITE24,
-                padding=10,
-                border_radius = ft.border_radius.all(20),
-                content=ft.Column([
-                    Countdown,
-                    ft.Text("OPENCV WITH FLET",
-                         size=20, weight="bold",
-                         color=ft.colors.WHITE),
-                ]
-                ),
-            )
-    )
+    # cv2window = ft.Card(
+    #         elevation=30,
+    #         content=ft.Container(
+    #             bgcolor=ft.colors.WHITE24,
+    #             padding=10,
+    #             border_radius = ft.border_radius.all(20),
+    #             content=ft.Column([
+    #                 Countdown,
+    #                 ft.Text("OPENCV WITH FLET",
+    #                      size=20, weight="bold",
+    #                      color=ft.colors.WHITE),
+    #             ]
+    #             ),
+    #         )
+    # )
 
     page.add(
         ft.Row(
