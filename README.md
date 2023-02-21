@@ -29,10 +29,10 @@ We hope that students or people enthusiastic about learning about drones are abl
 SkyGuardian has the following features:
 - Ability to control 1 or 2 drones through a router
 - Use of Mission Pads to confine the drone to a space
-- Drone flight algorithm using [Perlin Noise](https://www.khanacademy.org/computing/computer-programming/programming-natural-simulations/programming-noise/a/perlin-noise) 
+- Drone wander algorithm using a mix of pure random and smoothly changing trajectories via [Perlin Noise](https://www.khanacademy.org/computing/computer-programming/programming-natural-simulations/programming-noise/a/perlin-noise) 
 - Additional safety measures using industry hardware functional safety techniques
 - Pre-trained Computer Vision models to recognize objects
-- Ability to implement reactive behaviors to objects
+- Ability to quickly implement reactive behaviors to objects and sensor readings
 - [Flet](https://flet.dev)-powered language-agnostic GUI (Python, Go, C#)
 - Easy-to-understand & User-tested documentation
 
@@ -71,9 +71,33 @@ The code from <a href="https://www.youtube.com/watch?v=58aPh8rKKsk">Azu Technolo
 </details>
 
 <details>
-<summary>Perlin-Noise Flight Algorithm</summary>
+<summary>Finite State Machine</summary>
 <br>
-Overview of Flight Alg. + Finite State Machine (include pix)
+Overview of Finite State Machine, including the states currently implemented and the functionality in each one. This section will include a state transition diagram below:
+
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/SMPTE_Color_Bars.svg/1200px-SMPTE_Color_Bars.svg.png" width="500">
+
+</details> 
+
+<details>
+<summary>Reactive Control Through Potential Fields</summary>
+<br>
+This section will introduce the concept of reactive control, showing a diagram below with the mission pads and both drones.
+
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/SMPTE_Color_Bars.svg/1200px-SMPTE_Color_Bars.svg.png" width="500">
+
+The next paragraph will give a brief overview of the two types of rection we've defined: Blocking and movement, as well as the difference between behaviors and reactions.
+
+</details> 
+
+<details>
+<summary>Object Recognition by OpenCV</summary>
+<br>
+This section will introduce using the pre-trained models via open CV (link to resource on convolutional neural networks). It will describe where in the code this implemented, and what a user would have to change in order to swap out a different model.
+
+It will also discuss the options that can be tweaked: confidence level and filtering out the noise of false detections (assuming this is implemented by the end of the year)
+
+If we implement by the end of the year, it will also describe our approach to running inference through the GPU (installation requirements will be covered below)
 </details> 
 
 <details>
@@ -192,12 +216,19 @@ Still don't know if we need this lol
 We used the following materials for this project:
 - 2 Tello EDU drones
 - Router
+- Tello mission pads
 - etc. 
 
 ## Setting up drones and router
 ## How to run requirements
+## Setting up the Mission Pads
+This section will include a graphic as to how to setup the mission pad layout, and point to the correct section of code (Currently in SensoryState.py, but should likely be moved) where they can create custom mission pad layouts.
+
 # Examples
 ## Creating a reactive behavior to an object
+## Adding a new button to the GUI
+## Adding a custom State
+
 # Supplemental Documentation
 # Troublehooting resources
 + [Tello Drone User Manual](https://dl-cdn.ryzerobotics.com/downloads/Tello/Tello%20User%20Manual%20v1.4.pdf)
