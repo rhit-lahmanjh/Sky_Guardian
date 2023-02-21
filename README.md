@@ -73,7 +73,7 @@ The code from <a href="https://www.youtube.com/watch?v=58aPh8rKKsk">Azu Technolo
 <details>
 <summary>Finite State Machine</summary>
 <br>
-Overview of Finite State Machine, including the states currently implemented and the functionality in each one. This section will include a state transition diagram below:
+Overview of Finite State Machine, including the states currently implemented and the functionality in each one. This section will include a state transition diagram below:<br> 
 
 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/SMPTE_Color_Bars.svg/1200px-SMPTE_Color_Bars.svg.png" width="500">
 
@@ -82,10 +82,12 @@ Overview of Finite State Machine, including the states currently implemented and
 <details>
 <summary>Reactive Control Through Potential Fields</summary>
 <br>
-This section will introduce the concept of reactive control, showing a diagram below with the mission pads and both drones.
+This section will introduce the concept of reactive control, showing a diagram below with the mission pads and both drones.<br> 
+
 
 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/SMPTE_Color_Bars.svg/1200px-SMPTE_Color_Bars.svg.png" width="500">
 
+<br> 
 The next paragraph will give a brief overview of the two types of rection we've defined: Blocking and movement, as well as the difference between behaviors and reactions.
 
 </details> 
@@ -93,11 +95,11 @@ The next paragraph will give a brief overview of the two types of rection we've 
 <details>
 <summary>Object Recognition by OpenCV</summary>
 <br>
-This section will introduce using the pre-trained models via open CV (link to resource on convolutional neural networks). It will describe where in the code this implemented, and what a user would have to change in order to swap out a different model.
+This section will introduce using the pre-trained models via open CV (link to resource on convolutional neural networks). It will describe where in the code this implemented, and what a user would have to change in order to swap out a different model. <br> 
 
-It will also discuss the options that can be tweaked: confidence level and filtering out the noise of false detections (assuming this is implemented by the end of the year)
+It will also discuss the options that can be tweaked: confidence level and filtering out the noise of false detections (assuming this is implemented by the end of the year) <br> 
 
-If we implement by the end of the year, it will also describe our approach to running inference through the GPU (installation requirements will be covered below)
+If we implement by the end of the year, it will also describe our approach to running inference through the GPU (installation requirements will be covered below) <br> 
 </details> 
 
 <details>
@@ -207,6 +209,7 @@ Once these safety features are implemented properly either through hardware or s
 <details>
 <summary>Networking</summary>
 
+
 <br>
 Still don't know if we need this lol
 <img src="https://github.com/rhit-lahmanjh/Sky_Guardian/blob/main/Networking/NetworkingDiagram.PNG" width="500">
@@ -220,7 +223,9 @@ We used the following materials for this project:
 - etc. 
 
 ## Setting up drones and router
+This section will cover how to set up the router, connect your computer to it, connect the drone to it, and run the code through it.
 ## How to run requirements
+This section will walk the user through setting up the environment through anaconda
 ## Setting up the Mission Pads
 This section will include a graphic as to how to setup the mission pad layout, and point to the correct section of code (Currently in SensoryState.py, but should likely be moved) where they can create custom mission pad layouts.
 
@@ -230,6 +235,7 @@ This section will include a graphic as to how to setup the mission pad layout, a
 ## Adding a custom State
 
 # Supplemental Documentation
+This section will include any additional documents that we deem too long to include in this top level of the readme. Likely some of the section from functional safety above will be moved to here.
 # Troublehooting resources
 + [Tello Drone User Manual](https://dl-cdn.ryzerobotics.com/downloads/Tello/Tello%20User%20Manual%20v1.4.pdf)
 + [Official Flet developer community](https://discord.gg/mMJHgYEqRK)
