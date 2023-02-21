@@ -5,11 +5,11 @@ from video_analyzer import VideoAnalyzer
 import time as t
 
 # update dependent on pad layout
-DISTANCE_BETWEEN_MISSION_PADS = 80
-X_MIN_BOUNDARY = -20
-X_MAX_BOUNDARY = 20
-Y_MIN_BOUNDARY = -20
-Y_MAX_BOUNDARY = 260
+DISTANCE_BETWEEN_MISSION_PADS = 50
+X_MIN_BOUNDARY = 0
+X_MAX_BOUNDARY = 50
+Y_MIN_BOUNDARY = 0
+Y_MAX_BOUNDARY = 150
 DEBUG_PRINTS = True
 
 #CV Settings
@@ -25,6 +25,8 @@ class SensoryState():
                                 [DISTANCE_BETWEEN_MISSION_PADS,DISTANCE_BETWEEN_MISSION_PADS],
                                 [DISTANCE_BETWEEN_MISSION_PADS,2*DISTANCE_BETWEEN_MISSION_PADS],
                                 [DISTANCE_BETWEEN_MISSION_PADS,3*DISTANCE_BETWEEN_MISSION_PADS],])
+    yawShift = 0
+    yawShiftSet = False
     sensorReadings = dict()
     videoCapture = None
     videoAnalyzer = None
@@ -59,10 +61,13 @@ class SensoryState():
                     queue.popleft()
             padID = currentReadings.get('mid')
             if(padID > 0):
+                if not self.yawShiftSet:
+                    self.yawShift = currentReadings.get('yaw')
+                    self.yawShiftSet = True
                 self.globalPose[0] = currentReadings.get('x') + self.missionPadShift[padID-1,0]
                 self.globalPose[1] = currentReadings.get('y') + self.missionPadShift[padID-1,1]
                 self.globalPose[2] = currentReadings.get('z')
-                self.globalPose[3] = currentReadings.get('yaw') - 90
+                self.globalPose[3] = currentReadings.get('yaw') - self.yawShift
             if DEBUG_PRINTS:
                 print(f"Pad: {padID} X: {self.globalPose[0]} Y: {self.globalPose[1]} Z: {self.globalPose[2]} YAW : {self.globalPose[3]}")
                 # print(f"Shifting by: {self.missionPadShift[padID-1,:]}")

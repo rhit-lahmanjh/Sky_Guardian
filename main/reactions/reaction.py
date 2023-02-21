@@ -1,6 +1,6 @@
 from sensoryState import SensoryState
 import numpy as np
-# from drone import Drone
+from drone import State
 import time as t
 from enum import IntEnum
 
@@ -25,7 +25,6 @@ class blockingReaction:
 ### Specific Reaction Definitions
 # reacting to a specific object
 class flipOnBanana(blockingReaction):
-
     def react(self, drone, input, currentMovement = np.zeros((4,1))):
         if input.visibleObjects is not None:
             for object in input.visibleObjects:
@@ -34,10 +33,8 @@ class flipOnBanana(blockingReaction):
                     drone.flip_left()
 
 class bobOnShoe(blockingReaction):
-
     def react(self,drone,input, currentMovement = np.zeros((4,1))):
         if input.visibleObjects is not None:
-
             for object in input.visibleObjects:
                 if(int(object[1]) == vision_class.shoe):
                     print('Shoe Detected: Bobbing')
@@ -47,29 +44,34 @@ class bobOnShoe(blockingReaction):
                     t.sleep(1)
                     return
 
+class pauseOnPerson(blockingReaction):
+    def react(self,drone,input, currentMovement = np.zeros((4,1))):
+        if input.visibleObjects is not None:
+            for object in input.visibleObjects:
+                if(int(object[1]) == vision_class.person):
+                    drone.opstate = State.Hover
+                    return
+
 class followCellPhone(movementReaction):
-    
     def react(self, input: SensoryState, currentMovement: np.array):
         res = np.zeros((4,1))
         if input.visibleObjects is not None:
             for object in input.visibleObjects:
                 if(int(object[1]) == int(vision_class.cell_phone)):
                     imgWidth = input.image.shape[0]
-                    res[3] = -2*imgWidth*(.5-object[3])
+                    res[3] = -.3*imgWidth*(.5-object[3])
                     print(f'FOLLOWING CELL PHONE: Yaw: {res[3]}')
         return res
     
 class runFromBanana(movementReaction):
-
     def react(self, input: SensoryState, currentMovement: np.array):
         res = np.zeros((4,1))
         if input.visibleObjects is not None:
             for object in input.visibleObjects:
-                print(int(object[1]))
-                if(int(object[1]) == int(vision_class.cell_phone)):
+                if(int(object[1]) == int(vision_class.banana)):
                     imgWidth = input.image.shape[0]
-                    res[3] = -3*imgWidth*(.5-object[3])
-                    res[1] = -object[5]*10
+                    res[3] = -.3*imgWidth*(.5-object[3]) # yaw
+                    res[1] = -object[5]*.3 # move back (proportional to object width)
                     print(f'Reverse: {res[1]} Yaw: {res[3]}')
         return res
 

@@ -31,23 +31,24 @@ class State(Enum):
     Doorway = 8
     Scan = 9
     Hover = 10
+    Drift = 11
  
 class Drone(tel.Tello):
     #video I THINK THIS IS DEPRICATED
-    vidCap = None
-    vision = None
+    # vidCap = None
+    # vision = None
 
     #movement
     MAXSPEED = 20
     opState = None
     prevState = None
     hoverDebounce = 0
+    landDebonce = 0
     noiseGenerator = None
     xyNoiseStorage = .5
     thetaStorage = .1
     STOP = np.array([0.0,0.0,0.0,0.0])
     prevDirection = None
-    recentlySentLandCommand = False
     wanderCounter = 20
     randomWanderVec = np.zeros((4,1))
 
@@ -116,11 +117,11 @@ class Drone(tel.Tello):
         self.wanderCounter += 1
         return self.prevDirection
 
-    def __randomWander_butworksmaybe__(self):
+    def __randomWander_simplified__(self):
         if self.wanderCounter >= 20:
-            self.randomWanderVec[0] = rand.randint(-15,15)
-            self.randomWanderVec[1] = rand.randint(-20,20)
-            self.randomWanderVec[3] = rand.randint(-15,15)
+            self.randomWanderVec[0] = rand.randint(-10,10)
+            self.randomWanderVec[1] = rand.randint(-5,12)
+            # self.randomWanderVec[3] = rand.randint(-15,15)
             self.wanderCounter = 0
 
         self.wanderCounter += 1
@@ -129,7 +130,7 @@ class Drone(tel.Tello):
     def __avoidBoundary__(self):
         xBoundaryForceDroneFrame = 0
         yBoundaryForceDroneFrame = 0
-        movementForceMagnitude = 2
+        movementForceMagnitude = 1.2
         yaw = math.radians(self.sensoryState.globalPose[3,0])
         if self.sensoryState.globalPose[0,0] < sensoryState.X_MIN_BOUNDARY:
             error = abs(self.sensoryState.globalPose[0,0]-sensoryState.X_MIN_BOUNDARY)
@@ -157,20 +158,25 @@ class Drone(tel.Tello):
             xBoundaryForceDroneFrame = xBoundaryForceDroneFrame - yBoundaryForce*math.sin(yaw)
             yBoundaryForceDroneFrame = yBoundaryForceDroneFrame + yBoundaryForce*math.cos(yaw)
         
+        yawContribution = 0
+        if yBoundaryForceDroneFrame < 0:
+            yawContribution = yBoundaryForceDroneFrame
+        
         res = np.array([[xBoundaryForceDroneFrame],
                          [yBoundaryForceDroneFrame],
                          [0],
-                         [0],])
+                         [yawContribution],])
         if DEBUG_PRINTS:
             print(f' Total Boundary Force: X: {res[0,0]} Y: {res[1,0]}')
         return res
     
     def operatorOverride(self):
         # land interrupt
-        if(key.is_pressed('l') and not self.recentlySentLandCommand):
+        if(key.is_pressed('l') and not self.hoverDebounce > 10):
             self.opState = State.Land
-            self.recentlySentLandCommand = True
+            self.hoverDebounce = 0
             return
+        self.hoverDebounce += 1
         if key.is_pressed('w'):
             self.move_forward(100)
             t.sleep(1)
@@ -186,6 +192,8 @@ class Drone(tel.Tello):
         if key.is_pressed('r'):
             self.opState = State.Wander
             return
+        if key.is_pressed('d'):
+            self.opState = State.Drift
     #endregion
     #region MOVEMENT FUNCTIONS
     def stop(self): # lands, cuts stream and connection with drone
@@ -223,7 +231,7 @@ class Drone(tel.Tello):
         # Checks the battery charge before takeoff
         if self.opState.Grounded:
             print("Battery Charge: " + str(self.sensoryState.getSensorReading("bat")))
-            if self.sensoryState.getSensorReading("bat") > 50:
+            if self.sensoryState.getSensorReading("bat") > 30:
                 BatCheck = True
             else:
                 BatCheck = False
@@ -406,8 +414,6 @@ class Drone(tel.Tello):
                             print("Telemetry Checks Successful")
                             print('Taking off') 
                             self.takeoff()
-                            # t.sleep(2)
-                            # self.move_up(20)
                             self.opState = State.Hover # Hover for now, eventually scanning
                         else:
                             self.opState = State.Grounded
@@ -436,22 +442,31 @@ class Drone(tel.Tello):
                     # self.sensoryState.globalPose[0,0] = 35
                     # self.sensoryState.globalPose[1,0] = 30
                     # self.sensoryState.globalPose[3,0] = -90
-                    self.moveDirection(np.array([[0],[20],[0],[0]]))
-                    # self.moveDirection(np.add(np.array([[0],[20],[0],[0]]),self.__avoidBoundary__()))
+                    # self.moveDirection(np.array([[0],[20],[0],[0]]))
+                    # self.moveDirection(np.add(np.array([[0],[10],[0],[0]]),self.__avoidBoundary__()))
                     if(DEBUG_PRINTS):
                         print("Wandering")
-                    # wanderVec = np.add(self.__randomWander_butworksmaybe__(),self.__avoidBoundary__())
-                    # print(wanderVec)
-                    # if self.behavior is not None:
-                    #     reactionMovement = self.behavior.runReactions(drone = self, input = self.sensoryState, currentMovement = wanderVec)
-                    #     wanderVec = np.add(wanderVec, reactionMovement)
-                    # self.moveDirection(wanderVec)
+                    wanderVec = np.add(self.__randomWander_simplified__(),self.__avoidBoundary__())
+                    if self.behavior is not None:
+                        reactionMovement = self.behavior.runReactions(drone = self, input = self.sensoryState, currentMovement = wanderVec)
+                        wanderVec = np.add(wanderVec, reactionMovement)
+                    self.moveDirection(wanderVec)
 
                 case State.Hover:
                     if WITH_DRONE:
                         self.hover()
                     else:
                         print('Hovering')
+
+                case State.Drift:
+                    if WITH_DRONE:
+                        wanderVec = self.__avoidBoundary__()
+                        if self.behavior is not None:
+                            reactionMovement = self.behavior.runReactions(drone = self, input = self.sensoryState, currentMovement = wanderVec)
+                            wanderVec = np.add(wanderVec, reactionMovement)
+                        self.moveDirection(wanderVec)
+
+
         self.stop()
         cv2.destroyAllWindows()
 
