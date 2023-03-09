@@ -13,7 +13,7 @@ from behaviors.behavior import behaviorFramework
 from refresh_tracker import RefreshTracker, State
 
 DEBUG_PRINTS = True
-WITH_DRONE = True
+WITH_DRONE = False
 WITH_CAMERA = True
 RECORD_SENSOR_STATE = True
 
@@ -367,8 +367,8 @@ class Drone(tel.Tello):
 
     def operate(self):
         # creating window
-        if WITH_CAMERA:
-            cv2.namedWindow('test', cv2.WINDOW_NORMAL)
+        # if WITH_CAMERA:
+        #     cv2.namedWindow('test', cv2.WINDOW_NORMAL)
 
         while cv2.waitKey(20) != 27: # Escape
             #sensing
@@ -377,8 +377,9 @@ class Drone(tel.Tello):
                     self.sensoryState.update(self.get_current_state())
                 else:
                     self.sensoryState.update()
-                if self.sensoryState.returnedImage:
-                    cv2.imshow('test',self.sensoryState.image)
+                # if self.sensoryState.returnedImage:
+                    # cv2.imshow('test',self.sensoryState.image)
+
             # self.refreshTracker.update()
             # self.refreshTracker.printAVG()
             

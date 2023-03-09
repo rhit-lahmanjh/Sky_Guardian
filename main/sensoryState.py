@@ -52,6 +52,9 @@ class SensoryState():
         self.videoCapture = cv2.VideoCapture(0)
         self.videoAnalyzer = VideoAnalyzer()
 
+    def getFrame(self):
+        return self.returnedImage, self.image
+        
     def update(self,currentReadings = None):
         if self.WITH_DRONE:
             for key in currentReadings:
