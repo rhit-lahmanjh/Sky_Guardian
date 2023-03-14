@@ -304,7 +304,9 @@ class Drone(tel.Tello):
         return all(self.telemetryCheck.values())
 
     def checkNoPad(self):
-        self.get_mission_pad_id()
+        # Function to check for Pad ID, and switch states accordingly
+        if self.get_mission_pad_id() == 0:
+            self.opState = State.NoPad
 
 
     #region TESTING
@@ -428,6 +430,7 @@ class Drone(tel.Tello):
                     if(DEBUG_PRINTS):
                         print('Scanning')
                     # self.fullScan()
+                    self.checkNoPad()
                     continue
 
                 case State.Wander:
@@ -444,6 +447,7 @@ class Drone(tel.Tello):
                         reactionMovement = self.behavior.runReactions(drone = self, input = self.sensoryState, currentMovement = wanderVec)
                         wanderVec = np.add(wanderVec, reactionMovement)
                     self.moveDirection(wanderVec)
+                    self.checkNoPad()
 
                 case State.Hover:
                     if WITH_DRONE:
@@ -458,6 +462,7 @@ class Drone(tel.Tello):
                             reactionMovement = self.behavior.runReactions(drone = self, input = self.sensoryState, currentMovement = wanderVec)
                             wanderVec = np.add(wanderVec, reactionMovement)
                         self.moveDirection(wanderVec)
+                        self.checkNoPad()
 
                 case State.NoPad:
                     # State when no MissionPad is detected
