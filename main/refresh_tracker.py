@@ -16,6 +16,7 @@ class State(Enum):
     Scan = 9
     Hover = 10
     Drift = 11
+    NoPad = 12 #enum setup for NoPad state
 
 class RefreshTracker():
     refreshRateQueue = None

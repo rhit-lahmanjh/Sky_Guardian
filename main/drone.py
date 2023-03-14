@@ -1,4 +1,6 @@
 import sys
+import time
+
 import djitellopy as tel
 from perlin_noise import PerlinNoise
 import cv2
@@ -68,7 +70,7 @@ class Drone(tel.Tello):
         elif not WITH_DRONE and WITH_CAMERA:
             self.sensoryState = sensoryState.SensoryState()
             self.sensoryState.setupWebcam()
-            print('seupt')
+            print('setup')
         else:
             self.sensoryState = sensoryState.SensoryState()
 
@@ -301,6 +303,10 @@ class Drone(tel.Tello):
         print("Final Dictionary Value: " + str(self.telemetryCheck.values()))
         return all(self.telemetryCheck.values())
 
+    def checkNoPad(self):
+        self.get_mission_pad_id()
+
+
     #region TESTING
     def dronelessTest(self):
         while cv2.waitKey(20) != 27: # Escape
@@ -453,6 +459,29 @@ class Drone(tel.Tello):
                             wanderVec = np.add(wanderVec, reactionMovement)
                         self.moveDirection(wanderVec)
 
+                case State.NoPad:
+                    # State when no MissionPad is detected
+                    # Mission Pad ID Numbers are Integers
+                    missionPadIDNumber = [1, 2, 3, 4, 5, 6, 7, 8]
+                    if self.get_mission_pad_id() != missionPadIDNumber:
+                        print('Mission Pads not detected')
+                        print('Elapsing 10 seconds to re-acquire pad ID')
+                        # Elapse 10 seconds, give the drone time to reacquire Mission Pad ID
+                        for i in range(10, 0, -1):
+                            missionPadIDNumber = [1, 2, 3, 4, 5, 6, 7, 8]
+                            print(i)
+                            time.sleep(1)
+                            # Check for Mission Pad IDs inside of elapsing time
+                            idNumber = self.get_mission_pad_id()
+                            if idNumber == missionPadIDNumber:
+                                self.opState = State.Wander
+                        # Switch to Landed state after elapsed time
+                        print('No Mission Pad detected. Landing...')
+                        self.opState = State.Land
+                    else:
+                        # Mission Pad detected, switch back to Wander State
+                        print('Mission Pad detected.')
+                        self.opState = State.Wander
 
         self.stop()
         cv2.destroyAllWindows()
