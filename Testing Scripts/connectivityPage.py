@@ -29,6 +29,7 @@ def main(page: ft.Page):
     def droneOneConnect_button(e):
         print("Connecting to Drone 1")
         # Input appropriate FSM drone logic
+
         page.update()
 
     def droneTwoConnect_button(e):
