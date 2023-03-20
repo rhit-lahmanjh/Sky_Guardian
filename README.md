@@ -73,33 +73,45 @@ The code from <a href="https://www.youtube.com/watch?v=58aPh8rKKsk">Azu Technolo
 <details>
 <summary>Finite State Machine</summary>
 <br>
-Overview of Finite State Machine, including the states currently implemented and the functionality in each one. This section will include a state transition diagram below:<br> 
+General control of both drones is organized around a Finite State Machine (FSM). The primary state of wander is implemented alongside a few states that support smooth and safe operation. The general control logic is shown below. NOTE: ADD STATE TRANSITION CONDITIONS AT SOME POINT AND ADD LOST MISSION PAD AS WELL.<br> 
 
-<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/SMPTE_Color_Bars.svg/1200px-SMPTE_Color_Bars.svg.png" width="500">
+<img src="imgs/control_loop.png" width="500">
 
 </details> 
 
 <details>
 <summary>Reactive Control Through Potential Fields</summary>
 <br>
-This section will introduce the concept of reactive control, showing a diagram below with the mission pads and both drones.<br> 
+The primary path planning approach for Sky Guardian lies in reactive control LINK through potential fields LINK. In order to allow the drones to wander in a constrained space, Tello mission pads are utitilized in a pre-defined map. These mission pads allow the drone to localize and respond appropriately when moving out of intended airspace. BELOW: diagram of drone measuring it's location and drone being pushed into the space CURRENTLY PLACEHOLDER.<br> 
 
-
-<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/SMPTE_Color_Bars.svg/1200px-SMPTE_Color_Bars.svg.png" width="500">
+<img src="imgs/mission_pad_blank.png" width="500">
 
 <br> 
-The next paragraph will give a brief overview of the two types of rection we've defined: Blocking and movement, as well as the difference between behaviors and reactions.
+Sky Guardian provides an outline for implementing various reactions to certain stimuli. For our purposes, reactions are individual responses to certain stimuli (ie, the drone detects a banana) and behaviors are sets of those reactions. We have defined two types of reactions: blocking and movement. <br>
 
+A blocking reaction initiates a pre-defined set of instructions, during which the drone is incapable of performing any other movements. The trigger blocks the continuation of the control loop for a time. <br>
+
+A movement reaction defines non-blocking instructions. So, it returns a movement force according to the same idea as potential fields. Hence, a drone could tend to fly toward certain objects or away from others. <br>
 </details> 
 
 <details>
 <summary>Object Recognition by OpenCV</summary>
 <br>
-This section will introduce using the pre-trained models via open CV (link to resource on convolutional neural networks). It will describe where in the code this implemented, and what a user would have to change in order to swap out a different model. <br> 
+Sky Guardian performs object recognition by implementing pre-trained Convolutional Neural Networks (CNN) via OpenCV's deep learning module. All video feed analysis is abstracted out into the VideoAnalyzer class from video_analyzer.py. To try a different network from the one provided, all that needs to be done is change which weights and configuration file is loaded //change if needed ADD MORE INFO ABOUT MODEL BEING RAN. <br>
 
-It will also discuss the options that can be tweaked: confidence level and filtering out the noise of false detections (assuming this is implemented by the end of the year) <br> 
+The CNN outputs several pieces of information about the objects detected. It's in the format of a Nx7 matrix, sorted in order of confidence. The indexes are shown below: <bv>
 
-If we implement by the end of the year, it will also describe our approach to running inference through the GPU (installation requirements will be covered below) <br> 
+0: None
+1: Class Label (default in reference)
+2: Confidence Level
+3: X bounding box coordinate
+4: Y bounding box coordinate
+5: bounding box width
+6: bounding box height
+
+The VideoAnalyzer automatically filters out detectiosn with a low confidence score, according to the default set in its global variables. //Addition: possibly add info about filtering if implemented <br>
+
+CUDA: If we implement by the end of the year, it will also describe our approach to running inference through the GPU (installation requirements will be covered below) <br> 
 </details> 
 
 <details>
@@ -227,6 +239,7 @@ This section will cover how to set up the router, connect your computer to it, c
 ## How to run requirements
 This section will walk the user through setting up the environment through anaconda
 ## Setting up the Mission Pads
+For Sky Guardian to work as expected, it's important to setup the mission pads as the drone expects to see them. This layout is shown below, where orientation, spacing and layout are important. Should you wish to adjust the spacing between the pads, this is found in the SensoryState class. NOTE: Because of observed inconsistency with the drone correctly measuring the yaw, the drone expects to begin facing the X direction as shown below.
 This section will include a graphic as to how to setup the mission pad layout, and point to the correct section of code (Currently in SensoryState.py, but should likely be moved) where they can create custom mission pad layouts.
 
 # Examples
