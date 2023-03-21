@@ -1,6 +1,6 @@
 import cv2
-# import onnx
-# import onnxruntime
+import onnx
+import onnxruntime
 import numpy as np
 
 
