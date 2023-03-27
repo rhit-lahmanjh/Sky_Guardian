@@ -8,7 +8,12 @@ import threading
 # tello_address = ('192.168.10.1', 8889)
 # local_address = ('', 9000)
 
-# This is updated Connectivity page after the Onnx Github implosion
+# Incorporate Function to send messages to the Tello drone
+# myTello.py lines 21 - 27
+
+# Incorporate Function that listens for messages from Tello and prints them to the screen
+# myTello.py lines 30 - 41
+
 def main(page: ft.Page):
 
     page.title = "Drone Connection Page"
@@ -16,24 +21,60 @@ def main(page: ft.Page):
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
 
-    # def connect_button(e):
-    #     if not t.value:
-    #         t.error_text = "IP Address Format: 192.168.10.1"
-    #         page.update()
-    #     else:
-    #         t.value = f"Textboxes values are: '{tb1.value}', '{tb2.value}'."
-    #         page.update()
-    #         page.add(ft.Text(tb1.value))
-    #         # Connect to drone
-
     def droneOneConnect_button(e):
+
         print("Connecting to Drone 1")
+        # User input should be the string input
+        tello_address = ('192.168.0.248', 8889)
         # Input appropriate FSM drone logic
+        # Create a UDP connection that we'll send the command to tello drone
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        # Let's be explicit and bind to a local port on our machine where Tello can send messages
+        sock.bind(('', 9000))
+
+        # Send Tello into command mode
+        #send("command")
+        # Receive response from Tello
+        #receive()
+        # Delay 3 seconds before we send the next command
+        #time.sleep(3)
+        # Ask Tello about battery status
+        #send("battery?")
+        # Receive battery response from Tello
+        #receive()
+
+        # input lines 43 - 45
+
         page.update()
 
     def droneTwoConnect_button(e):
+
         print("Connecting to Drone 2")
         # Input appropriate FSM drone logic
+        # User input should be the string IP address
+        tello2_address = ('192.168.0.140', 8889)
+        # Create a UDP connection that we'll send the command to tello drone
+        sock2 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        # Let's be explicit and bind to a local port on our machine where Tello can send
+        sock2.bind(('', 9010))
+        # Send Tello into command mode
+        # send("command")
+        # Receive response from Tello
+        # receive()
+        # Delay 3 seconds before we send the next command
+        # time.sleep(3)
+        # Ask Tello about battery status
+        # send("battery?")
+        # Receive battery response from Tello
+        # receive()
+
+        # input lines 43 - 45
+
+        ## if the messages can be sent and recieved, set a boolean flag to true
+        ## Create a continue button function, and then place its function call within a conditional statement
+        ## boolean flag for both drones has to be true
+        ## Make continue button green color to indicate affirmative action to proceed
+
         page.update()
 
     def window_event(e):
@@ -46,21 +87,14 @@ def main(page: ft.Page):
     page.on_window_event = window_event
 
     def yes_click(e):
+        # close the UDP sockets
+        #sock.close()
+        #sock2.close()
         page.window_destroy()
 
     def no_click(e):
         confirm_dialog.open = False
         page.update()
-
-
-    # # Expand to automatically add IP address fields as the number of drones present is selected from UI
-    # t = ft.Text()
-    # tb1 = ft.TextField(label="Enter Drone 1 IP Address")
-    # b1 = ft.ElevatedButton(text="Connect to Drone", on_click=connect_button)
-    # tb2 = ft.TextField(label="Enter Drone 2 IP Address")
-    # b2 = ft.ElevatedButton("Connect to Drone", on_click=connect_button)
-    # page.add(tb1, b1, tb2, b2)
-
 
     droneOneConnectionItems = [
         ft.TextField(label="Enter Drone 1 IP Address"),
@@ -80,7 +114,6 @@ def main(page: ft.Page):
                     droneOneConnectionItems,
                     alignment=ft.MainAxisAlignment.CENTER),
                 )
-
         ]
     )
 
@@ -103,7 +136,7 @@ def main(page: ft.Page):
         ],
         spacing=50,
         alignment=ft.MainAxisAlignment.CENTER,
-    )
+      )
     )
 
     confirm_dialog = ft.AlertDialog(
@@ -116,8 +149,6 @@ def main(page: ft.Page):
         ],
         actions_alignment=ft.MainAxisAlignment.END,
     )
-
-
 
     page.add(ft.Text('Try exiting this app by clicking window "Close" button'))
 

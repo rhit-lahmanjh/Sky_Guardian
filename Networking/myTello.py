@@ -8,7 +8,7 @@ import threading
 tello_address = ('192.168.0.248', 8889)
 tello2_address = ('192.168.0.140',8889)
 
-# Create a UDP connection that we'll send the command to
+# Create a UDP connection that we'll send the command to tello drone
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock2 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
