@@ -5,11 +5,15 @@ import numpy as np
 import urllib
 import matplotlib.pyplot as plt
 import time as t
+from video_analyzer import VideoAnalyzer
 
 # load and define model
 modelFile = "CV_testing/models/ssd_mobilenet_v2_coco_2018_03_29/frozen_inference_graph.pb"
 configFile = "CV_testing/models/ssd_mobilenet_v2_coco_2018_03_29.pbtxt"
 classFile = "CV_testing/coco_class_labels.txt"
+
+yolo3Config = "CV_testing/yolo3_config.cfg"
+yolo3Weights = "CV_testing/yolov3.weights"
 
 #read class labels
 with open(classFile) as fp:
@@ -17,10 +21,14 @@ with open(classFile) as fp:
 print(labels)
 
 #read TF network and create net object (can load different networks)
-net = cv2.dnn.readNetFromTensorflow(modelFile, configFile)
+# netCuda = cv2.dnn.readNetFromTensorflow(modelFile, configFile)
+# netCuda = cv2.dnn.readNet(yolo3Weights,yolo3Config)
+netCuda = cv2.dnn.readNetFromONNX("yolov5n6.onnx")
+netCuda.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
+netCuda.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
 
 #define object detection function
-def detect_objects(net,im = None):
+def detect_objects(netCuda,im = None):
     if im is None:
         print('No image to read')
         return null
@@ -28,14 +36,23 @@ def detect_objects(net,im = None):
     yPix = im.shape[0]
     xPix = im.shape[1]
 
+    print(f'Y: {yPix} X: {xPix}')
+
+    newHeight = 640
+    newWidth = 640
+
+    #resize
+    im = cv2.resize(im,dsize=(newHeight,newWidth),interpolation=cv2.INTER_LINEAR)
+    print(f'newY : {im.shape[0]} newX: {im.shape[1]}')
+
     # Create a "Blob?" whatever that is
     blob = cv2.dnn.blobFromImage(im,1.0, size = (yPix,xPix), mean = (0,0,0), swapRB=True, crop=False)
 
     #Pass blob to network
-    net.setInput(blob)
+    netCuda.setInput(blob)
     
     # Perform Prediction
-    return net.forward()
+    return netCuda.forward()
 
 
 FONTFACE = cv2.FONT_HERSHEY_SIMPLEX
@@ -89,26 +106,26 @@ while cv2.waitKey(1) != 27: # Escape
     has_frame, frame = source.read()
     if not has_frame:
         break
-    src = cv2.cuda_GpuMat()
-    src.upload(frame)
+    # src = cv2.cuda_GpuMat()
+    # src.upload(frame)
 
-    clahe = cv2.cuda.createCLAHE(clipLimit=5.0, tileGridSize=(8, 8))
-    dst = clahe.apply(src, cv2.cuda_Stream.Null())
+    # clahe = cv2.cuda.createCLAHE(clipLimit=5.0, tileGridSize=(8, 8))
+    # dst = clahe.apply(src, cv2.cuda_Stream.Null())
 
-    result = dst.download()
+    # result = dst.download()
 
-    # startTime = t.time_ns()
-    # objects = detect_objects(net,frame)
-    # t1 = t.time_ns()
-    # print(f'Inference Time: {(t1-startTime)/1000000}')
+    startTime = t.time_ns()
+    objects = detect_objects(netCuda,frame)
+    # print(f'newY : {frame.shape[0]} newX: {frame.shape[1]}')
+    t1 = t.time_ns()
+    print(f'Inference Time: {(t1-startTime)/1000000}')
+    # print(f'Using: {netCuda}')
     # display_objects(frame, objects,threshold=.5)
-    # t2= t.time_ns()
-    # print(f'Display Objects Time: {(t2-t1)/1000000}')
-    # t3=t.time_ns()
-    cv2.imshow(win_name, result)
-    # print(f'Display Time: {(t3-t2)/1000000}')
-
-
+    t2= t.time_ns()
+    print(f'Display Objects Time: {(t2-t1)/1000000}')
+    t3=t.time_ns()
+    cv2.imshow(win_name, frame)
+    print(f'Display Time: {(t3-t2)/1000000}')
 
 source.release()
 cv2.destroyWindow(win_name)
