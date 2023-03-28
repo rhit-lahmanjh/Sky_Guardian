@@ -32,8 +32,8 @@ def receive():
     try:
       response1, ip_address = sock.recvfrom(128)
       response2, ip_address = sock2.recvfrom(128)
-      print("Received message from Tello Joseph: " + response1.decode(encoding='utf-8'))
-      print("Received message from Tello Arvind: " + response2.decode(encoding='utf-8'))
+      print("Received message from Tello One: " + response1.decode(encoding='utf-8'))
+      print("Received message from Tello Two: " + response2.decode(encoding='utf-8'))
     except Exception as e:
       sock.close()
       sock2.close()
@@ -41,7 +41,7 @@ def receive():
       break
 
 receiveThread = threading.Thread(target=receive)
-receiveThread.daemon  = True
+receiveThread.daemon = True
 receiveThread.start()
 
 
