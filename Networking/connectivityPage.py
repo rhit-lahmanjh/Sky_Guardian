@@ -1,18 +1,11 @@
 import flet as ft
-import djitellopy
 import socket
 import time
 import threading
-#from drone import (Drone, State)
+import myTello
 
 # tello_address = ('192.168.10.1', 8889)
 # local_address = ('', 9000)
-
-# Incorporate Function to send messages to the Tello drone
-# myTello.py lines 21 - 27
-
-# Incorporate Function that listens for messages from Tello and prints them to the screen
-# myTello.py lines 30 - 41
 
 def main(page: ft.Page):
 
@@ -24,26 +17,29 @@ def main(page: ft.Page):
     def droneOneConnect_button(e):
 
         print("Connecting to Drone 1")
-        # User input should be the string input
-        tello_address = ('192.168.0.248', 8889)
+        # User input should be the string or char input to the tello address
+        userIPaddress = str(e.control.value)
+        tello_address = (userIPaddress, 8889)
         # Input appropriate FSM drone logic
         # Create a UDP connection that we'll send the command to tello drone
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         # Let's be explicit and bind to a local port on our machine where Tello can send messages
         sock.bind(('', 9000))
 
-        # Send Tello into command mode
-        #send("command")
-        # Receive response from Tello
-        #receive()
-        # Delay 3 seconds before we send the next command
-        #time.sleep(3)
-        # Ask Tello about battery status
-        #send("battery?")
-        # Receive battery response from Tello
-        #receive()
+        receiveThread = threading.Thread(target=myTello.receive)
+        receiveThread.daemon = True
+        receiveThread.start()
 
-        # input lines 43 - 45
+        # Send Tello into command mode
+        myTello.send("command")
+        # Receive response from Tello
+        myTello.receive()
+        # Delay 3 seconds before we send the next command
+        time.sleep(3)
+        # Ask Tello about battery status
+        myTello.send("battery?")
+        # Receive battery response from Tello
+        myTello.receive()
 
         page.update()
 
@@ -53,22 +49,28 @@ def main(page: ft.Page):
         # Input appropriate FSM drone logic
         # User input should be the string IP address
         tello2_address = ('192.168.0.140', 8889)
+
         # Create a UDP connection that we'll send the command to tello drone
         sock2 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         # Let's be explicit and bind to a local port on our machine where Tello can send
         sock2.bind(('', 9010))
-        # Send Tello into command mode
-        # send("command")
-        # Receive response from Tello
-        # receive()
-        # Delay 3 seconds before we send the next command
-        # time.sleep(3)
-        # Ask Tello about battery status
-        # send("battery?")
-        # Receive battery response from Tello
-        # receive()
 
-        # input lines 43 - 45
+        receiveThread = threading.Thread(target=myTello.receive)
+        receiveThread.daemon = True
+        receiveThread.start()
+
+        # Send Tello into command mode
+        myTello.send("command")
+        # Receive response from Tello
+        myTello.receive()
+        # Delay 3 seconds before we send the next command
+        time.sleep(3)
+        # Ask Tello about battery status
+        myTello.send("battery?")
+        # Receive battery response from Tello
+        myTello.receive()
+
+
 
         ## if the messages can be sent and recieved, set a boolean flag to true
         ## Create a continue button function, and then place its function call within a conditional statement
@@ -97,12 +99,14 @@ def main(page: ft.Page):
         page.update()
 
     droneOneConnectionItems = [
-        ft.TextField(label="Enter Drone 1 IP Address"),
+        # Want to use input from text field
+        ft.TextField(label="Enter Drone 1 IP Address", on_submit=droneOneConnect_button),
         ft.ElevatedButton(text="Connect to Drone", on_click=droneOneConnect_button)
     ]
 
     droneTwoConnectionItems = [
-        ft.TextField(label="Enter Drone 2 IP Address", ),
+        # Want to use input from text field
+        ft.TextField(label="Enter Drone 2 IP Address", on_submit=droneTwoConnect_button),
         ft.ElevatedButton(text="Connect to Drone", on_click=droneTwoConnect_button)
     ]
 
@@ -150,6 +154,6 @@ def main(page: ft.Page):
         actions_alignment=ft.MainAxisAlignment.END,
     )
 
-    page.add(ft.Text('Try exiting this app by clicking window "Close" button'))
+    page.add(ft.Text('Exit app via "Close" button'))
 
 ft.app(target=main)
