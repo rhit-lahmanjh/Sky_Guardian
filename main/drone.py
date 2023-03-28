@@ -6,7 +6,6 @@ from perlin_noise import PerlinNoise
 import cv2
 import keyboard as key
 import time as t
-from collections import deque
 import numpy as np
 import math
 import random as rand
@@ -22,9 +21,6 @@ RECORD_SENSOR_STATE = True
 clamp = lambda n, minn, maxn: max(min(maxn, n), minn)
  
 class Drone(tel.Tello):
-    #video I THINK THIS IS DEPRICATED
-    # vidCap = None
-    # vision = None
 
     #movement
     MAXSPEED = 20
@@ -39,7 +35,6 @@ class Drone(tel.Tello):
     prevDirection = None
     wanderCounter = 20
     randomWanderVec = np.zeros((4,1))
-
     behavior: behaviorFramework = None
 
     #sensor Data
@@ -49,7 +44,7 @@ class Drone(tel.Tello):
     refreshTracker = None
 
     def __init__(self,identifier = None, behavior: behaviorFramework = None):
-        cv2.VideoCapture()
+        # cv2.VideoCapture()
         self.identifier = identifier
         self.opState = State.Grounded
         if behavior is not None:
@@ -308,7 +303,6 @@ class Drone(tel.Tello):
         if self.get_mission_pad_id() == 0:
             self.opState = State.NoPad
 
-
     #region TESTING
     def dronelessTest(self):
         while cv2.waitKey(20) != 27: # Escape
@@ -385,8 +379,8 @@ class Drone(tel.Tello):
                     self.sensoryState.update(self.get_current_state())
                 else:
                     self.sensoryState.update()
-                # if self.sensoryState.returnedImage:
-                    # cv2.imshow('test',self.sensoryState.image)
+                if self.sensoryState.returnedImage:
+                    cv2.imshow('test',self.sensoryState.image)
 
             # self.refreshTracker.update()
             # self.refreshTracker.printAVG()

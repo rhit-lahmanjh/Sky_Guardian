@@ -12,9 +12,9 @@ else:
     print("Using CPU")
 device = "cpu"
 
-model = torch.load("yolov8.pt")
-model.eval() #Remember that you must call model.eval() to set dropout and batch normalization layers to evaluation mode before running inference. Failing to do this will yield inconsistent inference results.
-model.to(device)
+model = YOLO("yolov8m.pt")
+# model.eval() #Remember that you must call model.eval() to set dropout and batch normalization layers to evaluation mode before running inference. Failing to do this will yield inconsistent inference results.
+# model.to(device)
 
 
 s = 0

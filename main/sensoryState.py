@@ -12,9 +12,6 @@ Y_MIN_BOUNDARY = 0
 Y_MAX_BOUNDARY = 150
 DEBUG_PRINTS = True
 
-#CV Settings
-CONFIDENCE_THRESHOLD = .6
-
 class SensoryState():
     globalPose = np.ones((4,1))
     missionPadShift = np.array([[0,0],
@@ -87,31 +84,15 @@ class SensoryState():
             self.__clearBuffer__(self.videoCapture)
             self.returnedImage, self.image = self.videoCapture.retrieve()
             if self.returnedImage:
-                tstart = t.time()
-                self.look_for_objects(self.image)
-                tend = t.time()
-                # print(f'time:{tend-tstart}')
+                [self.visibleObjects,self.image] = self.videoAnalyzer.detectObjects(self.image)
 
     def __clearBuffer__(self, cap):
         """ Emptying buffer frame """
         while True:
             start_time = t.time()
-            grabbed = cap.grab()
+            cap.grab()
             if t.time()-start_time > .02:
                 break
-
-    def look_for_objects(self,img):
-        # print('Seeing')
-        objects = self.videoAnalyzer.detect_objects(img)
-        if objects is not None:
-            self.visibleObjects.clear()
-            for object in objects[0,0,:,:]:
-                if object[2] < CONFIDENCE_THRESHOLD:
-                    break
-                self.visibleObjects.append(object)
-        self.videoAnalyzer.outline_objects_on_image(img, self.visibleObjects)
-
-    #def printStatus(self):
 
     def getSensorReading(self,sensor, average = False):
         """Reads most recent appropriate sensor reading, either most recent value or most recent averaged value

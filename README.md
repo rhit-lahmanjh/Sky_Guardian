@@ -4,7 +4,7 @@
 
 SkyGuardian is an open-source codebase for people to learn drone control topics made by senior students at Rose-Hulman Institute of Technology located in Terre Haute, IN.
 
-![Header](header.png)
+![Header](imgs\header.png)
 
 # Table of Contents
 

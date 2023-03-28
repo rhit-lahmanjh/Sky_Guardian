@@ -10,7 +10,8 @@ else:
     print("Converted for CPU")
 device = "cpu"
 
-model = torch.load("yolov8s.pt").recall()
+model = torch.load("yolov8s.pt")
+
 
 torch.onnx.export(model,                                # model being run
                   torch.randn(1, 28, 28).to(device),    # model input (or a tuple for multiple inputs)
