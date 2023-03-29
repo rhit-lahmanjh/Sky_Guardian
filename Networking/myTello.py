@@ -18,10 +18,10 @@ sock2.bind(('',9010))
 
 
 # Function to send messages to Tello
-def send(message):
+def send(message, tello_address_input):
   try:
-    sock.sendto(message.encode(), tello_address)
-    sock2.sendto(message.encode(), tello2_address)
+    sock.sendto(message.encode(), tello_address_input)
+    sock2.sendto(message.encode(), tello_address_input)
     print("Sending message: " + message)
   except Exception as e:
     print("Error sending: " + str(e))
@@ -45,25 +45,25 @@ receiveThread.daemon = True
 receiveThread.start()
 
 
-# Send Tello into command mode
-send("command")
-
-# Receive response from Tello
-# Delay 3 seconds before we send the next command
-time.sleep(3)
-
-send("takeoff")
-
-time.sleep(3)
-
-send("land")
-
-# # Ask Tello about battery status
-# send("ap TP-Link_382E 84662019")
-
-# # Receive battery response from Tello
-# receive()
-print("Mission accomplished my dudes")
-# Close the UDP socket
-sock.close()
-sock2.close()
+# # Send Tello into command mode
+# send("command", )
+#
+# # Receive response from Tello
+# # Delay 3 seconds before we send the next command
+# time.sleep(3)
+#
+# send("takeoff")
+#
+# time.sleep(3)
+#
+# send("land")
+#
+# # # Ask Tello about battery status
+# # send("ap TP-Link_382E 84662019")
+#
+# # # Receive battery response from Tello
+# # receive()
+# print("Mission accomplished my dudes")
+# # Close the UDP socket
+# sock.close()
+# sock2.close()
