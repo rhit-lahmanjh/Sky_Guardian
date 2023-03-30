@@ -1,10 +1,10 @@
 #!/bin/env python
-from drone import Drone
-from refresh_tracker import State
+from drone import (Drone, State)
 import flet as ft
 import djitellopy
 import socket
 import time
+import numpy as np
 import cv2
 import base64
 import threading
@@ -19,40 +19,15 @@ from flet import (
     colors,
     CrossAxisAlignment,
 )
-from behaviors.behavior import behavior1
 
 # tello_address = ('192.168.10.1', 8889)
 # local_address = ('', 9000)
-
-
-# CV2 Window 
-class Countdown(ft.UserControl):
-    def __init__(self,drone):
-        super().__init__()
-        self.drone = drone
-
-    def did_mount(self):
-        self.update_timer()
-
-    def update_timer(self):
-        while True:
-            returned, frame = self.drone.sensoryState.getFrame()
-            if returned:
-                _, im_arr = cv2.imencode('.png', frame)
-                im_b64 = base64.b64encode(im_arr)
-                self.img.src_base64 = im_b64.decode("utf-8")
-            self.update()
-
-    def build(self):
-        self.img = ft.Image(
-            border_radius=ft.border_radius.all(20)
-        )
-        return self.img
         
 def main(page: ft.Page):
     # drone connection
-    drone1 = Drone(identifier = 'test',behavior = behavior1())
-    
+    drone1 = Drone(identifier = 'test', behavior = None)
+    cap = drone1.sensoryState.videoCapture
+
     # Setting up threading
     threads = []
     FSM_thread = threading.Thread(target=drone1.operate)
@@ -73,12 +48,12 @@ def main(page: ft.Page):
         page.update()
 
     def drone1_land(e):
-        print("Drone 1 State: Landing")
-        drone1.opState = State.Land ## Fix
+        print("Drone 1 State: Landed")
+        drone1.opState = State.Landed
         page.update()
     
     def drone2_land(e):
-        print("Drone 2 State: Landing")           
+        print("Drone 2 State: Landed")           
     #     drone2.opState = State.Landed
         page.update()
 
@@ -101,41 +76,41 @@ def main(page: ft.Page):
         # drone2.opState = State.Hover
         page.update()        
 
+    # # CV2 Window 
     # class Countdown(ft.UserControl):
-    #     cv2.namedWindow("Video Stream",cv2.WINDOW_NORMAL)
-    #     cv2.resizeWindow("Video Stream",400,600)
+    #     def __init__(self):
+    #         super().__init__()
 
-	# 	# # AND SAVE THE FILE NAME WITH TIME NOW 
-	# 	# timestamp = str(int(time.time()))
-	# 	# myfileface = str("myCumFaceFile" + "_" + timestamp + '.jpg')
-    #     try:
+    #     def did_mount(self):
+    #         self.update_timer()
+
+    #     def update_timer(self):
     #         while True:
-    #             ret,frame = cap.read()
-    #             cv2.imshow("Webcam",frame)
-    #             myimage.src = ""
-    #             page.update()
+    #             drone1.sensoryState.__clearBuffer__(drone1.sensoryState.videoCapture)
+    #             _, frame = drone1.sensoryState.videoCapture
+    #             # frame = cv2.resize(frame,(400,400))
+    #             _, im_arr = cv2.imencode('.png', frame)
+    #             im_b64 = base64.b64encode(im_arr)
+    #             self.img.src_base64 = im_b64.decode("utf-8")
+    #             self.update()
 
-	# 			# AFTER THAT WAITING YOU INPUT FROM KEYBOARD
-	# 			# key = cv2.waitKey(1)
+    #             # img_b64 = drone1.sensoryState.image
+    #             # print(type(drone1.sensoryState.image))
+    #             # # img_b64 = ndarray_to_b64(np.array(drone1.sensoryState.image).astype('uint8'))
+    #             # self.img = drone1.sensoryState.image
+    #             # self.update()
 
-	# 			# # AND IF YOU PRESS Q FROM YOU KEYBOARD THEN
-	# 			# # THE WEBCAM WINDOW CAN CLOSE 
-	# 			# # AND YOU NOT CAPTURE YOU IMAGE
-	# 			# if key == ord("q"):
-	# 			# 	break
-	# 			# elif key == ord("s"):
-	# 			# 	# AND IF YOU PRESS s FROM YOU KEYBOARD
-	# 			# 	# THE THE YOU CAPTURE WILL SAVE IN FOLDER YOUPHOTO
-	# 			# 	cv2.imwrite(f"youphoto/{myfileface}",frame)
-	# 			# 	# AND SHOW TEXT YOU PICTURE SUCCESS INPUT
-	# 			# 	cv2.putText(frame,"YOU SUCESS CAPTURE GUYS !!!",(10,50),cv2.FONT_HERSHEY_SIMPLEX,1,(0,0,255),2)
-	# 			# 	cv2.imshow("Webcam",frame)
-	# 			# 	cv2.waitKey(3000)
-	# 			# 	folder_path = "youphoto/"
-	# 			# 	myimage.src = folder_path + myfileface
-	# 			# 	page.update()
-	# 			# 	break
+    #     def build(self):
+    #         self.img = ft.Image(
+    #             border_radius=ft.border_radius.all(20)
+    #         )
+    #         return self.img
 
+    # def ndarray_to_b64(ndarray):
+    # # converts a np ndarray to a b64 string readable by html-img tags 
+    #     img = cv2.cvtColor(ndarray, cv2.COLOR_RGB2BGR)
+    #     _, buffer = cv2.imencode('.png', img)
+    #     return base64.b64encode(buffer).decode('utf-8')
 
     drone1_items = [
         ft.Container(width=200, height=75, content=ft.Text("Launch"), on_click=drone1_launch, bgcolor = ft.colors.GREEN_200, alignment=ft.alignment.center), 
@@ -173,7 +148,7 @@ def main(page: ft.Page):
         ]
     )
 
-    cv2window = ft.Card(
+    cv2window =  ft.Card(
             elevation=30,
             content=ft.Container(
                 bgcolor=ft.colors.WHITE24,
@@ -194,6 +169,7 @@ def main(page: ft.Page):
             [
                 drone1_column,
                 drone2_column,
+                cv2window
             ],
             spacing=15,
             alignment=ft.MainAxisAlignment.START,
@@ -202,9 +178,53 @@ def main(page: ft.Page):
         ft.Row(
             controls=[
             ft.Container(width=415, height=75, content=ft.Text("ORDER 66"), on_click=order66, bgcolor = ft.colors.RED, alignment=ft.alignment.center)]
-        ),
-
-        cv2window,
+        )
     )
 
 ft.app(target=main)
+cv2.destroyAllWindows()
+
+class Countdown(ft.UserControl, Drone):
+    cv2.namedWindow("Video Stream",cv2.WINDOW_NORMAL)
+    cv2.resizeWindow("Video Stream", 400, 600)
+    cap = Drone.sensoryState.videoCapture
+    
+    myImage = ft.Image(src=False, width=300, height=300, fit="cover")
+		# # AND SAVE THE FILE NAME WITH TIME NOW 
+		# timestamp = str(int(time.time()))
+		# myfileface = str("myCumFaceFile" + "_" + timestamp + '.jpg')
+    try:
+        while True:
+            ret, frame = cap.read()
+            cv2.imshow("Webcam",frame)
+            myImage.src = ""
+            ft.page.update()
+
+            # AFTER THAT WAITING YOU INPUT FROM KEYBOARD
+            key = cv2.waitKey(1)
+
+            # AND IF YOU PRESS Q FROM YOU KEYBOARD THEN
+            # THE WEBCAM WINDOW CAN CLOSE 
+            # AND YOU NOT CAPTURE YOU IMAGE
+            # if key == ord("q"):
+            #     break
+            # elif key == ord("s"):
+            #     # AND IF YOU PRESS s FROM YOU KEYBOARD
+            #     # THE THE YOU CAPTURE WILL SAVE IN FOLDER YOUPHOTO
+            #     cv2.imwrite(f"youphoto/{myfileface}",frame)
+            #     # AND SHOW TEXT YOU PICTURE SUCCESS INPUT
+            #     cv2.putText(frame,"YOU SUCESS CAPTURE GUYS !!!",(10,50),cv2.FONT_HERSHEY_SIMPLEX,1,(0,0,255),2)
+            #     cv2.imshow("Webcam",frame)
+            #     cv2.waitKey(3000)
+            #     folder_path = "youphoto/"
+            #     myimage.src = folder_path + myfileface
+            #     page.update()
+            #     break
+            
+            cap.release()
+            cv2.destroyAllWindows()
+            ft.page.update()    
+
+    except Exception as e:
+        print(e)
+        print("Failed")

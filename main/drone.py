@@ -1,17 +1,17 @@
 import sys
-import time
-
 import djitellopy as tel
+from enum import Enum
 from perlin_noise import PerlinNoise
 import cv2
 import keyboard as key
 import time as t
+from collections import deque
 import numpy as np
 import math
 import random as rand
-from sensoryState import SensoryState
+import sensoryState
 from behaviors.behavior import behaviorFramework
-from refresh_tracker import RefreshTracker, State
+from refresh_tracker import RefreshTracker
 
 DEBUG_PRINTS = True
 WITH_DRONE = True
@@ -19,22 +19,38 @@ WITH_CAMERA = True
 RECORD_SENSOR_STATE = True
 
 clamp = lambda n, minn, maxn: max(min(maxn, n), minn)
+
+class State(Enum):
+    Grounded = 1
+    Takeoff = 2
+    Land = 3
+    Wander = 4
+    FollowWalkway = 5
+    FollowHallway = 6
+    TrackPerson = 7
+    Doorway = 8
+    Scan = 9
+    Hover = 10
  
 class Drone(tel.Tello):
+    #video I THINK THIS IS DEPRICATED
+    vidCap = None
+    vision = None
 
     #movement
     MAXSPEED = 20
     opState = None
     prevState = None
     hoverDebounce = 0
-    landDebonce = 0
     noiseGenerator = None
     xyNoiseStorage = .5
     thetaStorage = .1
     STOP = np.array([0.0,0.0,0.0,0.0])
     prevDirection = None
+    recentlySentLandCommand = False
     wanderCounter = 20
     randomWanderVec = np.zeros((4,1))
+
     behavior: behaviorFramework = None
 
     #sensor Data
@@ -44,7 +60,7 @@ class Drone(tel.Tello):
     refreshTracker = None
 
     def __init__(self,identifier = None, behavior: behaviorFramework = None):
-        # cv2.VideoCapture()
+        cv2.VideoCapture()
         self.identifier = identifier
         self.opState = State.Grounded
         if behavior is not None:
@@ -59,52 +75,51 @@ class Drone(tel.Tello):
             #setup video
             if WITH_CAMERA:
                 self.streamon()
-                self.sensoryState = SensoryState(self.get_current_state(),self.get_video_capture())
+                self.sensoryState = sensoryState.SensoryState(self.get_current_state(),self.get_video_capture())
             else:
-                self.sensoryState = SensoryState(self.get_current_state())
+                self.sensoryState = sensoryState.SensoryState(self.get_current_state())
         elif not WITH_DRONE and WITH_CAMERA:
-            self.sensoryState = SensoryState()
+            self.sensoryState = sensoryState.SensoryState()
             self.sensoryState.setupWebcam()
-            print('setup')
+            print('seupt')
         else:
-            self.sensoryState = SensoryState()
+            self.sensoryState = sensoryState.SensoryState()
 
         #setup useful classes
         self.noiseGenerator = PerlinNoise(octaves=1, seed=7)
         self.refreshTracker = RefreshTracker()
 
     #region INTERNAL UTILITY FUNCTIONS
-    # def __randomWander__(self):
-    #     if self.wanderCounter >= 5:
-    #         while(True):
-    #             notZeroPlease = rand.randint(-10,10)
-    #             if(notZeroPlease != 0):
-    #                 break
-    #         self.xyNoiseStorage = 1/notZeroPlease
-    #         self.wanderCounter = 0
-    #     else:
-    #         self.xyNoiseStorage = self.noiseGenerator(self.xyNoiseStorage)
+    def __randomWander__(self):
+        if self.wanderCounter >= 5:
+            while(True):
+                notZeroPlease = rand.randint(-10,10)
+                if(notZeroPlease != 0):
+                    break
+            self.xyNoiseStorage = 1/notZeroPlease
+            self.wanderCounter = 0
+        else:
+            self.xyNoiseStorage = self.noiseGenerator(self.xyNoiseStorage)
 
-    #     # print(f"Noise: {self.xyNoiseStorage}")
-    #     self.thetaStorage = clamp(n=(self.thetaStorage + (math.pi * self.xyNoiseStorage)),minn=-math.pi/2,maxn=math.pi/2)
-    #     # print(f"Theta: {self.thetaStorage}")
+        # print(f"Noise: {self.xyNoiseStorage}")
+        self.thetaStorage = clamp(n=(self.thetaStorage + (math.pi * self.xyNoiseStorage)),minn=-math.pi/2,maxn=math.pi/2)
+        # print(f"Theta: {self.thetaStorage}")
         
-    #     xDir = math.sin(self.thetaStorage)
-    #     yDir = math.cos(self.thetaStorage)
+        xDir = math.sin(self.thetaStorage)
+        yDir = math.cos(self.thetaStorage)
 
-    #     newDirection = np.array([[xDir],[yDir],[0],[xDir]]) # this is not default argument bc using self
+        newDirection = np.array([[xDir],[yDir],[0],[xDir]]) # this is not default argument bc using self
 
-    #     movementVec = newDirection*self.MAXSPEED
-    #     # print(f'Sum {movementVec}')
-    #     self.prevDirection = movementVec
-    #     self.wanderCounter += 1
-    #     return self.prevDirection
+        movementVec = newDirection*self.MAXSPEED
+        # print(f'Sum {movementVec}')
+        self.prevDirection = movementVec
+        self.wanderCounter += 1
+        return self.prevDirection
 
-    def __randomWander_simplified__(self):
-        if self.wanderCounter >= 20:
-            self.randomWanderVec[0] = rand.randint(-10,10)
-            self.randomWanderVec[1] = rand.randint(-5,12)
-            # self.randomWanderVec[3] = rand.randint(-15,15)
+    def __randomWander_butworksmaybe__(self):
+        if self.wanderCounter >= 10:
+            self.randomWanderVec[0] = rand.randint(-15,15)
+            self.randomWanderVec[1] = rand.randint(-15,15)
             self.wanderCounter = 0
 
         self.wanderCounter += 1
@@ -141,25 +156,20 @@ class Drone(tel.Tello):
             xBoundaryForceDroneFrame = xBoundaryForceDroneFrame - yBoundaryForce*math.sin(yaw)
             yBoundaryForceDroneFrame = yBoundaryForceDroneFrame + yBoundaryForce*math.cos(yaw)
         
-        yawContribution = 0
-        if yBoundaryForceDroneFrame < 0:
-            yawContribution = yBoundaryForceDroneFrame
-        
         res = np.array([[xBoundaryForceDroneFrame],
                          [yBoundaryForceDroneFrame],
                          [0],
-                         [yawContribution],])
+                         [0],])
         if DEBUG_PRINTS:
             print(f' Total Boundary Force: X: {res[0,0]} Y: {res[1,0]}')
         return res
     
     def operatorOverride(self):
         # land interrupt
-        if(key.is_pressed('l') and not self.hoverDebounce > 10):
+        if(key.is_pressed('l') and not self.recentlySentLandCommand):
             self.opState = State.Land
-            self.hoverDebounce = 0
+            self.recentlySentLandCommand = True
             return
-        self.hoverDebounce += 1
         if key.is_pressed('w'):
             self.move_forward(100)
             t.sleep(1)
@@ -175,8 +185,6 @@ class Drone(tel.Tello):
         if key.is_pressed('r'):
             self.opState = State.Wander
             return
-        if key.is_pressed('d'):
-            self.opState = State.Drift
     #endregion
     #region MOVEMENT FUNCTIONS
     def stop(self): # lands, cuts stream and connection with drone
@@ -214,7 +222,7 @@ class Drone(tel.Tello):
         # Checks the battery charge before takeoff
         if self.opState.Grounded:
             print("Battery Charge: " + str(self.sensoryState.getSensorReading("bat")))
-            if self.sensoryState.getSensorReading("bat") > 30:
+            if self.sensoryState.getSensorReading("bat") > 50:
                 BatCheck = True
             else:
                 BatCheck = False
@@ -298,11 +306,6 @@ class Drone(tel.Tello):
         print("Final Dictionary Value: " + str(self.telemetryCheck.values()))
         return all(self.telemetryCheck.values())
 
-    def checkNoPad(self):
-        # Function to check for Pad ID, and switch states accordingly
-        if self.get_mission_pad_id() == 0:
-            self.opState = State.NoPad
-
     #region TESTING
     def dronelessTest(self):
         while cv2.waitKey(20) != 27: # Escape
@@ -369,8 +372,8 @@ class Drone(tel.Tello):
 
     def operate(self):
         # creating window
-        # if WITH_CAMERA:
-        #     cv2.namedWindow('test', cv2.WINDOW_NORMAL)
+        if WITH_CAMERA:
+            cv2.namedWindow('test', cv2.WINDOW_NORMAL)
 
         while cv2.waitKey(20) != 27: # Escape
             #sensing
@@ -379,9 +382,8 @@ class Drone(tel.Tello):
                     self.sensoryState.update(self.get_current_state())
                 else:
                     self.sensoryState.update()
-                # if self.sensoryState.returnedImage:
-                #     cv2.imshow('test',self.sensoryState.image)
-
+                if self.sensoryState.returnedImage:
+                    cv2.imshow('test',self.sensoryState.image)
             # self.refreshTracker.update()
             # self.refreshTracker.printAVG()
             
@@ -403,7 +405,9 @@ class Drone(tel.Tello):
                             print("Telemetry Checks Successful")
                             print('Taking off') 
                             self.takeoff()
-                            self.opState = State.Wander
+                            # t.sleep(2)
+                            # self.move_up(20)
+                            self.opState = State.Hover # Hover for now, eventually scanning
                         else:
                             self.opState = State.Grounded
                             print("A Telemetry threshold has been violated. Unsafe takeoff/flight conditions")
@@ -424,57 +428,84 @@ class Drone(tel.Tello):
                     if(DEBUG_PRINTS):
                         print('Scanning')
                     # self.fullScan()
-                    self.checkNoPad()
                     continue
 
                 case State.Wander:
                     if(DEBUG_PRINTS):
                         print("Wandering")
-                    wanderVec = np.add(self.__randomWander_simplified__(),self.__avoidBoundary__())
+                    wanderVec = np.add(self.__randomWander_butworksmaybe__(),self.__avoidBoundary__())
+                    # print(wanderVec)
                     if self.behavior is not None:
                         reactionMovement = self.behavior.runReactions(drone = self, input = self.sensoryState, currentMovement = wanderVec)
                         wanderVec = np.add(wanderVec, reactionMovement)
                     self.moveDirection(wanderVec)
-                    self.checkNoPad()
 
                 case State.Hover:
                     if WITH_DRONE:
                         self.hover()
                     else:
                         print('Hovering')
-
-                case State.Drift:
-                    if WITH_DRONE:
-                        wanderVec = self.__avoidBoundary__()
-                        if self.behavior is not None:
-                            reactionMovement = self.behavior.runReactions(drone = self, input = self.sensoryState, currentMovement = wanderVec)
-                            wanderVec = np.add(wanderVec, reactionMovement)
-                        self.moveDirection(wanderVec)
-                        self.checkNoPad()
-
-                case State.NoPad:
-                    # State when no MissionPad is detected
-                    # Mission Pad ID Numbers are Integers
-                    missionPadIDNumber = [1, 2, 3, 4, 5, 6, 7, 8]
-                    if self.get_mission_pad_id() != missionPadIDNumber:
-                        print('Mission Pads not detected')
-                        print('Elapsing 10 seconds to re-acquire pad ID')
-                        # Elapse 10 seconds, give the drone time to reacquire Mission Pad ID
-                        for i in range(10, 0, -1):
-                            missionPadIDNumber = [1, 2, 3, 4, 5, 6, 7, 8]
-                            print(i)
-                            time.sleep(1)
-                            # Check for Mission Pad IDs inside of elapsing time
-                            idNumber = self.get_mission_pad_id()
-                            if idNumber == missionPadIDNumber:
-                                self.opState = State.Wander
-                        # Switch to Landed state after elapsed time
-                        print('No Mission Pad detected. Landing...')
-                        self.opState = State.Land
-                    else:
-                        # Mission Pad detected, switch back to Wander State
-                        print('Mission Pad detected.')
-                        self.opState = State.Wander
-
         self.stop()
         cv2.destroyAllWindows()
+
+#State Control
+            # # Dynamic Battery Charge, Dynamic Wi-Fi SNR, Dynamic Pitch and Roll Controls
+
+            # # If the drone breaks the max ceiling, it will lower itself below the threshold
+            # if self.getSensorReading("h") > 180:
+            #     print("Drone height is breaking the altitude ceiling.")
+            #     self.move_down(15) # move is in cm
+
+            # # If the drone starts to get bad SNR values, it will move backwards one foot
+            # if self.query_wifi_signal_noise_ratio() < 25:
+            #     print("Drone height is breaking the altitude ceiling.")
+            #     self.move_back(30) # move is in cm
+
+            # # If the drone battery gets below 12%, the drone will land
+            # # Additional Battery Charge safety measure with a higher level implementation
+            # # Adds diversity, in addition to Tello hardware safety features, to how battery temp is monitored
+            # if self.getSensorReading("bat") < 12:
+            #     print("Drone battery charge is very low. Landing...")
+            #     self.land()
+            #     self.opState = State.Landed
+
+            # # If the drone pitch is too high or low in flight, it will hover for 5 seconds to reorient itself
+            # if abs(self.getSensorReading("pitch")) < 45:
+            #     print("Drone pitch is not level. Hovering to regain stability...")
+            #     for i in range(5):
+            #         self.hover()
+            #         break
+
+            # # If the drone pitch is too high or low in flight, it will hover for 5 seconds to reorient itself
+            # if abs(self.getSensorReading("roll")) < 45:
+            #     print("Drone roll is not level. Hovering to regain stability...")
+            #     for i in range(5):
+            #         self.hover()
+            #         break
+
+            # Acceleration Safety Check
+
+
+    # #region REACTIONS
+    # def R_stopOnCellPhone(self, object = None):
+    #     if(object != None and object[1] == 77):
+    #         self.hover()
+
+    # def R_pauseOnPerson(self, object = None):
+    #     # add in logic to get back to previous state
+    #     if(object != None and object[1] == 1):
+    #         self.prevState = self.opState
+    #         self.opState = State.Hover
+
+    # def R_backUpFromPerson(self,object = None):
+    #     if(object != None and object[1] == 1):
+    #         self.move_back(40)
+    # #endregion
+
+
+    # self.moveDirection(self.__randomWander__())
+    # self.sensoryState.globalPose[0,0] = 35
+    # self.sensoryState.globalPose[1,0] = 30
+    # self.sensoryState.globalPose[3,0] = -90
+    # self.moveDirection(np.add(self.__randomWander__(),self.__avoidBoundary__()))
+    # self.moveDirection(np.add(np.array([[0],[10],[0],[0]]),self.__avoidBoundary__()))

@@ -127,12 +127,3 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-
-# Yolo Models
-yolov8n.pt
-yolov8s.pt
-yolov8m.pt
-yolov8l.pt
-yolov8x.pt
-yolov8m.onnx
-yolov8n.onnx

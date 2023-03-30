@@ -27,5 +27,5 @@ class behaviorFramework:
         return res
 
 class behavior1(behaviorFramework):
-    blockingReactions = [rxt.bobOnScissors(),rxt.pauseOnSoccerBall()]
-    movementReactions = [rxt.followCellPhone(), rxt.runFromBanana()]
+    blockingReactions = [rxt.flipOnBanana(), rxt.bobOnShoe()]
+    movementReactions = [rxt.followCellPhone()]

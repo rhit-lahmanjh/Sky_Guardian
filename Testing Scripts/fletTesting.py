@@ -8,22 +8,16 @@ def main(page: ft.Page):
     page.title = "Routes Example"
 
     def route_change(route):
-        ## This is the routing structure to use when merging the connectivity page and the main dashboard
-        ## This portion of the code block will house all of the connectivity page code
         page.views.clear()
         page.views.append(
             ft.View(
                 "/",
                 [
                     ft.AppBar(title=ft.Text("Flet app"), bgcolor=ft.colors.SURFACE_VARIANT),
-                    ## Line logic for routing to main dashboard, page.go() logic is for routing
-                    ## This line inside of conditional statements, for the continue button on the connectivity page
                     ft.ElevatedButton("Visit Store", on_click=lambda _: page.go("/store")),
                 ],
             )
         )
-
-        ## This portion of the code will house all of the main dashboard code
         if page.route == "/store":
             page.views.append(
                 ft.View(
