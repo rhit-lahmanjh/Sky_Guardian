@@ -19,14 +19,14 @@ def main(page: ft.Page):
 
         print("Connecting to Drone 1")
         # User input should be the string or char input to the tello address
-        userIPaddress = str(e.control.value)
+        userIPaddress = str(input1.value)
 
         receiveThread = threading.Thread(target=myTello.receive)
         receiveThread.daemon = True
         receiveThread.start()
 
         # Send Tello into command mode
-        myTello.send("command", userIPaddress)
+        myTello.send("command", (userIPaddress, 8889))
         # Receive response from Tello
         myTello.receive()
         # Delay 3 seconds before we send the next command
@@ -50,14 +50,14 @@ def main(page: ft.Page):
         print("Connecting to Drone 2")
         # Input appropriate FSM drone logic
         # User input should be the string IP address
-        userIPaddress = str(e.control.value)
+        userIPaddress = str(input2.value)
 
         receiveThread = threading.Thread(target=myTello.receive)
         receiveThread.daemon = True
         receiveThread.start()
 
         # Send Tello into command mode
-        myTello.send("command", userIPaddress)
+        myTello.send("command", (userIPaddress, 8889))
         # Receive response from Tello
         myTello.receive()
         # Delay 3 seconds before we send the next command
@@ -100,16 +100,19 @@ def main(page: ft.Page):
     def continueButton(e):
       print("Routing to Dashbord")
 
+    input1 = ft.TextField(label="Enter Drone 1 IP Address", on_submit=droneOneConnect_button)
+
     droneOneConnectionItems = [
         # Want to use input from text field
-
-        ft.TextField(label="Enter Drone 1 IP Address", on_submit=droneOneConnect_button),
+        input1,
         ft.ElevatedButton(text="Connect", on_click=droneOneConnect_button, bgcolor = ft.colors.AMBER)
     ]
 
+    input2 = ft.TextField(label="Enter Drone 2 IP Address", on_submit=droneTwoConnect_button)
+
     droneTwoConnectionItems = [
         # Want to use input from text field
-        ft.TextField(label="Enter Drone 2 IP Address", on_submit=droneTwoConnect_button),
+        input2,
         ft.ElevatedButton(text="Connect", on_click=droneTwoConnect_button, bgcolor = ft.colors.AMBER)
     ]
 
