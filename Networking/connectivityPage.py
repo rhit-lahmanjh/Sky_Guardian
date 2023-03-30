@@ -40,6 +40,7 @@ def main(page: ft.Page):
         myTello.sock.close()
         SuccessfulConnection = True
         if SuccessfulConnection:
+            page.add("Drone 1 Connection Successful")
             page.add(droneContinueButtonRow)
 
         page.update()
@@ -70,6 +71,7 @@ def main(page: ft.Page):
         myTello.sock2.close()
         SuccessfulConnection = True
         if SuccessfulConnection:
+            page.add("Drone 2 Connection Successful")
             page.add(droneContinueButtonRow)
 
         page.update()
@@ -102,17 +104,17 @@ def main(page: ft.Page):
         # Want to use input from text field
 
         ft.TextField(label="Enter Drone 1 IP Address", on_submit=droneOneConnect_button),
-        ft.ElevatedButton(text="Connect", on_click=droneOneConnect_button)
+        ft.ElevatedButton(text="Connect", on_click=droneOneConnect_button, bgcolor = ft.colors.AMBER)
     ]
 
     droneTwoConnectionItems = [
         # Want to use input from text field
         ft.TextField(label="Enter Drone 2 IP Address", on_submit=droneTwoConnect_button),
-        ft.ElevatedButton(text="Connect", on_click=droneTwoConnect_button)
+        ft.ElevatedButton(text="Connect", on_click=droneTwoConnect_button, bgcolor = ft.colors.AMBER)
     ]
 
     droneContinueButtonItems = [
-        ft.ElevatedButton(text="Continue", on_click=continueButton)
+        ft.ElevatedButton(text="Continue", on_click=continueButton, bgcolor = ft.colors.GREEN_200)
     ]
 
     droneOneConnectionRow = ft.Row(
