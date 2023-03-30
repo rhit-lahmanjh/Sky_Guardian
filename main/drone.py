@@ -9,12 +9,12 @@ import time as t
 import numpy as np
 import math
 import random as rand
-import sensoryState
+from sensoryState import SensoryState
 from behaviors.behavior import behaviorFramework
 from refresh_tracker import RefreshTracker, State
 
 DEBUG_PRINTS = True
-WITH_DRONE = False
+WITH_DRONE = True
 WITH_CAMERA = True
 RECORD_SENSOR_STATE = True
 
@@ -59,46 +59,46 @@ class Drone(tel.Tello):
             #setup video
             if WITH_CAMERA:
                 self.streamon()
-                self.sensoryState = sensoryState.SensoryState(self.get_current_state(),self.get_video_capture())
+                self.sensoryState = SensoryState(self.get_current_state(),self.get_video_capture())
             else:
-                self.sensoryState = sensoryState.SensoryState(self.get_current_state())
+                self.sensoryState = SensoryState(self.get_current_state())
         elif not WITH_DRONE and WITH_CAMERA:
-            self.sensoryState = sensoryState.SensoryState()
+            self.sensoryState = SensoryState()
             self.sensoryState.setupWebcam()
             print('setup')
         else:
-            self.sensoryState = sensoryState.SensoryState()
+            self.sensoryState = SensoryState()
 
         #setup useful classes
         self.noiseGenerator = PerlinNoise(octaves=1, seed=7)
         self.refreshTracker = RefreshTracker()
 
     #region INTERNAL UTILITY FUNCTIONS
-    def __randomWander__(self):
-        if self.wanderCounter >= 5:
-            while(True):
-                notZeroPlease = rand.randint(-10,10)
-                if(notZeroPlease != 0):
-                    break
-            self.xyNoiseStorage = 1/notZeroPlease
-            self.wanderCounter = 0
-        else:
-            self.xyNoiseStorage = self.noiseGenerator(self.xyNoiseStorage)
+    # def __randomWander__(self):
+    #     if self.wanderCounter >= 5:
+    #         while(True):
+    #             notZeroPlease = rand.randint(-10,10)
+    #             if(notZeroPlease != 0):
+    #                 break
+    #         self.xyNoiseStorage = 1/notZeroPlease
+    #         self.wanderCounter = 0
+    #     else:
+    #         self.xyNoiseStorage = self.noiseGenerator(self.xyNoiseStorage)
 
-        # print(f"Noise: {self.xyNoiseStorage}")
-        self.thetaStorage = clamp(n=(self.thetaStorage + (math.pi * self.xyNoiseStorage)),minn=-math.pi/2,maxn=math.pi/2)
-        # print(f"Theta: {self.thetaStorage}")
+    #     # print(f"Noise: {self.xyNoiseStorage}")
+    #     self.thetaStorage = clamp(n=(self.thetaStorage + (math.pi * self.xyNoiseStorage)),minn=-math.pi/2,maxn=math.pi/2)
+    #     # print(f"Theta: {self.thetaStorage}")
         
-        xDir = math.sin(self.thetaStorage)
-        yDir = math.cos(self.thetaStorage)
+    #     xDir = math.sin(self.thetaStorage)
+    #     yDir = math.cos(self.thetaStorage)
 
-        newDirection = np.array([[xDir],[yDir],[0],[xDir]]) # this is not default argument bc using self
+    #     newDirection = np.array([[xDir],[yDir],[0],[xDir]]) # this is not default argument bc using self
 
-        movementVec = newDirection*self.MAXSPEED
-        # print(f'Sum {movementVec}')
-        self.prevDirection = movementVec
-        self.wanderCounter += 1
-        return self.prevDirection
+    #     movementVec = newDirection*self.MAXSPEED
+    #     # print(f'Sum {movementVec}')
+    #     self.prevDirection = movementVec
+    #     self.wanderCounter += 1
+    #     return self.prevDirection
 
     def __randomWander_simplified__(self):
         if self.wanderCounter >= 20:
@@ -379,8 +379,8 @@ class Drone(tel.Tello):
                     self.sensoryState.update(self.get_current_state())
                 else:
                     self.sensoryState.update()
-                if self.sensoryState.returnedImage:
-                    cv2.imshow('test',self.sensoryState.image)
+                # if self.sensoryState.returnedImage:
+                #     cv2.imshow('test',self.sensoryState.image)
 
             # self.refreshTracker.update()
             # self.refreshTracker.printAVG()
@@ -428,12 +428,6 @@ class Drone(tel.Tello):
                     continue
 
                 case State.Wander:
-
-                    # self.sensoryState.globalPose[0,0] = 35
-                    # self.sensoryState.globalPose[1,0] = 30
-                    # self.sensoryState.globalPose[3,0] = -90
-                    # self.moveDirection(np.array([[0],[20],[0],[0]]))
-                    # self.moveDirection(np.add(np.array([[0],[10],[0],[0]]),self.__avoidBoundary__()))
                     if(DEBUG_PRINTS):
                         print("Wandering")
                     wanderVec = np.add(self.__randomWander_simplified__(),self.__avoidBoundary__())
@@ -484,47 +478,3 @@ class Drone(tel.Tello):
 
         self.stop()
         cv2.destroyAllWindows()
-
-#State Control
-            # # Dynamic Battery Charge, Dynamic Wi-Fi SNR, Dynamic Pitch and Roll Controls
-
-            # # If the drone breaks the max ceiling, it will lower itself below the threshold
-            # if self.getSensorReading("h") > 180:
-            #     print("Drone height is breaking the altitude ceiling.")
-            #     self.move_down(15) # move is in cm
-
-            # # If the drone starts to get bad SNR values, it will move backwards one foot
-            # if self.query_wifi_signal_noise_ratio() < 25:
-            #     print("Drone height is breaking the altitude ceiling.")
-            #     self.move_back(30) # move is in cm
-
-            # # If the drone battery gets below 12%, the drone will land
-            # # Additional Battery Charge safety measure with a higher level implementation
-            # # Adds diversity, in addition to Tello hardware safety features, to how battery temp is monitored
-            # if self.getSensorReading("bat") < 12:
-            #     print("Drone battery charge is very low. Landing...")
-            #     self.land()
-            #     self.opState = State.Landed
-
-            # # If the drone pitch is too high or low in flight, it will hover for 5 seconds to reorient itself
-            # if abs(self.getSensorReading("pitch")) < 45:
-            #     print("Drone pitch is not level. Hovering to regain stability...")
-            #     for i in range(5):
-            #         self.hover()
-            #         break
-
-            # # If the drone pitch is too high or low in flight, it will hover for 5 seconds to reorient itself
-            # if abs(self.getSensorReading("roll")) < 45:
-            #     print("Drone roll is not level. Hovering to regain stability...")
-            #     for i in range(5):
-            #         self.hover()
-            #         break
-
-            # Acceleration Safety Check
-
-
-    # self.sensoryState.globalPose[0,0] = 35
-    # self.sensoryState.globalPose[1,0] = 30
-    # self.sensoryState.globalPose[3,0] = -90
-    # self.moveDirection(np.add(self.__randomWander__(),self.__avoidBoundary__()))
-    # self.moveDirection(np.add(np.array([[0],[10],[0],[0]]),self.__avoidBoundary__()))

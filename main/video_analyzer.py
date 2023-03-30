@@ -3,8 +3,7 @@ import torch.cuda
 import os.path
 
 class VideoAnalyzer():
-
-    visionNet = []
+    visionNet: YOLO
     netPathList = ["yolov8n.pt", "yolov8s.pt","yolov8m.pt","yolov8l.pt","yolov8x.pt"]
     netIndex = 3
 
