@@ -26,13 +26,14 @@ def main(page: ft.Page):
         receiveThread.start()
 
         # Send Tello into command mode
+        # Need to write to a text file and then read IP address from there in the myTello file
         myTello.send("command", (userIPaddress, 8889))
         # Receive response from Tello
         myTello.receive()
         # Delay 3 seconds before we send the next command
         time.sleep(3)
         # Ask Tello about battery status
-        myTello.send("battery?", userIPaddress)
+        myTello.send("battery?", (userIPaddress, 8889))
         # Receive battery response from Tello
         myTello.receive()
 
@@ -63,7 +64,7 @@ def main(page: ft.Page):
         # Delay 3 seconds before we send the next command
         time.sleep(3)
         # Ask Tello about battery status
-        myTello.send("battery?", userIPaddress)
+        myTello.send("battery?", (userIPaddress, 8889))
         # Receive battery response from Tello
         myTello.receive()
 
