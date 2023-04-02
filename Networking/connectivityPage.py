@@ -1,5 +1,4 @@
 import flet as ft
-import socket
 import time
 import threading
 import myTello
@@ -127,7 +126,7 @@ def main(page: ft.Page):
 
     droneOneConnectionRow = ft.Row(
         [
-            ft.Text(value="Drone 1", style=ft.TextThemeStyle.DISPLAY_SMALL),
+            ft.Text(value="Drone 1", style=ft.TextThemeStyle.DISPLAY_SMALL,text_align=ft.TextAlign.CENTER),
             ft.Container(
                 content=ft.Row(
                     droneOneConnectionItems,
