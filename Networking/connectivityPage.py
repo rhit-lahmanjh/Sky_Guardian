@@ -20,11 +20,11 @@ def main(page: ft.Page):
 
         print("Connecting to Drone 1")
         # User input should be the string or char input to the tello address
-        userIPaddress = str(input1.value)
+        userIPaddress1 = str(input1.value)
         portValue = 8889
-        with open("ip_file.txt", "wb") as file_handler:
-            pickle.dump((userIPaddress, portValue), (file_handler))
-        input
+        with open("ip_fileDrone1.txt", "wb") as file_handler:
+            pickle.dump((userIPaddress1, portValue), (file_handler))
+        input()
 
         receiveThread = threading.Thread(target=myTello.receive)
         receiveThread.daemon = True
@@ -38,7 +38,7 @@ def main(page: ft.Page):
         # Delay 3 seconds before we send the next command
         time.sleep(3)
         # Ask Tello about battery status
-        myTello.send("battery?", (userIPaddress, 8889))
+        myTello.send("battery?")
         # Receive battery response from Tello
         myTello.receive()
 
@@ -56,8 +56,11 @@ def main(page: ft.Page):
         print("Connecting to Drone 2")
         # Input appropriate FSM drone logic
         # User input should be the string IP address
-        userIPaddress = str(input2.value)
+        userIPaddress2 = str(input2.value)
         portValue = 8889
+        with open("ip_fileDrone2.txt", "wb") as file_handler:
+            pickle.dump((userIPaddress2, portValue), (file_handler))
+        input()
 
         receiveThread = threading.Thread(target=myTello.receive)
         receiveThread.daemon = True
@@ -82,11 +85,6 @@ def main(page: ft.Page):
             page.add(droneContinueButtonRow)
 
         page.update()
-
-    ## if the messages can be sent and recieved, set a boolean flag to true
-    ## Create a continue button function, and then place its function call within a conditional statement
-    ## boolean flag for both drones has to be true
-    ## Make continue button green color to indicate affirmative action to proceed
 
     def window_event(e):
         if e.data == "close":
