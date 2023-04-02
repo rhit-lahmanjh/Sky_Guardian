@@ -3,9 +3,20 @@
 import socket
 import time
 import threading
+import pickle
+
+try:
+  with open("ip_file.txt", "rb") as file_handler:
+    try:
+      userIPaddress, portValue = pickle.load(file_handler)
+    except:
+      print("This file has no data")
+except:
+  print("File does not exist")
+input()
 
 # IP and port of Tello
-tello_address = ('192.168.0.248', 8889)
+tello_address = (userIPaddress, portValue)
 tello2_address = ('192.168.0.140',8889)
 
 # Create a UDP connection that we'll send the command to

@@ -3,6 +3,7 @@ import socket
 import time
 import threading
 import myTello
+import pickle
 
 # tello_address = ('192.168.10.1', 8889)
 # local_address = ('', 9000)
@@ -20,6 +21,10 @@ def main(page: ft.Page):
         print("Connecting to Drone 1")
         # User input should be the string or char input to the tello address
         userIPaddress = str(input1.value)
+        portValue = 8889
+        with open("ip_file.txt", "wb") as file_handler:
+            pickle.dump((userIPaddress, portValue), (file_handler))
+        input
 
         receiveThread = threading.Thread(target=myTello.receive)
         receiveThread.daemon = True
@@ -27,7 +32,7 @@ def main(page: ft.Page):
 
         # Send Tello into command mode
         # Need to write to a text file and then read IP address from there in the myTello file
-        myTello.send("command", (userIPaddress, 8889))
+        myTello.send("command")
         # Receive response from Tello
         myTello.receive()
         # Delay 3 seconds before we send the next command
@@ -52,19 +57,20 @@ def main(page: ft.Page):
         # Input appropriate FSM drone logic
         # User input should be the string IP address
         userIPaddress = str(input2.value)
+        portValue = 8889
 
         receiveThread = threading.Thread(target=myTello.receive)
         receiveThread.daemon = True
         receiveThread.start()
 
         # Send Tello into command mode
-        myTello.send("command", (userIPaddress, 8889))
+        myTello.send("command")
         # Receive response from Tello
         myTello.receive()
         # Delay 3 seconds before we send the next command
         time.sleep(3)
         # Ask Tello about battery status
-        myTello.send("battery?", (userIPaddress, 8889))
+        myTello.send("battery?")
         # Receive battery response from Tello
         myTello.receive()
 
