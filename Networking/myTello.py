@@ -3,10 +3,26 @@
 import socket
 import time
 import threading
+import pickle
+
+try:
+  with open("ip_fileDrone1.txt", "rb") as file_handler:
+    try:
+      userIPaddress1, portValue = pickle.load(file_handler)
+    except:
+      print("This file has no data")
+  with open("ip_fileDrone2.txt", "rb") as file_handler:
+    try:
+      userIPaddress2, portValue = pickle.load(file_handler)
+    except:
+      print("This file has no data")
+except:
+  print("File does not exist")
+input()
 
 # IP and port of Tello
-tello_address = ('192.168.0.248', 8889)
-tello2_address = ('192.168.0.140',8889)
+tello_address = (userIPaddress1, portValue)
+tello2_address = (userIPaddress2,portValue)
 
 # Create a UDP connection that we'll send the command to
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -63,7 +79,7 @@ send("land")
 
 # # Receive battery response from Tello
 # receive()
-print("Mission accomplished my dudes")
+print("Connection successfully tested.")
 # Close the UDP socket
 sock.close()
 sock2.close()
