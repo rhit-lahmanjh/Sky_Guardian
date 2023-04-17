@@ -69,7 +69,6 @@ We use threading to allow the GUI to access drone functions while the drone flig
 The code from <a href="https://www.youtube.com/watch?v=58aPh8rKKsk">Azu Technology</a> that creates a modern GUI for an OpenCV window was modified to display the OpenCV Tello video stream through the GUI. This repository is one of few, if not the only, that allows the Tello stremaing window to be viewed through Flet. 
 ---
 </details>
-</details>
 
 <details>
 <summary>Finite State Machine</summary>
@@ -77,10 +76,9 @@ The code from <a href="https://www.youtube.com/watch?v=58aPh8rKKsk">Azu Technolo
 General control of both drones is organized around a Finite State Machine (FSM). The primary state of wander is implemented alongside a few states that support smooth and safe operation. The general control logic is shown below. NOTE: ADD STATE TRANSITION CONDITIONS AT SOME POINT AND ADD LOST MISSION PAD AS WELL.<br> 
 
 <img src="imgs/control_loop.png" width="500">
-
 </details> 
-</details>
 
+<details>
 <summary>Reactive Control Through Potential Fields</summary>
 <br>
 The primary path planning approach for Sky Guardian lies in reactive control LINK through potential fields LINK. In order to allow the drones to wander in a constrained space, Tello mission pads are utitilized in a pre-defined map. These mission pads allow the drone to localize and respond appropriately when moving out of intended airspace. BELOW: diagram of drone measuring it's location and drone being pushed into the space CURRENTLY PLACEHOLDER.<br> 
