@@ -14,6 +14,7 @@ DEBUG_PRINTS = True
 
 class SensoryState():
     globalPose = np.ones((4,1))
+    localPose = np.ones((4,1))
     missionPadShift = np.array([[0,0],
                                 [0,DISTANCE_BETWEEN_MISSION_PADS],
                                 [0,2*DISTANCE_BETWEEN_MISSION_PADS],
@@ -30,6 +31,10 @@ class SensoryState():
                                 [3*DISTANCE_BETWEEN_MISSION_PADS,DISTANCE_BETWEEN_MISSION_PADS],
                                 [3*DISTANCE_BETWEEN_MISSION_PADS,2*DISTANCE_BETWEEN_MISSION_PADS],
                                 [3*DISTANCE_BETWEEN_MISSION_PADS,3*DISTANCE_BETWEEN_MISSION_PADS],])
+    missionPadSection = 0
+    missionPadVisible = 0
+    yawOffset = 0
+    yawOffsetSet = False
     
     sensorReadings = dict()
     videoCapture = None
@@ -64,11 +69,20 @@ class SensoryState():
                 if(len(queue) > 10):
                     queue.popleft()
             padID = currentReadings.get('mid')
+            self.missionPadVisible = padID
             if(padID > 0):
+                if not self.yawOffsetSet:
+                    self.yawOffset = currentReadings.get('yaw')
+                    self.yawOffsetSet = True
                 self.globalPose[0] = currentReadings.get('x') + self.missionPadShift[padID-1,0]
                 self.globalPose[1] = currentReadings.get('y') + self.missionPadShift[padID-1,1]
                 self.globalPose[2] = currentReadings.get('z')
-                self.globalPose[3] = currentReadings.get('yaw') - 90
+                self.globalPose[3] = currentReadings.get('yaw') - self.yawOffset
+                self.localPose[0] = currentReadings.get('x')
+                self.localPose[1] = currentReadings.get('y')
+                self.localPose[2] = currentReadings.get('z')
+                self.localPose[3] = currentReadings.get('yaw') - self.yawOffset
+            
             if DEBUG_PRINTS:
                 print(f"Pad: {padID} X: {self.globalPose[0]} Y: {self.globalPose[1]} Z: {self.globalPose[2]} YAW : {self.globalPose[3]}")
                 # print(f"Shifting by: {self.missionPadShift[padID-1,:]}")
