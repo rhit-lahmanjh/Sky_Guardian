@@ -26,7 +26,8 @@ class VideoAnalyzer():
     def detectObjects(self,img):
         objects = self.visionNet(img,conf=self.confidenceLevel)
         img = objects[0].plot()
-        return objects, img
+
+        return objects[0].boxes.boxes.cpu(), img
 
     def increase_model_size(self):
         if self.netIndex == 5:

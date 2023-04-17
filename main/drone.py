@@ -12,7 +12,7 @@ import random as rand
 from sensoryState import SensoryState
 import sensoryState
 from behaviors.behavior import behaviorFramework
-from refresh_tracker import RefreshTracker
+from refresh_tracker import RefreshTracker, State
 
 DEBUG_PRINTS = True
 WITH_DRONE = False
@@ -50,7 +50,7 @@ class Drone(tel.Tello):
     prevDirection = None
     recentlySentLandCommand = False
     wanderCounter = 20
-    randomWanderVec = np.zeros((4,1))
+    randomWanderVec = np.zeros((4,1)) #NOTE: [x,y,z,yaw]
     swarmVector = np.zeros((4,1))
     behavior: behaviorFramework = None
 
@@ -76,15 +76,15 @@ class Drone(tel.Tello):
             #setup video
             if WITH_CAMERA:
                 self.streamon()
-                self.sensoryState = sensoryState.SensoryState(self.get_current_state(),self.get_video_capture())
+                self.sensoryState = SensoryState(self.get_current_state(),self.get_video_capture())
             else:
-                self.sensoryState = sensoryState.SensoryState(self.get_current_state())
+                self.sensoryState = SensoryState(self.get_current_state())
         elif not WITH_DRONE and WITH_CAMERA:
-            self.sensoryState = sensoryState.SensoryState()
+            self.sensoryState = SensoryState()
             self.sensoryState.setupWebcam()
             print('seupt')
         else:
-            self.sensoryState = sensoryState.SensoryState()
+            self.sensoryState = SensoryState()
 
         #setup useful classes
         self.noiseGenerator = PerlinNoise(octaves=1, seed=7)
@@ -108,31 +108,33 @@ class Drone(tel.Tello):
         yaw = -math.radians(self.sensoryState.globalPose[3,0])
 
         #discontinuous, forces are only applied once the drone passes the boundary
-        if self.sensoryState.globalPose[0,0] < self.sensoryState.X_MIN_BOUNDARY:
-            globalForce[0,0] = movementForceMagnitude*(self.sensoryState.X_MIN_BOUNDARY-self.sensoryState.globalPose[0,0])
-        elif self.sensoryState.globalPose[0,0] > self.sensoryState.X_MAX_BOUNDARY:
-            globalForce[0,0] = movementForceMagnitude*(self.sensoryState.X_MAX_BOUNDARY-self.sensoryState.globalPose[0,0])
+        if self.sensoryState.globalPose[0,0] < sensoryState.X_MIN_BOUNDARY:
+            globalForce[0,0] = movementForceMagnitude*(sensoryState.X_MIN_BOUNDARY-self.sensoryState.globalPose[0,0])
+        elif self.sensoryState.globalPose[0,0] > sensoryState.X_MAX_BOUNDARY:
+            globalForce[0,0] = movementForceMagnitude*(sensoryState.X_MAX_BOUNDARY-self.sensoryState.globalPose[0,0])
 
-        if self.sensoryState.globalPose[1,0] < self.sensoryState.Y_MIN_BOUNDARY:
-            globalForce[1,0] = movementForceMagnitude*(self.sensoryState.Y_MIN_BOUNDARY - self.sensoryState.globalPose[1,0])
-        elif self.sensoryState.globalPose[1] > self.sensoryState.Y_MAX_BOUNDARY:
-            globalForce[1,0] = movementForceMagnitude*(self.sensoryState.Y_MAX_BOUNDARY - self.sensoryState.globalPose[1,0])
+        if self.sensoryState.globalPose[1,0] < sensoryState.Y_MIN_BOUNDARY:
+            globalForce[1,0] = movementForceMagnitude*(sensoryState.Y_MIN_BOUNDARY - self.sensoryState.globalPose[1,0])
+        elif self.sensoryState.globalPose[1] > sensoryState.Y_MAX_BOUNDARY:
+            globalForce[1,0] = movementForceMagnitude*(sensoryState.Y_MAX_BOUNDARY - self.sensoryState.globalPose[1,0])
         
         res = self.transformGlobalToDroneSpace(globalForce,yaw=yaw)
 
         if DEBUG_PRINTS:
-            print(f' Total Boundary Force: X: {res[0,0]} Y: {res[1,0]}')
+            print(f' Total Boundary Force: X: {res[0]} Y: {res[1]}')
 
         return res
     
     def transformGlobalToDroneSpace(self,force:np.array((3,1)),yaw = 0):
-        globalSpaceForce = self.sensoryState.globalPose[0:2,0]
+        globalSpaceForce = self.sensoryState.globalPose[0:3,0]
         transformationMatrix = np.array([[math.cos(yaw),-math.sin(yaw),0],
                                          [math.sin(yaw),math.cos(yaw),0],
                                          [0,0,1],])
         
         droneSpaceForce = np.matmul(transformationMatrix,globalSpaceForce)
-        return droneSpaceForce
+        res = np.zeros((4,1))
+        res[0:3,0] = droneSpaceForce
+        return res
     
     def operatorOverride(self):
         # land interrupt
