@@ -62,6 +62,7 @@ The GUI uses the following components<br>
 We use threading to allow the GUI to access drone functions while the drone flight algorithm is running. This becomes a problem if the threads try to read/write the same piece of memory at the exact same time, but the chances of this happening are low for this project. 
 ---
 </details> 
+</details>
 
 <details>
 <summary>OpenCV window for Flet</summary>
