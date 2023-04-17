@@ -2,15 +2,17 @@ from ultralytics import YOLO
 import torch.cuda
 import os.path
 
+CONFIDENCE_CUTOFF = .5
+
 class VideoAnalyzer():
 
     visionNet: YOLO
     
     netPathList = ["yolov8n.pt", "yolov8s.pt","yolov8m.pt","yolov8l.pt","yolov8x.pt"]
-    # Onnx Runtime has the potential to allow models to run faster
     netIndex = 3
+    confidenceLevel = 0
 
-    def __init__(self):
+    def __init__(self,conf = CONFIDENCE_CUTOFF):
         if torch.cuda.is_available():
             device = "cuda:0"
             print("Using GPU")
@@ -19,9 +21,10 @@ class VideoAnalyzer():
             print("Using CPU")
         self.__loadModels__()
         self.visionNet = YOLO("yolov8m.pt")
+        self.confidenceLevel = conf
     
     def detectObjects(self,img):
-        objects = self.visionNet(img)
+        objects = self.visionNet(img,conf=self.confidenceLevel)
         img = objects[0].plot()
         return objects, img
 
