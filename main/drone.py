@@ -15,7 +15,7 @@ from behaviors.behavior import behaviorFramework
 from refresh_tracker import RefreshTracker
 
 DEBUG_PRINTS = True
-WITH_DRONE = True
+WITH_DRONE = False
 WITH_CAMERA = True
 RECORD_SENSOR_STATE = True
 
@@ -127,9 +127,9 @@ class Drone(tel.Tello):
     
     def transformGlobalToDroneSpace(self,force:np.array((3,1)),yaw = 0):
         globalSpaceForce = self.sensoryState.globalPose[0:2,0]
-        transformationMatrix = np.array([[math.cos(yaw),-math.sin(yaw),0]
-                                         [math.sin(yaw),math.cos(yaw),0]
-                                         [0,0,1]])
+        transformationMatrix = np.array([[math.cos(yaw),-math.sin(yaw),0],
+                                         [math.sin(yaw),math.cos(yaw),0],
+                                         [0,0,1],])
         
         droneSpaceForce = np.matmul(transformationMatrix,globalSpaceForce)
         return droneSpaceForce
