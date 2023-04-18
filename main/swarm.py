@@ -21,12 +21,14 @@ class Swarm():
             self.drone1.operate(exitLoop = True)
             self.drone2.operate(exitLoop = True)
 
+
+    # Pose is a np array of size (4,1), where [[xpos],[ypos],[zpos],[yaw]]
     def handleDroneCollision(self,drone1Pose,drone2Pose) -> np.array((4,1)):
 
         # 30cm threshold
         distanceThreshold = 30
         # distance formula with drone 1 & 2 XY coordinates
-        distance = math.sqrt(((x2 - x1)**2) + ((y2 - y1)**2))
+        distance = math.sqrt(((drone2Pose[0,0] - x1)**2) + ((drone2Pose[1,0] - y1)**2))
         if distance < distanceThreshold:
             # invert the directional vectors on the drones to push them apart
 
