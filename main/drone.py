@@ -15,7 +15,7 @@ from behaviors.behavior import behaviorFramework
 from refresh_tracker import RefreshTracker, State
 
 DEBUG_PRINTS = True
-WITH_DRONE = False
+WITH_DRONE = True
 WITH_CAMERA = True
 RECORD_SENSOR_STATE = True
 
@@ -126,14 +126,17 @@ class Drone(tel.Tello):
         return res
     
     def transformGlobalToDroneSpace(self,force:np.array((3,1)),yaw = 0):
-        globalSpaceForce = self.sensoryState.globalPose[0:3,0]
+        globalSpaceForce = force
         transformationMatrix = np.array([[math.cos(yaw),-math.sin(yaw),0],
                                          [math.sin(yaw),math.cos(yaw),0],
                                          [0,0,1],])
         
         droneSpaceForce = np.matmul(transformationMatrix,globalSpaceForce)
+        print(droneSpaceForce)
         res = np.zeros((4,1))
-        res[0:3,0] = droneSpaceForce
+        print(res[0:3].shape)
+        print(droneSpaceForce.shape)
+        res[0:3] = droneSpaceForce
         return res
     
     def operatorOverride(self):
