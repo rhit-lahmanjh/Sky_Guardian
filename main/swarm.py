@@ -1,5 +1,6 @@
 from drone import Drone
 import numpy as np
+import math
 
 
 class Swarm():
@@ -23,6 +24,13 @@ class Swarm():
             self.drone2.operate(exitLoop = True)
 
     def handleDroneCollision(self,drone1Pose,drone2Pose) -> np.array((4,1)):
-        
+
+        # 30cm threshold
+        distanceThreshold = 30
+        # distance formula with drone 1 & 2 XY coordinates
+        distance = math.sqrt(((x2 - x1)**2) + ((y2 - y1)**2))
+        if distance < distanceThreshold:
+            # invert the directional vectors on the drones to push them apart
+
         # KIRK outline code
         return np.zeros((4,1))
