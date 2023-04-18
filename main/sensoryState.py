@@ -12,11 +12,9 @@ Y_MIN_BOUNDARY = -25
 Y_MAX_BOUNDARY = 25
 DEBUG_PRINTS = True
 
-#CV Settings
-CONFIDENCE_THRESHOLD = .6
-
 class SensoryState():
     globalPose = np.ones((4,1))
+    localPose = np.ones((4,1))
     missionPadShift = np.array([[0,0],
                                 [0,DISTANCE_BETWEEN_MISSION_PADS],
                                 [0,2*DISTANCE_BETWEEN_MISSION_PADS],
@@ -24,7 +22,20 @@ class SensoryState():
                                 [DISTANCE_BETWEEN_MISSION_PADS,0],
                                 [DISTANCE_BETWEEN_MISSION_PADS,DISTANCE_BETWEEN_MISSION_PADS],
                                 [DISTANCE_BETWEEN_MISSION_PADS,2*DISTANCE_BETWEEN_MISSION_PADS],
-                                [DISTANCE_BETWEEN_MISSION_PADS,3*DISTANCE_BETWEEN_MISSION_PADS],])
+                                [DISTANCE_BETWEEN_MISSION_PADS,3*DISTANCE_BETWEEN_MISSION_PADS],
+                                [2*DISTANCE_BETWEEN_MISSION_PADS,0],
+                                [2*DISTANCE_BETWEEN_MISSION_PADS,DISTANCE_BETWEEN_MISSION_PADS],
+                                [2*DISTANCE_BETWEEN_MISSION_PADS,2*DISTANCE_BETWEEN_MISSION_PADS],
+                                [2*DISTANCE_BETWEEN_MISSION_PADS,3*DISTANCE_BETWEEN_MISSION_PADS],
+                                [3*DISTANCE_BETWEEN_MISSION_PADS,0],
+                                [3*DISTANCE_BETWEEN_MISSION_PADS,DISTANCE_BETWEEN_MISSION_PADS],
+                                [3*DISTANCE_BETWEEN_MISSION_PADS,2*DISTANCE_BETWEEN_MISSION_PADS],
+                                [3*DISTANCE_BETWEEN_MISSION_PADS,3*DISTANCE_BETWEEN_MISSION_PADS],])
+    missionPadSection = 0
+    missionPadVisible = 0
+    yawOffset = 0
+    yawOffsetSet = False
+    
     sensorReadings = dict()
     videoCapture = None
     videoAnalyzer = None
@@ -58,11 +69,20 @@ class SensoryState():
                 if(len(queue) > 10):
                     queue.popleft()
             padID = currentReadings.get('mid')
+            self.missionPadVisible = padID
             if(padID > 0):
+                if not self.yawOffsetSet:
+                    self.yawOffset = currentReadings.get('yaw')
+                    self.yawOffsetSet = True
                 self.globalPose[0] = currentReadings.get('x') + self.missionPadShift[padID-1,0]
                 self.globalPose[1] = currentReadings.get('y') + self.missionPadShift[padID-1,1]
                 self.globalPose[2] = currentReadings.get('z')
-                self.globalPose[3] = currentReadings.get('yaw') - 90
+                self.globalPose[3] = currentReadings.get('yaw') - self.yawOffset
+                self.localPose[0] = currentReadings.get('x')
+                self.localPose[1] = currentReadings.get('y')
+                self.localPose[2] = currentReadings.get('z')
+                self.localPose[3] = currentReadings.get('yaw') - self.yawOffset
+            
             if DEBUG_PRINTS:
                 print(f"Pad: {padID} X: {self.globalPose[0]} Y: {self.globalPose[1]} Z: {self.globalPose[2]} YAW : {self.globalPose[3]}")
                 # print(f"Shifting by: {self.missionPadShift[padID-1,:]}")
@@ -70,31 +90,15 @@ class SensoryState():
             self.__clearBuffer__(self.videoCapture)
             self.returnedImage, self.image = self.videoCapture.retrieve()
             if self.returnedImage:
-                tstart = t.time()
-                self.look_for_objects(self.image)
-                tend = t.time()
-                print(f'time:{tend-tstart}')
+                [self.visibleObjects,self.image] = self.videoAnalyzer.detectObjects(self.image)
 
     def __clearBuffer__(self, cap):
         """ Emptying buffer frame """
         while True:
             start_time = t.time()
-            grabbed = cap.grab()
+            cap.grab()
             if t.time()-start_time > .02:
                 break
-
-    def look_for_objects(self,img):
-        print('Seeing')
-        objects = self.videoAnalyzer.detect_objects(img)
-        if objects is not None:
-            self.visibleObjects.clear()
-            for object in objects[0,0,:,:]:
-                if object[2] < CONFIDENCE_THRESHOLD:
-                    break
-                self.visibleObjects.append(object)
-        self.videoAnalyzer.outline_objects_on_image(img, self.visibleObjects)
-
-    #def printStatus(self):
 
     def getSensorReading(self,sensor, average = False):
         """Reads most recent appropriate sensor reading, either most recent value or most recent averaged value

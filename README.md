@@ -1,10 +1,10 @@
-# SkyGuardian
+# inTellogence
 
 [![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
 
-SkyGuardian is an open-source codebase for people to learn drone control topics made by senior students at Rose-Hulman Institute of Technology located in Terre Haute, IN.
+inTellogence is an open-source codebase for people to learn drone control topics made by senior students at Rose-Hulman Institute of Technology located in Terre Haute, IN.
 
-![Header](header.png)
+![Header](imgs/header.png)
 
 # Table of Contents
 
@@ -24,15 +24,16 @@ SkyGuardian is an open-source codebase for people to learn drone control topics 
 
 # About
 ## Purpose
+We hope that students or people enthusiastic about learning about drones are able to gain new knowledge through this repository and possible contribute to it.
 
 ## Features
-SkyGuardian has the following features:
+inTellogence has the following features:
 - Ability to control 1 or 2 drones through a router
 - Use of Mission Pads to confine the drone to a space
-- Drone flight algorithm using [Perlin Noise](https://www.khanacademy.org/computing/computer-programming/programming-natural-simulations/programming-noise/a/perlin-noise) 
+- Drone wander algorithm using a mix of pure random and smoothly changing trajectories via [Perlin Noise](https://www.khanacademy.org/computing/computer-programming/programming-natural-simulations/programming-noise/a/perlin-noise)
 - Additional safety measures using industry hardware functional safety techniques
 - Pre-trained Computer Vision models to recognize objects
-- Ability to implement reactive behaviors to objects
+- Ability to quickly implement reactive behaviors to objects and sensor readings
 - [Flet](https://flet.dev)-powered language-agnostic GUI (Python, Go, C#)
 - Easy-to-understand & User-tested documentation
 
@@ -40,7 +41,7 @@ SkyGuardian has the following features:
 <details>
 <summary>Graphic User Interface (GUI)</summary>
 <br>
-SkyGuardian uses <a href="https://flet.dev">Flet</a>, a simplified <a href="https://flutter.dev">Flutter</a> model, to build the GUI. Python is currently supported, but Go and C# are <a href="https://flet.dev/roadmap/">coming soon</a>.<br> 
+inTellogence uses <a href="https://flet.dev">Flet</a>, a simplified <a href="https://flutter.dev">Flutter</a> model, to build the GUI. Python is currently supported, but Go and C# are <a href="https://flet.dev/roadmap/">coming soon</a>.<br> 
 
 When first starting the program, the GUI brings you to a "landing" page where a user will be able to connect 1 or 2 drones. <br> 
 <br> 
@@ -61,6 +62,7 @@ The GUI uses the following components<br>
 We use threading to allow the GUI to access drone functions while the drone flight algorithm is running. This becomes a problem if the threads try to read/write the same piece of memory at the exact same time, but the chances of this happening are low for this project. 
 ---
 </details> 
+</details>
 
 <details>
 <summary>OpenCV window for Flet</summary>
@@ -68,12 +70,50 @@ We use threading to allow the GUI to access drone functions while the drone flig
 The code from <a href="https://www.youtube.com/watch?v=58aPh8rKKsk">Azu Technology</a> that creates a modern GUI for an OpenCV window was modified to display the OpenCV Tello video stream through the GUI. This repository is one of few, if not the only, that allows the Tello stremaing window to be viewed through Flet. 
 ---
 </details>
-</details>
 
 <details>
-<summary>Perlin-Noise Flight Algorithm</summary>
+<summary>Finite State Machine</summary>
 <br>
-Overview of Flight Alg. + Finite State Machine (include pix)
+General control of both drones is organized around a Finite State Machine (FSM). The primary state of wander is implemented alongside a few states that support smooth and safe operation. The general control logic is shown below. NOTE: ADD STATE TRANSITION CONDITIONS AT SOME POINT AND ADD LOST MISSION PAD AS WELL.<br> 
+
+<img src="imgs/control_loop.png" width="500">
+</details> 
+
+<details>
+<summary>Reactive Control Through Potential Fields</summary>
+<br>
+The primary path planning approach for Sky Guardian lies in reactive control LINK through potential fields LINK. In order to allow the drones to wander in a constrained space, Tello mission pads are utitilized in a pre-defined map. These mission pads allow the drone to localize and respond appropriately when moving out of intended airspace. BELOW: diagram of drone measuring it's location and drone being pushed into the space CURRENTLY PLACEHOLDER.<br> 
+
+<img src="imgs/mission_pad_blank.png" width="500">
+
+<br> 
+Sky Guardian provides an outline for implementing various reactions to certain stimuli. For our purposes, reactions are individual responses to certain stimuli (ie, the drone detects a banana) and behaviors are sets of those reactions. We have defined two types of reactions: blocking and movement. <br>
+
+A blocking reaction initiates a pre-defined set of instructions, during which the drone is incapable of performing any other movements. The trigger blocks the continuation of the control loop for a time. <br>
+
+A movement reaction defines non-blocking instructions. So, it returns a movement force according to the same idea as potential fields. Hence, a drone could tend to fly toward certain objects or away from others. <br>
+</details> 
+
+<details>
+<summary>Object Recognition by OpenCV</summary>
+<br>
+
+TO BE UPDATED WITH YOLO INFORMATION
+Sky Guardian performs object recognition by implementing pre-trained Convolutional Neural Networks (CNN) via OpenCV's deep learning module. All video feed analysis is abstracted out into the VideoAnalyzer class from video_analyzer.py. To try a different network from the one provided, all that needs to be done is change which weights and configuration file is loaded //change if needed ADD MORE INFO ABOUT MODEL BEING RAN. <br>
+
+The CNN outputs several pieces of information about the objects detected. It's in the format of a Nx7 matrix, sorted in order of confidence. The indexes are shown below: <bv>
+
+0: None
+1: Class Label (default in reference)
+2: Confidence Level
+3: X bounding box coordinate
+4: Y bounding box coordinate
+5: bounding box width
+6: bounding box height
+
+The VideoAnalyzer automatically filters out detectiosn with a low confidence score, according to the default set in its global variables. //Addition: possibly add info about filtering if implemented <br>
+
+CUDA: If we implement by the end of the year, it will also describe our approach to running inference through the GPU (installation requirements will be covered below) <br> 
 </details> 
 
 <details>
@@ -191,12 +231,22 @@ Still don't know if we need this lol
 We used the following materials for this project:
 - 2 Tello EDU drones
 - Router
+- Tello Mission Pads
 - etc. 
 
 ## Setting up drones and router
+This section will cover how to set up the router, connect your computer to it, connect the drone to it, and run the code through it.
 ## How to run requirements
+This section will walk the user through setting up the environment through anaconda
+## Setting up the Mission Pads
+For Sky Guardian to work as expected, it's important to setup the mission pads as the drone expects to see them. This layout is shown below, where orientation, spacing and layout are important. Should you wish to adjust the spacing between the pads, this is found in the SensoryState class. NOTE: Because of observed inconsistency with the drone correctly measuring the yaw, the drone expects to begin facing the X direction as shown below.
+This section will include a graphic as to how to setup the mission pad layout, and point to the correct section of code (Currently in SensoryState.py, but should likely be moved) where they can create custom mission pad layouts.
+
 # Examples
 ## Creating a reactive behavior to an object
+## Adding a new button to the GUI
+## Adding a custom State
+
 # Supplemental Documentation
 # Troublehooting resources
 + [Tello Drone User Manual](https://dl-cdn.ryzerobotics.com/downloads/Tello/Tello%20User%20Manual%20v1.4.pdf)

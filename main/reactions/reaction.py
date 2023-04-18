@@ -3,6 +3,7 @@ import numpy as np
 # from drone import Drone
 import time as t
 from enum import IntEnum
+from refresh_tracker import State
 
 
 ### Reaction Format Interfaces
@@ -23,28 +24,36 @@ class blockingReaction:
         pass
 
 ### Specific Reaction Definitions
+# NOTE: the output structure of visibleObjects is an N x 6 array, [x1, y1, x2, y2, score, label]
 # reacting to a specific object
 class flipOnBanana(blockingReaction):
 
     def react(self, drone, input, currentMovement = np.zeros((4,1))):
         if input.visibleObjects is not None:
             for object in input.visibleObjects:
-                if(int(object[1]) == vision_class.banana):
+                if(int(object[5]) == vision_class.banana):
                     print('Banana Detected: Flipping')
                     drone.flip_left()
 
-class bobOnShoe(blockingReaction):
+class bobOnScissors(blockingReaction):
 
     def react(self,drone,input, currentMovement = np.zeros((4,1))):
         if input.visibleObjects is not None:
-
             for object in input.visibleObjects:
-                if(int(object[1]) == vision_class.shoe):
+                if(int(object[5]) == vision_class.scissors):
                     print('Shoe Detected: Bobbing')
                     drone.move_up(20)
                     t.sleep(1)
                     drone.move_down(20)
                     t.sleep(1)
+                    return
+                
+class pauseOnSoccerBall(blockingReaction):
+    def react(self,drone,input, currentMovement = np.zeros((4,1))):
+        if input.visibleObjects is not None:
+            for object in input.visibleObjects:
+                if(int(object[1]) == vision_class.sports_ball):
+                    drone.opstate = State.Hover
                     return
 
 class followCellPhone(movementReaction):
@@ -53,104 +62,110 @@ class followCellPhone(movementReaction):
         res = np.zeros((4,1))
         if input.visibleObjects is not None:
             for object in input.visibleObjects:
-                print(int(object[1]))
-                if(int(object[1]) == int(vision_class.cell_phone)):
+                print(f"Indicies: {int(object[5])}")
+                if(int(object[5]) == int(vision_class.cell_phone)):
                     imgWidth = input.image.shape[0]
-                    res[3] = -1*imgWidth*(.5-object[3])
-                    print(f'Yaw: {res[3]}')
+                    res[3] = -.3*((imgWidth/2)-((object[2]+object[0])/2))
+                    res[1] = (object[2]-object[0])*20/imgWidth # move back (proportional to object width)
+
+                    # print(f'Yaw: {res[3]}')
+                    print(f"Following: {int(object[5])}")
+                    print(f'FOLLOW PHONE: Forward: {res[1]} Yaw: {res[3]}')
+        return res
+    
+class runFromBanana(movementReaction):
+    
+    def react(self, input: SensoryState, currentMovement: np.array):
+        res = np.zeros((4,1))
+        if input.visibleObjects is not None:
+            for object in input.visibleObjects:
+                if(int(object[5]) == int(vision_class.banana)):
+                    imgWidth = input.image.shape[0]
+                    res[3] = -.3*((imgWidth/2)-((object[2]+object[0])/2))
+                    res[1] = -(object[2]-object[0])*20/imgWidth # move back
+
+                    # print(f'Yaw: {res[3]}')
+                    print(f'RUN FROM SCARY BANANA: Reverse: {res[1]} Yaw: {res[3]}')
         return res
 
-
 class vision_class(IntEnum):
-    unlabeled = 0
-    person = 1
-    bicycle = 2
-    car = 3
-    motorcycle = 4
-    airplane = 5
-    bus = 6
-    train = 7
-    truck = 8
-    boat = 9
-    traffic_light = 10
-    fire_hydrant = 11
-    street_sign = 12
-    stop_sign = 13
-    parking_meter = 14
-    bench = 15
-    bird = 16
-    cat = 17
-    dog = 18
-    horse = 19
-    sheep = 20
-    cow = 21
-    elephant = 22
-    bear = 23
-    zebra = 24
-    giraffe = 25
-    hat = 26
-    backpack = 27
-    umbrella = 28
-    shoe = 29
-    eye_glasses = 30
-    handbag = 31
-    tie = 32
-    suitcase = 33
-    frisbee = 34
-    skis = 35
-    snowboard = 36
-    sports_ball = 37
-    kite = 38
-    baseball_bat = 39
-    baseball_glove = 40
-    skateboard = 41
-    surfboard = 42
-    tennis_racket = 43
-    bottle = 44
-    plate = 45
-    wine_glass = 46
-    cup = 47
-    fork = 48
-    knife = 49
-    spoon = 50
-    bowl = 51
-    banana = 52
-    apple = 53
-    sandwich = 54
-    orange = 55
-    broccoli = 56
-    carrot = 57
-    hot_dog = 58
-    pizza = 59
-    donut = 60
-    cake = 61
-    chair = 62
-    couch = 63
-    potted_plant = 64
-    bed = 65
-    mirror = 66
-    dining_table = 67
-    window = 68
-    desk = 69
-    toilet = 70
-    door = 71
-    tv = 72
-    laptop = 73
-    mouse = 74
-    remote = 75
-    keyboard = 76
-    cell_phone = 77
-    microwave = 78
-    oven = 79
-    toaster = 80
-    sink = 81
-    refrigerator = 82
-    blender = 83
-    book = 84
-    clock = 85
-    vase = 86
-    scissors = 87
-    teddy_bear = 88
-    hair_drier = 89
-    toothbrush = 90
-    hair_brush = 91
+  person = 0
+  bicycle = 1
+  car = 2
+  motorcycle = 3
+  airplane = 4
+  bus = 5
+  train = 6
+  truck = 7
+  boat = 8
+  traffic_light = 9
+  fire_hydrant = 10
+  stop_sign = 11
+  parking_meter = 12
+  bench = 13
+  bird = 14
+  cat = 15
+  dog = 16
+  horse = 17
+  sheep = 18
+  cow = 19
+  elephant = 20
+  bear = 21
+  zebra = 22
+  giraffe = 23
+  backpack = 24
+  umbrella = 25
+  handbag = 26
+  tie = 27
+  suitcase = 28
+  frisbee = 29
+  skis = 30
+  snowboard = 31
+  sports_ball = 32
+  kite = 33
+  baseball_bat = 34
+  baseball_glove = 35
+  skateboard = 36
+  surfboard = 37
+  tennis_racket = 38
+  bottle = 39
+  wine_glass = 40
+  cup = 41
+  fork = 42
+  knife = 43
+  spoon = 44
+  bowl = 45
+  banana = 46
+  apple = 47
+  sandwich = 48
+  orange = 49
+  broccoli = 50
+  carrot = 51
+  hot_dog = 52
+  pizza = 53
+  donut = 54
+  cake = 55
+  chair = 56
+  couch = 57
+  potted_plant = 58
+  bed = 59
+  dining_table = 60
+  toilet = 61
+  tv = 62
+  laptop = 63
+  mouse = 64
+  remote = 65
+  keyboard = 66
+  cell_phone = 67
+  microwave = 68
+  oven = 69
+  toaster = 70
+  sink = 71
+  refrigerator = 72
+  book = 73
+  clock = 74
+  vase = 75
+  scissors = 76
+  teddy_bear = 77
+  hair_drier = 78
+  toothbrush = 79
