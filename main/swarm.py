@@ -31,6 +31,6 @@ class Swarm():
         distance = math.sqrt(((drone2Pose[0,0] - x1)**2) + ((drone2Pose[1,0] - y1)**2))
         if distance < distanceThreshold:
             # invert the directional vectors on the drones to push them apart
-
+        
         # KIRK outline code
         return np.zeros((4,1))

@@ -6,8 +6,8 @@ import time as t
 
 # update dependent on pad layout
 DISTANCE_BETWEEN_MISSION_PADS = 50
-X_MIN_BOUNDARY = 50
-X_MAX_BOUNDARY = 100
+X_MIN_BOUNDARY = 0
+X_MAX_BOUNDARY = 50
 Y_MIN_BOUNDARY = 0
 Y_MAX_BOUNDARY = 50
 DEBUG_PRINTS = True
@@ -61,8 +61,10 @@ class SensoryState():
         self.videoCapture = cv2.VideoCapture(0)
         self.videoAnalyzer = VideoAnalyzer()
 
-    def update(self,currentReadings = None):
+    def update(self,currentReadings:dict = None):
         if self.WITH_DRONE:
+
+            currentReadings['yaw'] = -currentReadings.pop('yaw') # this corrects the yaw to be consistent with right hand rule
             for key in currentReadings:
                 queue = self.sensorReadings.get(key)
                 queue.append(currentReadings.get(key))
@@ -70,7 +72,6 @@ class SensoryState():
                     queue.popleft()
 
             self.__updatePose__(currentReadings=currentReadings)
-            print(f"Sector: {self.missionPadSector} Pad: {self.missionPadVisibleID} X: {self.globalPose[0]} Y: {self.globalPose[1]} Z: {self.globalPose[2]} YAW : {self.globalPose[3]}")
 
             if DEBUG_PRINTS:
                 print(f"Sector: {self.missionPadSector} Pad: {self.missionPadVisibleID} X: {self.globalPose[0]} Y: {self.globalPose[1]} Z: {self.globalPose[2]} YAW : {self.globalPose[3]}")
@@ -82,7 +83,6 @@ class SensoryState():
                 [self.visibleObjects,self.image] = self.videoAnalyzer.detectObjects(self.image)
 
     def __updatePose__(self,currentReadings = None):
-
         if currentReadings != None:
             padID = currentReadings.get('mid')
 
@@ -93,8 +93,8 @@ class SensoryState():
                     self.yawOffsetSet = True
                 
                 #update sector if mission pad has changed, before setting new local pose
-                if padID != self.missionPadVisibleID:
-                    self.__determineMPSector__(currentReadings)
+                # if padID != self.missionPadVisibleID:
+                #     self.__determineMPSector__(currentReadings)
                 
                 self.missionPadVisibleID = padID
 

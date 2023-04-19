@@ -1,11 +1,10 @@
-import sys
-import djitellopy as tel
+# import djitellopytest
+import djitellopy
 from enum import Enum
 from perlin_noise import PerlinNoise
 import cv2
 import keyboard as key
 import time as t
-from collections import deque
 import numpy as np
 import math
 import random as rand
@@ -15,7 +14,7 @@ from behaviors.behavior import behaviorFramework
 from refresh_tracker import RefreshTracker, State
 
 DEBUG_PRINTS = True
-WITH_DRONE = False
+WITH_DRONE = True
 WITH_CAMERA = True
 RECORD_SENSOR_STATE = True
 
@@ -33,7 +32,7 @@ class State(Enum):
     Scan = 9
     Hover = 10
  
-class Drone(tel.Tello):
+class Drone(djitellopy.Tello):
     #video I THINK THIS IS DEPRICATED
     vidCap = None
     vision = None
@@ -60,14 +59,22 @@ class Drone(tel.Tello):
     telemetryReason = dict()
     refreshTracker = None
 
-    def __init__(self,identifier = None, behavior: behaviorFramework = None):
+    def __init__(self,identifier = None, 
+                 behavior: behaviorFramework = None,
+                 tello_ip = '192.168.10.1',
+                 vs_udp_ip = '0.0.0.0',
+                 vs_udp_port = 11111,
+                 control_udp_port = 8889,
+                 state_udp_port = 8890,):
         cv2.VideoCapture()
         self.identifier = identifier
         self.opState = State.Grounded
         if behavior is not None:
             self.behavior = behavior
         if WITH_DRONE:
+            # super().__init__(tello_ip = tello_ip, vs_udp_ip = vs_udp_ip, vs_udp_port = vs_udp_port, control_udp_port = control_udp_port, state_udp_port = state_udp_port)
             super().__init__()
+
             # This is where we will implement connecting to a drone through the router
             self.connect()
             self.set_speed(self.MAXSPEED)
@@ -127,15 +134,16 @@ class Drone(tel.Tello):
     
     def transformGlobalToDroneSpace(self,force:np.array((3,1)),yaw = 0):
         globalSpaceForce = force
+        print(f"Global Space Force: {globalSpaceForce}")
         transformationMatrix = np.array([[math.cos(yaw),-math.sin(yaw),0],
                                          [math.sin(yaw),math.cos(yaw),0],
                                          [0,0,1],])
         
         droneSpaceForce = np.matmul(transformationMatrix,globalSpaceForce)
-        print(droneSpaceForce)
+        print(f"Drone Space Force: {droneSpaceForce}")
         res = np.zeros((4,1))
-        print(res[0:3].shape)
-        print(droneSpaceForce.shape)
+        # print(res[0:3].shape)
+        # print(droneSpaceForce.shape)
         res[0:3] = droneSpaceForce
         return res
     
@@ -180,18 +188,25 @@ class Drone(tel.Tello):
     def moveDirection(self,direction = np.array([[0], [0], [0], [0]])):
         """Set the speed of the drone based on xyz and yaw
         direction is:
-        forward/backward : x or element 1
-        side to side     : y or element 2
+        left/right       : x or element 1 (right +)
+        forward/backward : y or element 2 (forward +)
         up and down      : z or element 3
         yaw              : turn or element 4
         """
+        if np.max(direction[0:2]) > self.MAXSPEED:
+            direction = self.normalizeMovementVector(direction=direction)
 
         cmd = f'rc {np.round_(direction[0,0],1)} {np.round_(direction[1,0],1)} {np.round_(direction[2,0],1)} {np.round_(direction[3,0],1)}'
         if WITH_DRONE:
             self.send_command_without_return(cmd)
         else:
             print(cmd)
-
+    
+    def normalizeMovementVector(self, direction = np.array([[0], [0], [0], [0]])):
+        xyNorm = np.linalg.norm(direction[0:2])
+        direction[0:2] = direction[0:2]*self.MAXSPEED/xyNorm
+        return direction
+                
     def fullScan(self):
         self.moveDirection([0,0,0,10])
 
@@ -287,7 +302,6 @@ class Drone(tel.Tello):
         print("Final Dictionary Value: " + str(self.telemetryCheck.values()))
         return all(self.telemetryCheck.values())
 
-
     def operate(self,exitLoop = False):
         # creating window
         if WITH_CAMERA:
@@ -312,6 +326,7 @@ class Drone(tel.Tello):
                 case State.Grounded:
                     if(DEBUG_PRINTS):
                         print('Landed')
+                        self.__avoidBoundary__()
                     if key.is_pressed('t'):
                         self.opState = State.Takeoff
                         print("Attempting to take off")
