@@ -1,23 +1,26 @@
 import flet as ft
+from yoloClasses import vision_class
 from flet import *
 from getkey import getkey, key
 
 def main(page:Page):
 
-	# opening the file in read mode
-    my_file = open("main/coco_class_labels.txt", "r")
+    data = (member.name for member in vision_class)
+    
+	# # opening the file in read mode
+    # my_file = open("main/coco_class_labels.txt", "r")
 
-    # reading the file
-    data_read = my_file.read()
+    # # reading the file
+    # data_read = my_file.read()
 
-    # replacing end splitting the text 
-    # when newline ('\n') is seen.
-    data = data_read.split("\n")
-    print(data)
-    print(type(data))
-    my_file.close()
+    # # replacing end splitting the text 
+    # # when newline ('\n') is seen.
+    # data = data_read.split("\n")
+    # print(data)
+    # print(type(data))
+    # my_file.close()
 
-    reaction_data = ["flipOnBanana", "bobOnScissors", "pauseOnSoccerBall", "followCellPhone", "RunFromBanana"]
+    reaction_data = ["Flip!", "Bob", "Pause", "Follow", "Run"]
 
     class ReactionInput(ft.UserControl):
         def build(self):

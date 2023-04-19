@@ -21,22 +21,22 @@ class blockingReaction:
     def __init__(self) -> None:
         pass
 
-    def react(self, drone, input: SensoryState, currentMovement: np.array) -> None:
+    def react(self, drone, target: vision_class(IntEnum), input: SensoryState, currentMovement: np.array) -> None:
         pass
 
 ### Specific Reaction Definitions
 # NOTE: the output structure of visibleObjects is an N x 6 array, [x1, y1, x2, y2, score, label]
 # reacting to a specific object
-class flipOnBanana(blockingReaction):
+class flipOnObject(blockingReaction):
 
-    def react(self, drone, input, currentMovement = np.zeros((4,1))):
+    def react(self, drone, input, target, currentMovement = np.zeros((4,1))):
         if input.visibleObjects is not None:
             for object in input.visibleObjects:
-                if(int(object[5]) == vision_class.banana):
+                if(int(object[5]) == target):
                     print('Banana Detected: Flipping')
                     drone.flip_left()
 
-class bobOnScissors(blockingReaction):
+class bobOnObject(blockingReaction):
 
     def react(self,drone,input, currentMovement = np.zeros((4,1))):
         if input.visibleObjects is not None:
@@ -49,17 +49,17 @@ class bobOnScissors(blockingReaction):
                     t.sleep(1)
                     return
                 
-class pauseOnSoccerBall(blockingReaction):
-    def react(self,drone,input, currentMovement = np.zeros((4,1))):
+class pauseOnObject(blockingReaction):
+    def react(self,drone,target,input, currentMovement = np.zeros((4,1))):
         if input.visibleObjects is not None:
             for object in input.visibleObjects:
-                if(int(object[1]) == vision_class.sports_ball):
+                if(int(object[1]) == target):
                     drone.opstate = State.Hover
                     return
 
 class followCellPhone(movementReaction):
     
-    def react(self, input: SensoryState, currentMovement: np.array):
+    def react(self,target, input: SensoryState, currentMovement: np.array):
         res = np.zeros((4,1))
         if input.visibleObjects is not None:
             for object in input.visibleObjects:

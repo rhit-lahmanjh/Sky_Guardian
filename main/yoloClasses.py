@@ -81,3 +81,6 @@ class vision_class(IntEnum):
   teddy_bear = 77
   hair_drier = 78
   toothbrush = 79
+  
+  def from_date(cls, date):
+    return cls(date.isoweekday())
