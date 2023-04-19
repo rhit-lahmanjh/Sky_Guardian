@@ -1,5 +1,5 @@
-# import djitellopytest
-import djitellopy
+import djitellopytest
+# import djitellopy
 from enum import Enum
 from perlin_noise import PerlinNoise
 import cv2
@@ -32,7 +32,7 @@ class State(Enum):
     Scan = 9
     Hover = 10
  
-class Drone(djitellopy.Tello):
+class Drone(djitellopytest.Tello):
     #video I THINK THIS IS DEPRICATED
     vidCap = None
     vision = None
@@ -72,8 +72,8 @@ class Drone(djitellopy.Tello):
         if behavior is not None:
             self.behavior = behavior
         if WITH_DRONE:
-            # super().__init__(tello_ip = tello_ip, vs_udp_ip = vs_udp_ip, vs_udp_port = vs_udp_port, control_udp_port = control_udp_port, state_udp_port = state_udp_port)
-            super().__init__()
+            super().__init__(tello_ip = tello_ip, vs_udp_ip = vs_udp_ip, vs_udp_port = vs_udp_port, control_udp_port = control_udp_port, state_udp_port = state_udp_port)
+            # super().__init__()
 
             # This is where we will implement connecting to a drone through the router
             self.connect()
@@ -328,7 +328,7 @@ class Drone(djitellopy.Tello):
                     if key.is_pressed('t'):
                         self.opState = State.Takeoff
                         print("Attempting to take off")
-                    
+
                 case State.Takeoff:
                     if WITH_DRONE:
                         safeToTakeOff = self.checkTelemetry()
