@@ -2,8 +2,6 @@ import flet as ft
 import time
 import threading
 import socket
-import pickle
-import csv
 
 # tello_address = ('192.168.10.1', 8889)
 # local_address = ('', 9000)
@@ -24,21 +22,12 @@ def main(page: ft.Page):
         userIPaddress1 = str(input1.value)
         portValue = 8889
 
-        # csv code for writing to csv file
-        # values = [userIPaddress1, portValue]
-        # with open('Drone1.csv', 'w') as file:
-        #     writer = csv.writer(file)
-        #     writer.writerow(values)
-
-        # Pickle Code for writing to txt file
-        # with open("ip_fileDrone1.txt", "wb") as file_handler:
-        #     pickle.dump((userIPaddress1, portValue), (file_handler))
-        # input()
-
+        print("Address assigned")
         tello_address = (userIPaddress1, portValue)
         # Create a UDP connection that we'll send the command to
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
+        print("Sock Binded")
         # Let's be explicit and bind to a local port on our machine where Tello can send messages
         sock.bind(('', 9000))
         def send(message):
@@ -59,23 +48,29 @@ def main(page: ft.Page):
                     print("Error receiving: " + str(e))
                     break
 
+        print("daemon Thread")
         receiveThread = threading.Thread(target=receive)
         receiveThread.daemon = True
         receiveThread.start()
 
         # Send Tello into command mode
         # Need to write to a text file and then read IP address from there in the myTello file
+        print("Send Function")
         send("command")
         # Receive response from Tello
+        print("Receive Function")
         receive()
         # Delay 3 seconds before we send the next command
+        print("Sleep")
         time.sleep(3)
         # Ask Tello about battery status
+        print("Battery Status")
         send("battery?")
         # Receive battery response from Tello
         receive()
 
         print("Successfully Connected to Drone")
+        print("Closing socket")
         sock.close()
         SuccessfulConnection = True
         if SuccessfulConnection:
@@ -102,11 +97,13 @@ def main(page: ft.Page):
         #     pickle.dump((userIPaddress2, portValue), (file_handler))
         # input()
 
+        print("Address assigned")
         tello2_address = (userIPaddress2, portValue)
         # Create a UDP connection that we'll send the command to
         sock2 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
         # Let's be explicit and bind to a local port on our machine where Tello can send messages
+        print("Sock Binded")
         sock2.bind(('', 9010))
 
         def send(message):
@@ -127,22 +124,28 @@ def main(page: ft.Page):
                     print("Error receiving: " + str(e))
                     break
 
+        print("daemon Thread")
         receiveThread = threading.Thread(target=receive)
         receiveThread.daemon = True
         receiveThread.start()
 
         # Send Tello into command mode
+        print("Send Function")
         send("command")
         # Receive response from Tello
+        print("Receive Function")
         receive()
         # Delay 3 seconds before we send the next command
+        print("Sleep")
         time.sleep(3)
         # Ask Tello about battery status
+        print("Battery Status")
         send("battery?")
         # Receive battery response from Tello
         receive()
 
         print("Successfully Connected to Drone")
+        print("Closing socket")
         sock2.close()
         SuccessfulConnection = True
         if SuccessfulConnection:
@@ -168,7 +171,7 @@ def main(page: ft.Page):
         page.update()
 
     def continueButton(e):
-      print("Routing to Dashbord")
+        print("Routing to Dashboard")
 
     input1 = ft.TextField(label="Enter IP Address, i.e. 192.168.0.248", on_submit=droneOneConnect_button)
 
@@ -245,3 +248,25 @@ def main(page: ft.Page):
     )
 
 ft.app(target=main)
+
+# csv code for writing to csv file
+# values = [userIPaddress1, portValue]
+# with open('Drone1.csv', 'w') as file:
+#     writer = csv.writer(file)
+#     writer.writerow(values)
+
+# Pickle Code for writing to txt file
+# with open("ip_fileDrone1.txt", "wb") as file_handler:
+#     pickle.dump((userIPaddress1, portValue), (file_handler))
+# input()
+
+# # csv code for writing to csv file
+# values = [userIPaddress2, portValue]
+# with open('Drone2.csv', 'w') as file:
+#     writer = csv.writer(file)
+#     writer.writerow(values)
+
+# Pickle Code for writing to txt file
+# with open("ip_fileDrone2.txt", "wb") as file_handler:
+#     pickle.dump((userIPaddress2, portValue), (file_handler))
+# input()
