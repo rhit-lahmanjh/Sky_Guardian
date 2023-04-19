@@ -20,7 +20,7 @@ class VideoAnalyzer():
             device = "cpu"
             print("Using CPU")
         self.__loadModels__()
-        self.visionNet = YOLO("yolov8m.pt")
+        self.visionNet = YOLO(self.netPathList[self.netIndex-1])
         self.confidenceLevel = conf
     
     def detectObjects(self,img):

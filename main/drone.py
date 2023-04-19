@@ -134,13 +134,13 @@ class Drone(djitellopy.Tello):
     
     def transformGlobalToDroneSpace(self,force:np.array((3,1)),yaw = 0):
         globalSpaceForce = force
-        print(f"Global Space Force: {globalSpaceForce}")
+        # print(f"Global Space Force: {globalSpaceForce}")
         transformationMatrix = np.array([[math.cos(yaw),-math.sin(yaw),0],
                                          [math.sin(yaw),math.cos(yaw),0],
                                          [0,0,1],])
         
         droneSpaceForce = np.matmul(transformationMatrix,globalSpaceForce)
-        print(f"Drone Space Force: {droneSpaceForce}")
+        # print(f"Drone Space Force: {droneSpaceForce}")
         res = np.zeros((4,1))
         # print(res[0:3].shape)
         # print(droneSpaceForce.shape)
@@ -306,7 +306,6 @@ class Drone(djitellopy.Tello):
         # creating window
         if WITH_CAMERA:
             cv2.namedWindow('test', cv2.WINDOW_NORMAL)
-
         while cv2.waitKey(20) != 27: # Escape
             #sensing
             if WITH_CAMERA:
@@ -326,7 +325,6 @@ class Drone(djitellopy.Tello):
                 case State.Grounded:
                     if(DEBUG_PRINTS):
                         print('Landed')
-                        self.__avoidBoundary__()
                     if key.is_pressed('t'):
                         self.opState = State.Takeoff
                         print("Attempting to take off")
