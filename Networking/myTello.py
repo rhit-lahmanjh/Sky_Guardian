@@ -1,28 +1,35 @@
-
 # Import the built-in socket and time modules
 import socket
 import time
 import threading
 import pickle
+import csv
 
-try:
-  with open("ip_fileDrone1.txt", "rb") as file_handler:
-    try:
-      userIPaddress1, portValue = pickle.load(file_handler)
-    except:
-      print("This file has no data")
-  with open("ip_fileDrone2.txt", "rb") as file_handler:
-    try:
-      userIPaddress2, portValue = pickle.load(file_handler)
-    except:
-      print("This file has no data")
-except:
-  print("File does not exist")
-input()
+with open("Drone1.csv", 'r') as file:
+  csvreader = csv.reader(file)
+  for row in csvreader:
+    print(row)
+
+
+# Pickle code for reading from a txt file
+# try:
+#   with open("ip_fileDrone1.txt", "rb") as file_handler:
+#     try:
+#       userIPaddress1, portValue = pickle.load(file_handler)
+#     except:
+#       print("This file has no data")
+#   with open("ip_fileDrone2.txt", "rb") as file_handler:
+#     try:
+#       userIPaddress2, portValue = pickle.load(file_handler)
+#     except:
+#       print("This file has no data")
+# except:
+#   print("File does not exist")
+# input()
 
 # IP and port of Tello
 tello_address = (userIPaddress1, portValue)
-tello2_address = (userIPaddress2,portValue)
+tello2_address = (userIPaddress2, portValue)
 
 # Create a UDP connection that we'll send the command to
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -57,7 +64,7 @@ def receive():
       break
 
 receiveThread = threading.Thread(target=receive)
-receiveThread.daemon  = True
+receiveThread.daemon = True
 receiveThread.start()
 
 
