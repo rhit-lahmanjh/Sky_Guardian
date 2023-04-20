@@ -16,8 +16,8 @@ class Swarm():
     def operate(self):
         while True: # Escape
             separateVector = self.handleDroneCollision(self.drone1.getPose(),self.drone2.getPose())
-            self.drone1.swarmMovement(separateVector)
-            self.drone2.swarmMovement(-separateVector)
+            self.drone1.swarmMovement(self.drone1.transformGlobalToDroneSpace(-separateVector))
+            self.drone2.swarmMovement(self.drone2.transformGlobalToDroneSpace(separateVector))
             self.drone1.operate(exitLoop = True)
             self.drone2.operate(exitLoop = True)
 
