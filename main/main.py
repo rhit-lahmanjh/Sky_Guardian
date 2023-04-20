@@ -3,8 +3,13 @@ from behaviors.behavior import behavior1
 import numpy as np
 import time
 
-drone1 = Drone(identifier = 'chuck',behavior = behavior1())
-drone1.operate()
+alphaIP = '192.168.0.140'
+local1_address = ('192.168.0.245',9010)
+
+
+
+alpha = Drone(identifier = 'chuck',behavior = behavior1(),)
+alpha.operate()
 
 # dir = np.array([[50],[0],[0],[0]])
 
