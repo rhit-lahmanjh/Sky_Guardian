@@ -10,9 +10,16 @@ def main(page: ft.Page):
     # tello_address = ('192.168.10.1', 8889)
     # local_address = ('', 9000)
     page.title = "Drone Connection Page"
-    # page.vertical_alignment = ft.MainAxisAlignment.CENTER
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
-    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+    page.horizontal_alignment = ft.CrossAxisAlignment.START
+
+    dr1 = ft.Text(value="Drone 1 Router IP: 192.168.0.248", color="black")
+    page.controls.append(dr1)
+    dr2 = ft.Text(value="Drone 2 Router IP: 192.168.0.140", color="black")
+    page.controls.append(dr2)
+    ds = ft.Text(value="Drone Single IP: 192.168.10.1", color="black")
+    page.controls.append(ds)
+    page.update()
 
     # Can only press one connect button at a time
     def droneOneConnect_button(e):
