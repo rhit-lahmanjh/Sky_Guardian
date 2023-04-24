@@ -72,7 +72,7 @@ class Drone(djitellopytest.Tello):
         if behavior is not None:
             self.behavior = behavior
         if WITH_DRONE:
-            super().__init__(tello_ip = tello_ip, vs_udp_ip = vs_udp_ip, vs_udp_port = vs_udp_port, control_udp_port = control_udp_port, state_udp_port = state_udp_port)
+            super().__init__(tello_ip = tello_ip, vs_udp_ip = vs_udp_ip, vs_udp_port = vs_udp_port, control_udp_port = control_udp_port, state_udp_port = state_udp_port, host=tello_ip)
             # super().__init__()
 
             # This is where we will implement connecting to a drone through the router
@@ -250,17 +250,18 @@ class Drone(djitellopytest.Tello):
 
         # Turns the string SNR value into an integer
         # Checks the Wi-Fi SNR value to determine signal strength
-        print("Signal Strength: " + self.query_wifi_signal_noise_ratio())
-        signalStrength = self.query_wifi_signal_noise_ratio()
-        if signalStrength != 'ok' and signalStrength != 'okay':
-            signalStrengthInt = int(signalStrength)
-        if signalStrength == 'ok':
-            SignalCheck = True
-        elif signalStrengthInt > 25:
-            SignalCheck = True
-        else:
-            SignalCheck = False
-            self.telemetryReason["SignalStrength"] = "SNR below 25dB. Weak Connection."
+        
+        #print("Signal Strength: " + self.query_wifi_signal_noise_ratio())
+        #signalStrength = self.query_wifi_signal_noise_ratio()
+        #if signalStrength != 'ok' and signalStrength != 'okay':
+        #    signalStrengthInt = int(signalStrength)
+        #if signalStrength == 'ok':
+        #    SignalCheck = True
+        #elif signalStrengthInt > 25:
+        #    SignalCheck = True
+        #else:
+        #    SignalCheck = False
+        #    self.telemetryReason["SignalStrength"] = "SNR below 25dB. Weak Connection."
 
         # Checks to make sure the pitch is not too far off
         # If the drone is too far from 0 degrees on pitch the takeoff
@@ -295,7 +296,7 @@ class Drone(djitellopytest.Tello):
 
         # Dictionary of Boolean values to check through static telemetry
         self.telemetryCheck = {"bat":BatCheck, "temph":TemphCheck, "templ":TemplCheck,
-                        "SignalStrength":SignalCheck, "pitch":pitchCheck, "roll":rollCheck,
+                         "pitch":pitchCheck, "roll":rollCheck,
                         "height":HeightCheck}
 
         print("Completed Telemetry Checks")
@@ -317,7 +318,7 @@ class Drone(djitellopytest.Tello):
                     cv2.imshow('test',self.sensoryState.image)
             # self.refreshTracker.update()
             # self.refreshTracker.printAVG()
-            
+            t.sleep(1)
             self.operatorOverride()
 
             # State Switching 
