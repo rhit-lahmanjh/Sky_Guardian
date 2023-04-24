@@ -1,5 +1,5 @@
 import djitellopytest
-# import djitellopy
+import djitellopy
 from enum import Enum
 from perlin_noise import PerlinNoise
 import cv2

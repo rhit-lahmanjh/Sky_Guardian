@@ -9,7 +9,7 @@ from threading import Thread
 from typing import Optional, Union, Type, Dict
 
 import cv2 # type: ignore
-from djitellopy import enforce_types # NOTE THIS NEEDED TO BE PULLED FROM MAIN REPOSITORY
+from djitellopy.enforce_types import enforce_types # NOTE THIS NEEDED TO BE PULLED FROM MAIN REPOSITORY
 # from .enforce_types import enforce_types
 
 
