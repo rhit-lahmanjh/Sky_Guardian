@@ -4,11 +4,12 @@ import numpy as np
 import time
 
 alphaIP = '192.168.0.140'
+alphaCmdPort = 8889
 local1_address = ('192.168.0.245',9010)
 
 
 
-alpha = Drone(identifier = 'chuck',behavior = behavior1(),)
+alpha = Drone(identifier = 'chuck',behavior = behavior1(),tello_ip=alphaIP)
 alpha.operate()
 
 # dir = np.array([[50],[0],[0],[0]])
