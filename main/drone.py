@@ -65,14 +65,15 @@ class Drone(djitellopytest.Tello):
                  vs_udp_ip = '0.0.0.0',
                  vs_udp_port = 11111,
                  control_udp_port = 8889,
-                 state_udp_port = 8890,):
+                 state_udp_port = 8890,
+                 local_computer_IP = '0.0.0.0',):
         cv2.VideoCapture()
         self.identifier = identifier
         self.opState = State.Grounded
         if behavior is not None:
             self.behavior = behavior
         if WITH_DRONE:
-            super().__init__(tello_ip = tello_ip, vs_udp_ip = vs_udp_ip, vs_udp_port = vs_udp_port, control_udp_port = control_udp_port, state_udp_port = state_udp_port, host=tello_ip)
+            super().__init__(tello_ip = tello_ip, vs_udp_ip = vs_udp_ip, vs_udp_port = vs_udp_port, control_udp_port = control_udp_port, state_udp_port = state_udp_port, host=tello_ip,local_computer_IP=local_computer_IP)
             # super().__init__()
 
             # This is where we will implement connecting to a drone through the router
