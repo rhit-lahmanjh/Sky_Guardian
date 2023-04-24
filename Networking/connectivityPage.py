@@ -110,10 +110,11 @@ def main(page: ft.Page):
         tello2_address = (userIPaddress2, portValue)
         # Create a UDP connection that we'll send the command to
         sock2 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        local_address = ('192.168.0.234', 9010)
 
         # Let's be explicit and bind to a local port on our machine where Tello can send messages
         print("Sock Binded")
-        sock2.bind(('', 9010))
+        sock2.bind(local_address)
 
         def send(message):
             try:
