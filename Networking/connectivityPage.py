@@ -74,7 +74,9 @@ def main(page: ft.Page):
         print("Battery Status")
         send("battery?")
         # Receive battery response from Tello
+        print("Awaiting Reception")
         receive()
+        print("Response Received")
 
         print("Successfully Connected to Drone")
         print("Closing socket")
@@ -149,7 +151,9 @@ def main(page: ft.Page):
         print("Battery Status")
         send("battery?")
         # Receive battery response from Tello
+        print("Awaiting Reception")
         receive()
+        print("Response Received")
 
         print("Successfully Connected to Drone")
         print("Closing socket")
