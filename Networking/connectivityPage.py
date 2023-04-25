@@ -33,10 +33,11 @@ def main(page: ft.Page):
         tello_address = (userIPaddress1, portValue)
         # Create a UDP connection that we'll send the command to
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
+        local_address = ('192.168.0.234', 9010)
         print("Sock Binded")
         # Let's be explicit and bind to a local port on our machine where Tello can send messages
-        sock.bind(('', 9000))
+        sock.bind(local_address)
+
         def send(message):
             try:
                 sock.sendto(message.encode(), tello_address)
@@ -94,17 +95,6 @@ def main(page: ft.Page):
         # User input should be the string IP address
         userIPaddress2 = str(input2.value)
         portValue = 8889
-
-        # # csv code for writing to csv file
-        # values = [userIPaddress2, portValue]
-        # with open('Drone2.csv', 'w') as file:
-        #     writer = csv.writer(file)
-        #     writer.writerow(values)
-
-        # Pickle Code for writing to txt file
-        # with open("ip_fileDrone2.txt", "wb") as file_handler:
-        #     pickle.dump((userIPaddress2, portValue), (file_handler))
-        # input()
 
         print("Address assigned")
         tello2_address = (userIPaddress2, portValue)
@@ -270,6 +260,17 @@ ft.app(target=main)
 # Pickle Code for writing to txt file
 # with open("ip_fileDrone1.txt", "wb") as file_handler:
 #     pickle.dump((userIPaddress1, portValue), (file_handler))
+# input()
+
+# # csv code for writing to csv file
+# values = [userIPaddress2, portValue]
+# with open('Drone2.csv', 'w') as file:
+#     writer = csv.writer(file)
+#     writer.writerow(values)
+
+# Pickle Code for writing to txt file
+# with open("ip_fileDrone2.txt", "wb") as file_handler:
+#     pickle.dump((userIPaddress2, portValue), (file_handler))
 # input()
 
 # # csv code for writing to csv file
