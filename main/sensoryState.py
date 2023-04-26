@@ -135,9 +135,9 @@ class SensoryState():
     def __clearBuffer__(self, cap):
         """ Emptying buffer frame """
         while True:
-            # print("buffer")
             start_time = t.time()
             grabbed = cap.grab()
+            print(f"buffer {t.time()-start_time}")
             if t.time()-start_time > .02:
                 break
 

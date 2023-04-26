@@ -7,7 +7,7 @@ from refresh_tracker import State
 from yoloClasses import vision_class
 
 
-### Reaction Format Interfaces
+### Reaction Format 
 class movementReaction:
 
     def __init__(self) -> None:

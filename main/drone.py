@@ -67,7 +67,7 @@ class Drone(djitellopytest.Tello):
                  control_udp_port = 8889,
                  state_udp_port = 8890,
                  local_computer_IP = '0.0.0.0',):
-        cv2.VideoCapture()
+        # cv2.VideoCapture()
         self.identifier = identifier
         self.opState = State.Grounded
         if behavior is not None:
@@ -78,6 +78,10 @@ class Drone(djitellopytest.Tello):
 
             # This is where we will implement connecting to a drone through the router
             self.connect()
+            self.set_video_bitrate(djitellopytest.Tello.BITRATE_AUTO)
+            # self.set_video_fps(djitellopytest.Tello.FPS_15)
+            self.set_video_resolution(djitellopytest.Tello.RESOLUTION_480P)
+
             self.set_speed(self.MAXSPEED)
             self.enable_mission_pads()
 
@@ -307,7 +311,7 @@ class Drone(djitellopytest.Tello):
     def operate(self,exitLoop = False):
         # creating window
         if WITH_CAMERA:
-            cv2.namedWindow('test', cv2.WINDOW_NORMAL)
+            cv2.namedWindow(self.identifier, cv2.WINDOW_NORMAL)
         while cv2.waitKey(20) != 27: # Escape
             #sensing
             if WITH_CAMERA:
@@ -316,10 +320,10 @@ class Drone(djitellopytest.Tello):
                 else:
                     self.sensoryState.update()
                 if self.sensoryState.returnedImage:
-                    cv2.imshow('test',self.sensoryState.image)
+                    cv2.imshow(self.identifier,self.sensoryState.image)
             # self.refreshTracker.update()
             # self.refreshTracker.printAVG()
-            t.sleep(1)
+
             self.operatorOverride()
 
             # State Switching 
@@ -413,4 +417,4 @@ class Drone(djitellopytest.Tello):
         if exitLoop: return
 
         self.stop()
-        cv2.destroyAllWindows()
+        cv2.destroyWindow(self.identifier)
