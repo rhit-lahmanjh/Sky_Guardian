@@ -224,7 +224,7 @@ Once these safety features are implemented properly either through hardware or s
 <summary>Networking</summary>
 
 <br>
-Still don't know if we need this lol
+<img src = "Networking\Picture of connection.PNG">
 </details> 
 
 # Getting Started
