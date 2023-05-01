@@ -224,7 +224,7 @@ Once these safety features are implemented properly either through hardware or s
 <summary>Networking</summary>
 
 <br>
-<img src = "C:\Users\krishna2\Downloads\inTellogence\Networking\Picture of connection.PNG">
+<img src = "inTellogence\Networking\Picture of connection.PNG">
 </details> 
 
 # Getting Started
