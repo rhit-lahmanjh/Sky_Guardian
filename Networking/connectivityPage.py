@@ -13,14 +13,6 @@ def main(page: ft.Page):
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
     page.horizontal_alignment = ft.CrossAxisAlignment.START
 
-    dr1 = ft.Text(value="Drone 1 Router IP: 192.168.0.248", color="black")
-    page.controls.append(dr1)
-    dr2 = ft.Text(value="Drone 2 Router IP: 192.168.0.140", color="black")
-    page.controls.append(dr2)
-    ds = ft.Text(value="Drone Single IP: 192.168.10.1", color="black")
-    page.controls.append(ds)
-    page.update()
-
     # Can only press one connect button at a time
     def droneOneConnect_button(e):
 
@@ -153,7 +145,6 @@ def main(page: ft.Page):
         if SuccessfulConnection:
             page.add("Drone 2 Connection Successful")
             page.add(droneContinueButtonRow)
-
         page.update()
 
     def window_event(e):
@@ -222,7 +213,7 @@ def main(page: ft.Page):
             ft.Container(
                 content=ft.Row(
                     droneContinueButtonItems,
-                    alignment=ft.MainAxisAlignment.CENTER),
+                    alignment=ft.MainAxisAlignment.END),
             )
         ]
     )
@@ -232,6 +223,7 @@ def main(page: ft.Page):
         [
             droneOneConnectionRow,
             droneTwoConnectionRow,
+            droneContinueButtonRow
         ],
         spacing=50,
         alignment=ft.MainAxisAlignment.CENTER,
@@ -248,6 +240,14 @@ def main(page: ft.Page):
         ],
         actions_alignment=ft.MainAxisAlignment.END,
     )
+
+    dr1 = ft.Text(value="Drone 1 Router IP: 192.168.0.248", color="black")
+    page.controls.append(dr1)
+    dr2 = ft.Text(value="Drone 2 Router IP: 192.168.0.140", color="black")
+    page.controls.append(dr2)
+    ds = ft.Text(value="Drone Single IP: 192.168.10.1", color="black")
+    page.controls.append(ds)
+    page.update()
 
 ft.app(target=main)
 
