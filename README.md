@@ -95,12 +95,12 @@ A movement reaction defines non-blocking instructions. So, it returns a movement
 </details> 
 
 <details>
-<summary>Object Recognition by OpenCV</summary>
+<summary>Object Recognition using Yolov8</summary>
 <br>
 
-TO BE UPDATED WITH YOLO INFORMATION
-Sky Guardian performs object recognition by implementing pre-trained Convolutional Neural Networks (CNN) via OpenCV's deep learning module. All video feed analysis is abstracted out into the VideoAnalyzer class from video_analyzer.py. To try a different network from the one provided, all that needs to be done is change which weights and configuration file is loaded //change if needed ADD MORE INFO ABOUT MODEL BEING RAN. <br>
+Sky Guardian performs object recognition by implementing <a href="https://github.com/ultralytics/ultralytics"> Ultralytics Yolov8 </a>. All video feed analysis is abstracted out into the VideoAnalyzer class from video_analyzer.py. This wrapper class adds the ability to automatically download all Object Recognition models, as well as adjust the model size (speed/accuracy tradeoff) To explore the other models available using Yolov8 (pose, image segmentation, etc), consider editing video_analyzer.py.<br>
 
+The output of the network can be slightly confusing (read about it <a href=""> here</a>.)
 The CNN outputs several pieces of information about the objects detected. It's in the format of a Nx7 matrix, sorted in order of confidence. The indexes are shown below: <bv>
 
 0: None
@@ -230,17 +230,41 @@ Still don't know if we need this lol
 # Getting Started
 We used the following materials for this project:
 - 2 Tello EDU drones
-- Router
-- Tello Mission Pads
-- etc. 
+- Router (we used the <a href= "https://www.amazon.com/TP-Link-AC1750-Smart-WiFi-Router/dp/B079JD7F7G/ref=sr_1_3?keywords=WiFi%2BRouters%2Bfor%2BHome&qid=1663443788&sr=8-3&ufe=app_do%3Aamzn1.fos.006c50ae-5d4c-4777-9bc0-4513d670b6bc&th=1">TP-Link AC1750 Smart WiFi Router (Archer A7)</a>
+- 16 Tello Mission Pads
 
 ## Setting up drones and router
-This section will cover how to set up the router, connect your computer to it, connect the drone to it, and run the code through it.
-## How to run requirements
-This section will walk the user through setting up the environment through anaconda
-## Setting up the Mission Pads
-For Sky Guardian to work as expected, it's important to setup the mission pads as the drone expects to see them. This layout is shown below, where orientation, spacing and layout are important. Should you wish to adjust the spacing between the pads, this is found in the SensoryState class. NOTE: Because of observed inconsistency with the drone correctly measuring the yaw, the drone expects to begin facing the X direction as shown below.
-This section will include a graphic as to how to setup the mission pad layout, and point to the correct section of code (Currently in SensoryState.py, but should likely be moved) where they can create custom mission pad layouts.
+This section will cover how to set up the router, connect your computer to it, and connect the drones to it.
+
+## Installations before running for the first time
+
+### Verify that your GPU is supported by CUDA
+First, to verify that your system is GPU capable. Open your Device Manager and scroll to "Display Adapters." If your system has one, the GPU will be listed here. To ensure that your system is CUDA capable, make sure your GPU is one listed as supported here <a href="https://developer.nvidia.com/cuda-gpus">here</a>.
+
+<img src="imgs/gpu_capable.png" width="500">
+<em>Here, we can see our GPU is the Nvidia Quadro P1000</em>
+
+### Download and install Cuda ()
+
+This tutorial assumes you are using the environment manager <a href= "https://www.anaconda.com/">Anaconda</a>. See Supplemental documentation if you are unfamiliar with Anaconda, as it's an incredibly helpful tool for navigating python distributions.
+
+### Package Installation
+We provide two options to install required packages.
+
+#### Anaconda Navigator
+Using from the environments page in Anaconda Navigator, simply import the inTellogence_environment.yaml file.
+
+#### With Anaconda Prompt
+With your desired environment activated, and the inTellogence folder active, run the following command:
+
+pip install -r requirements.txt
+
+## Mission Pad Setup
+For inTellogence to work as expected, it's important to setup the mission pads as the drone expects to see them, as mapping is currently not supported. This layout is shown below, where orientation, spacing and layout are important. Should you wish to adjust the spacing between the pads, these are defined as global constants in sensoryState.py, set by default to 50cm center to center. Since Tello EDU currently only supports 8 different mission pads, the flyable space is separated into two sectors, in which the drones track which quadrant they are in.
+
+IMPORTANT: When taking off, place the drones facing the X direction and it Sector 1.
+
+<img src="imgs/mission_pad_layout.png" width="500">
 
 # Examples
 ## Creating a reactive behavior to an object

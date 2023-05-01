@@ -15,9 +15,13 @@ class Swarm():
 
     def operate(self):
         while True: # Escape
-            separateDroneTwoForceVector = self.handleDroneTwoCollision(self.drone1.getPose(), self.drone2.getPose())
-            self.drone1.swarmMovement(self.drone1.transformGlobalToDroneSpace(-separateDroneTwoForceVector))
-            self.drone2.swarmMovement(self.drone2.transformGlobalToDroneSpace(separateDroneTwoForceVector))
+            if self.drone1.getPose()[0] != 0 and self.drone2.getPose()[0] != 0:
+                separateDroneTwoForceVector = self.handleDroneTwoCollision(self.drone1.getPose(), self.drone2.getPose())
+                print(f"Global: {separateDroneTwoForceVector}")
+                print(f"Drone 1: {self.drone1.transformGlobalToDroneSpace(-separateDroneTwoForceVector[0:3])}")
+                print(f"Drone 2: {self.drone2.transformGlobalToDroneSpace(separateDroneTwoForceVector[0:3])}")
+            #     self.drone1.swarmMovement(self.drone1.transformGlobalToDroneSpace(-separateDroneTwoForceVector))
+            #     self.drone2.swarmMovement(self.drone2.transformGlobalToDroneSpace(separateDroneTwoForceVector))
             self.drone1.operate(exitLoop = True)
             self.drone2.operate(exitLoop = True)
 
@@ -27,12 +31,13 @@ class Swarm():
 
         # 30cm threshold
         distanceThreshold = 30
+        forceMagnitude = 10
         # distance formula with drone 1 & 2 XY coordinates
-        distance = math.sqrt(((drone2Pose[0,0] - drone1Pose[0,0])**2) + ((drone2Pose[1,0] - drone1Pose[1,0])**2))
-        if distance < distanceThreshold:
-            xCord = (1 / distance) * ((drone2Pose[0, 0] - drone1Pose[0, 0]) / distance)
-            yCord = (1 / distance) * ((drone2Pose[1, 0] - drone1Pose[1, 0]) / distance)
-            return np.array([[xCord], [yCord], [0], [0]])
-
-        # KIRK outline code
-        return np.zeros((4,1))
+        if drone2Pose[0,0] != drone1Pose[0,0] and drone2Pose[1,0] != drone1Pose[1,0]: # NOTE TEST THIS FUNCTION
+            distance = math.sqrt(((drone2Pose[0,0] - drone1Pose[0,0])**2) + ((drone2Pose[1,0] - drone1Pose[1,0])**2))
+            if distance < distanceThreshold:
+                xCord = (forceMagnitude / distance) * ((drone2Pose[0, 0] - drone1Pose[0, 0]) / distance)
+                yCord = (forceMagnitude / distance) * ((drone2Pose[1, 0] - drone1Pose[1, 0]) / distance)
+                return np.array([[xCord], [yCord], [0], [0]])
+        else:
+            return np.zeros((4,1))

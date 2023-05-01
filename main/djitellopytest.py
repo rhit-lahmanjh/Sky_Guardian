@@ -121,7 +121,10 @@ class Tello:
         if not threads_initialized:
             # Run Tello command responses UDP receiver on background
             client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            client_socket.bind((self.LOCAL_COMPUTER_IP, Tello.CONTROL_UDP_PORT))
+            if self.LOCAL_COMPUTER_IP != '0.0.0.0':
+                client_socket.bind((self.LOCAL_COMPUTER_IP, self.CONTROL_UDP_PORT))
+            else:
+                client_socket.bind(("", Tello.CONTROL_UDP_PORT))
             response_receiver_thread = Thread(target=Tello.udp_response_receiver)
             response_receiver_thread.daemon = True
             response_receiver_thread.start()
@@ -135,7 +138,6 @@ class Tello:
 
         drones[host] = {'responses': [], 'state': {}}
 
-        self.send_command_with_return(f"port {self.STATE_UDP_PORT} {self.VS_UDP_PORT}") #NOTE CHANGE
         self.LOGGER.info("Tello instance was initialized. Host: '{}'. Port: '{}'.".format(host, Tello.CONTROL_UDP_PORT))
 
     def get_own_udp_object(self):
@@ -556,6 +558,7 @@ class Tello:
                 if self.get_current_state():
                     t = i / REPS  # in seconds
                     Tello.LOGGER.debug("'.connect()' received first state packet after {} seconds".format(t))
+                    self.send_command_with_return(f"port {self.STATE_UDP_PORT} {self.VS_UDP_PORT}") #NOTE CHANGE
                     break
                 time.sleep(1 / REPS)
 

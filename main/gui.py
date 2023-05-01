@@ -9,13 +9,23 @@ import cv2
 import base64
 import threading
 from flet import * 
+from behaviors.behavior import behavior1
+
 
 # tello_address = ('192.168.10.1', 8889)
 # local_address = ('', 9000)
         
+alphaIP = '192.168.0.140'
+alphaCmdPort = 8889
+local1_address = ('192.168.0.245',9010)
+joseph_local_address = '192.168.0.248'
+alpha_vs_port = 11111
+
 def main(page: ft.Page):
     # drone connection
-    drone1 = Drone(identifier = 'test', behavior = None)
+    # drone1 = Drone(identifier = 'test', behavior = None)
+    drone1 = Drone(identifier = 'alpha',behavior = behavior1(),tello_ip=alphaIP,control_udp_port=alphaCmdPort,vs_udp_port=alpha_vs_port)
+
     cap = drone1.sensoryState.videoCapture
 
     # Setting up threading
@@ -259,7 +269,7 @@ def main(page: ft.Page):
                 padding=10,
                 border_radius = ft.border_radius.all(20),
                 content=ft.Column([
-                    Countdown(drone1),
+                    # Countdown(drone1),
                     ft.Text("OPENCV WITH FLET",
                          size=20, weight="bold",
                          color=ft.colors.WHITE),
@@ -289,47 +299,47 @@ def main(page: ft.Page):
 ft.app(target=main)
 cv2.destroyAllWindows()
 
-class Countdown(ft.UserControl, Drone):
-    cv2.namedWindow("Video Stream",cv2.WINDOW_NORMAL)
-    cv2.resizeWindow("Video Stream", 400, 600)
-    cap = Drone.sensoryState.videoCapture
+# class Countdown(ft.UserControl, Drone):
+#     cv2.namedWindow("Video Stream",cv2.WINDOW_NORMAL)
+#     cv2.resizeWindow("Video Stream", 400, 600)
+#     cap = Drone.sensoryState.videoCapture
     
-    myImage = ft.Image(src=False, width=300, height=300, fit="cover")
-		# # AND SAVE THE FILE NAME WITH TIME NOW 
-		# timestamp = str(int(time.time()))
-		# myfileface = str("myCumFaceFile" + "_" + timestamp + '.jpg')
-    try:
-        while True:
-            ret, frame = cap.read()
-            cv2.imshow("Webcam",frame)
-            myImage.src = ""
-            ft.page.update()
+#     myImage = ft.Image(src=False, width=300, height=300, fit="cover")
+# 		# # AND SAVE THE FILE NAME WITH TIME NOW 
+# 		# timestamp = str(int(time.time()))
+# 		# myfileface = str("myCumFaceFile" + "_" + timestamp + '.jpg')
+#     try:
+#         while True:
+#             ret, frame = cap.read()
+#             cv2.imshow("Webcam",frame)
+#             myImage.src = ""
+#             ft.page.update()
 
-            # AFTER THAT WAITING YOU INPUT FROM KEYBOARD
-            key = cv2.waitKey(1)
+#             # AFTER THAT WAITING YOU INPUT FROM KEYBOARD
+#             key = cv2.waitKey(1)
 
-            # AND IF YOU PRESS Q FROM YOU KEYBOARD THEN
-            # THE WEBCAM WINDOW CAN CLOSE 
-            # AND YOU NOT CAPTURE YOU IMAGE
-            # if key == ord("q"):
-            #     break
-            # elif key == ord("s"):
-            #     # AND IF YOU PRESS s FROM YOU KEYBOARD
-            #     # THE THE YOU CAPTURE WILL SAVE IN FOLDER YOUPHOTO
-            #     cv2.imwrite(f"youphoto/{myfileface}",frame)
-            #     # AND SHOW TEXT YOU PICTURE SUCCESS INPUT
-            #     cv2.putText(frame,"YOU SUCESS CAPTURE GUYS !!!",(10,50),cv2.FONT_HERSHEY_SIMPLEX,1,(0,0,255),2)
-            #     cv2.imshow("Webcam",frame)
-            #     cv2.waitKey(3000)
-            #     folder_path = "youphoto/"
-            #     myimage.src = folder_path + myfileface
-            #     page.update()
-            #     break
+#             # AND IF YOU PRESS Q FROM YOU KEYBOARD THEN
+#             # THE WEBCAM WINDOW CAN CLOSE 
+#             # AND YOU NOT CAPTURE YOU IMAGE
+#             # if key == ord("q"):
+#             #     break
+#             # elif key == ord("s"):
+#             #     # AND IF YOU PRESS s FROM YOU KEYBOARD
+#             #     # THE THE YOU CAPTURE WILL SAVE IN FOLDER YOUPHOTO
+#             #     cv2.imwrite(f"youphoto/{myfileface}",frame)
+#             #     # AND SHOW TEXT YOU PICTURE SUCCESS INPUT
+#             #     cv2.putText(frame,"YOU SUCESS CAPTURE GUYS !!!",(10,50),cv2.FONT_HERSHEY_SIMPLEX,1,(0,0,255),2)
+#             #     cv2.imshow("Webcam",frame)
+#             #     cv2.waitKey(3000)
+#             #     folder_path = "youphoto/"
+#             #     myimage.src = folder_path + myfileface
+#             #     page.update()
+#             #     break
             
-            cap.release()
-            cv2.destroyAllWindows()
-            ft.page.update()    
+#             cap.release()
+#             cv2.destroyAllWindows()
+#             ft.page.update()    
 
-    except Exception as e:
-        print(e)
-        print("Failed")
+#     except Exception as e:
+#         print(e)
+#         print("Failed")

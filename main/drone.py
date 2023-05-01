@@ -1,7 +1,6 @@
 import djitellopytest
 import djitellopy
 from enum import Enum
-from perlin_noise import PerlinNoise
 import cv2
 import keyboard as key
 import time as t
@@ -13,25 +12,13 @@ import sensoryState
 from behaviors.behavior import behaviorFramework
 from refresh_tracker import RefreshTracker, State
 
-DEBUG_PRINTS = True
+DEBUG_PRINTS = False
 WITH_DRONE = True
 WITH_CAMERA = True
 RECORD_SENSOR_STATE = True
 
 clamp = lambda n, minn, maxn: max(min(maxn, n), minn)
 
-class State(Enum):
-    Grounded = 1
-    Takeoff = 2
-    Land = 3
-    Wander = 4
-    FollowWalkway = 5
-    FollowHallway = 6
-    TrackPerson = 7
-    Doorway = 8
-    Scan = 9
-    Hover = 10
- 
 class Drone(djitellopytest.Tello):
     #video I THINK THIS IS DEPRICATED
     vidCap = None
@@ -67,17 +54,20 @@ class Drone(djitellopytest.Tello):
                  control_udp_port = 8889,
                  state_udp_port = 8890,
                  local_computer_IP = '0.0.0.0',):
-        cv2.VideoCapture()
+        # cv2.VideoCapture()
         self.identifier = identifier
         self.opState = State.Grounded
         if behavior is not None:
             self.behavior = behavior
         if WITH_DRONE:
             super().__init__(tello_ip = tello_ip, vs_udp_ip = vs_udp_ip, vs_udp_port = vs_udp_port, control_udp_port = control_udp_port, state_udp_port = state_udp_port, host=tello_ip,local_computer_IP=local_computer_IP)
-            # super().__init__()
 
             # This is where we will implement connecting to a drone through the router
             self.connect()
+            self.set_video_bitrate(djitellopytest.Tello.BITRATE_AUTO)
+            # self.set_video_fps(djitellopytest.Tello.FPS_15)
+            self.set_video_resolution(djitellopytest.Tello.RESOLUTION_480P)
+
             self.set_speed(self.MAXSPEED)
             self.enable_mission_pads()
 
@@ -90,7 +80,7 @@ class Drone(djitellopytest.Tello):
         elif not WITH_DRONE and WITH_CAMERA:
             self.sensoryState = SensoryState()
             self.sensoryState.setupWebcam()
-            print('seupt')
+            print('setup complete')
         else:
             self.sensoryState = SensoryState()
 
@@ -307,7 +297,7 @@ class Drone(djitellopytest.Tello):
     def operate(self,exitLoop = False):
         # creating window
         if WITH_CAMERA:
-            cv2.namedWindow('test', cv2.WINDOW_NORMAL)
+            cv2.namedWindow(self.identifier, cv2.WINDOW_NORMAL)
         while cv2.waitKey(20) != 27: # Escape
             #sensing
             if WITH_CAMERA:
@@ -316,10 +306,10 @@ class Drone(djitellopytest.Tello):
                 else:
                     self.sensoryState.update()
                 if self.sensoryState.returnedImage:
-                    cv2.imshow('test',self.sensoryState.image)
+                    cv2.imshow(self.identifier,self.sensoryState.image)
             # self.refreshTracker.update()
             # self.refreshTracker.printAVG()
-            t.sleep(1)
+
             self.operatorOverride()
 
             # State Switching 
@@ -327,6 +317,7 @@ class Drone(djitellopytest.Tello):
                 case State.Grounded:
                     if(DEBUG_PRINTS):
                         print('Landed')
+                    print(f"{self.identifier} Swarm Vector: {self.swarmVector}")
                     if key.is_pressed('t'):
                         self.opState = State.Takeoff
                         print("Attempting to take off")
@@ -410,7 +401,7 @@ class Drone(djitellopytest.Tello):
                         # Mission Pad detected, switch back to Wander State
                         print('Mission Pad detected.')
                         self.opState = State.Wander
-        if exitLoop: return
+            if exitLoop: return
 
         self.stop()
-        cv2.destroyAllWindows()
+        cv2.destroyWindow(self.identifier)
