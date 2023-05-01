@@ -2,7 +2,7 @@ from drone import Drone
 from behaviors.behavior import behavior1
 import numpy as np
 import threading
-import time
+from swarm import Swarm
 
 #user specific variables
 joseph_local_address = '192.168.0.248'
@@ -19,26 +19,10 @@ betaCmdPort = 8891
 betaStatePort = 8892
 beta_vs_port = 11112
 
-
+#make drones
 alpha = Drone(identifier = 'alpha',behavior = behavior1(),tello_ip=alphaIP,control_udp_port=alphaCmdPort,state_udp_port=alphaStatePort, vs_udp_port=alpha_vs_port)
 beta = Drone(identifier = 'beta',behavior = behavior1(),tello_ip=betaIP,control_udp_port=betaCmdPort,state_udp_port = betaStatePort, vs_udp_port=beta_vs_port)
 
-# alpha.operate()
+swarm = Swarm(alpha,beta)
 
-
-threads = []
-alpha_thread = threading.Thread(target=alpha.operate)
-threads.append(alpha_thread)
-alpha_thread.start()
-
-beta_thread = threading.Thread(target=beta.operate)
-threads.append(beta_thread)
-beta_thread.start()
-
-# dir = np.array([[50],[0],[0],[0]])
-
-# drone1.takeoff()
-# drone1.moveDirection(dir)
-# time.sleep(5)
-# drone1.hover()
-# drone1.land()
+swarm.operate()

@@ -137,7 +137,7 @@ class SensoryState():
         while True:
             start_time = t.time()
             grabbed = cap.grab()
-            print(f"buffer {t.time()-start_time}")
+            # print(f"buffer {t.time()-start_time}")
             if t.time()-start_time > .02:
                 break
 

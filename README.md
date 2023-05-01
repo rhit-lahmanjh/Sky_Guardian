@@ -230,17 +230,28 @@ Still don't know if we need this lol
 # Getting Started
 We used the following materials for this project:
 - 2 Tello EDU drones
-- Router
-- Tello Mission Pads
-- etc. 
+- Router (we used the <a href= "https://www.amazon.com/TP-Link-AC1750-Smart-WiFi-Router/dp/B079JD7F7G/ref=sr_1_3?keywords=WiFi%2BRouters%2Bfor%2BHome&qid=1663443788&sr=8-3&ufe=app_do%3Aamzn1.fos.006c50ae-5d4c-4777-9bc0-4513d670b6bc&th=1">TP-Link AC1750 Smart WiFi Router (Archer A7)</a>
+- 16 Tello Mission Pads
 
 ## Setting up drones and router
-This section will cover how to set up the router, connect your computer to it, connect the drone to it, and run the code through it.
-## How to run requirements
-This section will walk the user through setting up the environment through anaconda
+This section will cover how to set up the router, connect your computer to it, and connect the drones to it.
+
+## Installations before running for the first time
+
+### Verify that your GPU is supported by CUDA
+First, to verify that your system is GPU capable. Open your Device Manager and scroll to "Display Adapters." If your system has one, the GPU will be listed here. To ensure that your system is CUDA capable, make sure your GPU is one listed as supported at this <a href="https://webstore.iec.ch/publication/59927">website</a>.
+
+<img src="imgs/gpu_capable.png" width="500">
+
+### Using Anaconda and CUDA ()
+
+This tutorial assumes you are using the environment manager Anaconda. 
+
+
 ## Setting up the Mission Pads
-For Sky Guardian to work as expected, it's important to setup the mission pads as the drone expects to see them. This layout is shown below, where orientation, spacing and layout are important. Should you wish to adjust the spacing between the pads, this is found in the SensoryState class. NOTE: Because of observed inconsistency with the drone correctly measuring the yaw, the drone expects to begin facing the X direction as shown below.
-This section will include a graphic as to how to setup the mission pad layout, and point to the correct section of code (Currently in SensoryState.py, but should likely be moved) where they can create custom mission pad layouts.
+For Sky Guardian to work as expected, it's important to setup the mission pads as the drone expects to see them. This layout is shown below, where orientation, spacing and layout are important. Should you wish to adjust the spacing between the pads, these are defined as global constants in sensoryState.py, set by default to 50cm center to center. NOTE: Because of observed inconsistency with the drone correctly measuring the yaw, the drone expects to begin facing the X direction as shown below.
+
+<img src="imgs/mission_pad_layout.png" width="500">
 
 # Examples
 ## Creating a reactive behavior to an object
