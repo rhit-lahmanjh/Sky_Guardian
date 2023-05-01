@@ -8,13 +8,15 @@ class Swarm():
     drone1:Drone
     drone2:Drone
 
+    turnOff = False
+
     def __init__(self,drone1:Drone,drone2:Drone) -> None:
         #this should later be updated to have more than 2 if time allows
         self.drone1 = drone1
         self.drone2 = drone2
 
     def operate(self):
-        while True: # Escape
+        while not self.turnOff: # Escape
             if self.drone1.getPose()[0] != 0 and self.drone2.getPose()[0] != 0:
                 separateDroneTwoForceVector = self.handleDroneTwoCollision(self.drone1.getPose(), self.drone2.getPose())
                 print(f"Global: {separateDroneTwoForceVector}")
@@ -24,6 +26,8 @@ class Swarm():
             #     self.drone2.swarmMovement(self.drone2.transformGlobalToDroneSpace(separateDroneTwoForceVector))
             self.drone1.operate(exitLoop = True)
             self.drone2.operate(exitLoop = True)
+        self.drone1.end_flight()
+        self.drone2.end_flight()
 
     # Pose is a np array of size (4,1), where [[xpos],[ypos],[zpos],[yaw]]
     # [0,0] = xpos, [1,0] = ypos, [2,0] = zpos

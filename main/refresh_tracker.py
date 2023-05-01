@@ -14,6 +14,8 @@ class State(Enum):
     Doorway = 8
     Scan = 9
     Hover = 10
+    Drift = 11
+    NoPad = 12
 
 class RefreshTracker():
     refreshRateQueue = None

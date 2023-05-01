@@ -159,6 +159,10 @@ class Drone(djitellopytest.Tello):
         if key.is_pressed('r'):
             self.opState = State.Wander
             return
+
+    def end_flight(self):
+        self.stop()
+        cv2.destroyWindow(self.identifier)
     #endregion
     #region MOVEMENT FUNCTIONS
     def stop(self): # lands, cuts stream and connection with drone
@@ -401,7 +405,5 @@ class Drone(djitellopytest.Tello):
                         # Mission Pad detected, switch back to Wander State
                         print('Mission Pad detected.')
                         self.opState = State.Wander
-            if exitLoop: return
+            if exitLoop: break
 
-        self.stop()
-        cv2.destroyWindow(self.identifier)
