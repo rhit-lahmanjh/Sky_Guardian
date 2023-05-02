@@ -226,6 +226,8 @@ Once these safety features are implemented properly either through hardware or s
 <summary>Networking</summary>
 
 <br>
+There are different types of swarm capabilities. One capability is where each drone has a unique "brain" and makes decisions on its own. The other type of swarm which we are trying to accomplish is centeralized control. Where, computation is occuring on a lower level device that is then sent to two or more objects to follow through. 
+
 Goal is operating 2 drones simultaneously through a central computer, primarily through connecting to the drones through a router. This is seen in figure 1. The computation and analysis would occur on the cimputer and the commands would be sent through the router to the drones. 
 
 <img src = "Networking\Diagram for Drone Connectivity.jpg">
