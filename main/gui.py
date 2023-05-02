@@ -1,10 +1,12 @@
 #!/bin/env python
 from drone import (Drone, State)
+from behaviors.behavior import behavior1
 import flet as ft
 import djitellopy
 import socket
 import time
 import numpy as np
+from yoloClasses import vision_class
 import cv2
 import base64
 import threading
@@ -23,9 +25,18 @@ alpha_vs_port = 11111
 
 def main(page: ft.Page):
     # drone connection
+<<<<<<< HEAD
+    alphaIP = '192.168.0.140'
+    alphaCmdPort = 8889
+    local1_address = ('192.168.0.245',9010)
+    drone1 = Drone(identifier = 'chuck',behavior = behavior1(),tello_ip=alphaIP)
+
+    # drone1 = Drone(identifier = 'test', behavior = None)
+=======
     # drone1 = Drone(identifier = 'test', behavior = None)
     drone1 = Drone(identifier = 'alpha',behavior = behavior1(),tello_ip=alphaIP,control_udp_port=alphaCmdPort,vs_udp_port=alpha_vs_port)
 
+>>>>>>> 94436e32b44a78773d216f7e52c1def1466ce891
     cap = drone1.sensoryState.videoCapture
 
     # Setting up threading
@@ -49,7 +60,7 @@ def main(page: ft.Page):
 
     def drone1_land(e):
         print("Drone 1 State: Landed")
-        drone1.opState = State.Landed
+        drone1.opState = State.Land
         page.update()
     
     def drone2_land(e):
@@ -77,21 +88,16 @@ def main(page: ft.Page):
         page.update()        
 
         # opening the file in read mode
-    my_file = open("main/coco_class_labels.txt", "r")
 
-    # reading the file
-    data_read = my_file.read()
-
-    # replacing end splitting the text 
-    # when newline ('\n') is seen.
-    data = data_read.split("\n")
-    print(data)
-    print(type(data))
-    my_file.close()
+    object_list = [e.name for e in vision_class]
 
     reaction_data = ["flipOnBanana", "bobOnScissors", "pauseOnSoccerBall", "followCellPhone", "RunFromBanana"]
 
     class ReactionInput(ft.UserControl):
+        def __init__(self, droneName):
+            super().__init__()
+            self.droneName = droneName
+
         def build(self):
             self.resultdata = ListView()
             self.resultlist = resultlist =  ft.Card(
@@ -130,7 +136,7 @@ def main(page: ft.Page):
                     content=ft.Container(
                     content=ft.Column(
                     [
-                        Text("Drone 1 Reaction:",size=30,weight="bold"),
+                        Text(self.droneName, size=30,weight="bold"),
                         self.txtsearch,
                         self.resultcon,
                         ft.Column([
@@ -153,7 +159,7 @@ def main(page: ft.Page):
 
             # IF NOT BLANK YOU TEXTFIELD SEARCH THE RUN FUNCTION
             if not self.mysearch == "":
-                for item in data:
+                for item in object_list:
                     if self.mysearch in item:
                         self.result.append(item)
             
@@ -166,7 +172,7 @@ def main(page: ft.Page):
             # IF NOT BLANK YOU TEXTFIELD SEARCH THE RUN FUNCTION
             if not self.mysearch == "":
                 self.resultcon.visible = True
-                for item in data:
+                for item in object_list:
                     if self.mysearch in item:
                         self.resultcon.offset = transform.Offset(0,0)
                         result.append(item)
@@ -244,6 +250,13 @@ def main(page: ft.Page):
         ]
     )
 
+    ft.IconButton(
+                    icon=ft.icons.PAUSE_CIRCLE_FILLED_ROUNDED,
+                    icon_color="blue400",
+                    icon_size=20,
+                    tooltip="Pause record",
+                ),
+
     drone2_items = [ 
         ft.Container( width=200, height=75, content=ft.Text("Launch"), on_click=drone2_launch, bgcolor = ft.colors.GREEN_200, alignment=ft.alignment.center), 
         ft.Container(width=200, height=75, content=ft.Text("Land"), on_click=drone2_land, bgcolor = ft.colors.CYAN_200, alignment=ft.alignment.center),
@@ -261,6 +274,7 @@ def main(page: ft.Page):
             ), 
         ]
     )
+
 
     cv2window =  ft.Card(
             elevation=30,
@@ -283,6 +297,7 @@ def main(page: ft.Page):
             [
                 drone1_column,
                 drone2_column,
+                # cv2window
             ],
             spacing=15,
             alignment=ft.MainAxisAlignment.START,
@@ -293,7 +308,7 @@ def main(page: ft.Page):
             ft.Container(width=415, height=75, content=ft.Text("ORDER 66"), on_click=order66, bgcolor = ft.colors.RED, alignment=ft.alignment.center)]
         ), 
 
-        ReactionInput(), ReactionInput(),
+        ReactionInput("Drone 1"),
     )
 
 ft.app(target=main)
