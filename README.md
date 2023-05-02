@@ -243,6 +243,13 @@ We used the following materials for this project:
 ## Router and Drone Connection
 This section will cover how to set up the router, connect your computer to it, and connect the drones to it.
 
+1. Connect router to power source and turn on.
+2. Disconnect from the wifi you are connected to. 
+3. Connect to the router.
+4. Find the non 5G SSID and click connect.
+5. Locate the password to the router located on the botto of the router. 
+6. 
+
 ## Necessary Installations
 
 ### Verify that your GPU is supported by CUDA
