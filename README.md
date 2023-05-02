@@ -86,7 +86,7 @@ General control of both drones is organized around a Finite State Machine (FSM).
 <details>
 <summary>Reactive Control Through Potential Fields</summary>
 <br>
-The primary path planning approach for Sky Guardian lies in [reactive control through potential fields](https://youtu.be/umkyPWDrys4). In order to allow the drones to wander in a constrained space, Tello mission pads are utitilized in a pre-defined map. These mission pads allow the drone to localize and respond appropriately when moving out of intended airspace, applying a movement force proportional to it's measured distance outside of desired airspace. <br> 
+The primary path planning approach for Sky Guardian lies in <a href = https://youtu.be/umkyPWDrys4>reactive control through potential fields</a>. In order to allow the drones to wander in a constrained space, Tello mission pads are utitilized in a pre-defined map. These mission pads allow the drone to localize and respond appropriately when moving out of intended airspace, applying a movement force proportional to it's measured distance outside of desired airspace. <br> 
 
 <img src="imgs/boundary_force.png" width="300">
 
@@ -105,19 +105,17 @@ A movement reaction defines non-blocking instructions. So, it returns a movement
 Sky Guardian performs object recognition by implementing <a href="https://github.com/ultralytics/ultralytics"> Ultralytics Yolov8 </a>. All video feed analysis is abstracted out into the VideoAnalyzer class from video_analyzer.py. This wrapper class adds the ability to automatically download all Object Recognition models, as well as adjust the model size (speed/accuracy tradeoff), and acceptable confidence level. To explore the other models available using Yolov8 (pose, image segmentation, etc), consider editing video_analyzer.py.<br>
 
 The output of the network can be slightly confusing (this article was helpful determining syntax <a href=""> here</a>.)
-To access results in the form of an Nx6 matrix, use syntax along the lines of results[0].boxes.boxes The indexes are shown below: <bv>
+To access results in the form of an Nx6 matrix, use syntax along the lines of results[0].boxes.boxes The indexes are shown below: <br>
 
-
-0: x1 bounding box coordinate
-1: y1 boudning box coordinate
-2: x2 bounding box coordinate
-3: y2 bounding box coordinate
-4: confidence score
-5 class label
+0: x1 bounding box coordinate<br>
+1: y1 boudning box coordinate<br>
+2: x2 bounding box coordinate<br>
+3: y2 bounding box coordinate<br>
+4: confidence score<br>
+5 class label<br>
 
 In order to speed up this detection process, this repository assumes the use of CUDA 11.8. This offloads the inference calculations to the GPU, which it can be parallelized. Installation instructions can be found in Getting Started. Yolov8 allows for very minimal setup in this respect.<br>
 
- <br> 
 </details> 
 
 <details>
