@@ -11,11 +11,13 @@ class VideoAnalyzer():
     netPathList = ["yolov8n.pt", "yolov8s.pt","yolov8m.pt","yolov8l.pt","yolov8x.pt"]
     netIndex = 2
     confidenceLevel = 0
+    USING_CUDA = False
 
     def __init__(self,conf = CONFIDENCE_CUTOFF):
         if torch.cuda.is_available():
             device = "cuda:0"
             print("Using GPU")
+            self.USING_CUDA = True
         else:
             device = "cpu"
             print("Using CPU")
@@ -26,7 +28,10 @@ class VideoAnalyzer():
     def detectObjects(self,img):
         objects = self.visionNet(img,conf=self.confidenceLevel)
         img = objects[0].plot()
-
+        # if self.device == "cuda:0":
+        #     return objects[0].boxes.boxes.cpu(), img
+        # else:
+        #     return objects[0].boxes.boxes, img
         return objects[0].boxes.boxes.cpu(), img
 
     def increase_model_size(self):

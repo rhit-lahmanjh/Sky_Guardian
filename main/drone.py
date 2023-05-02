@@ -1,6 +1,4 @@
 import djitellopytest
-import djitellopy
-from enum import Enum
 import cv2
 import keyboard as key
 import time as t
@@ -8,7 +6,6 @@ import numpy as np
 import math
 import random as rand
 from sensoryState import SensoryState,MissionPadMap
-import sensoryState
 from behaviors.behavior import behaviorFramework
 from refresh_tracker import RefreshTracker, State
 
@@ -16,6 +13,7 @@ DEBUG_PRINTS = False
 WITH_DRONE = True
 WITH_CAMERA = True
 RECORD_SENSOR_STATE = True
+RUNNING_WITH_GUI = False
 
 clamp = lambda n, minn, maxn: max(min(maxn, n), minn)
 
@@ -34,6 +32,7 @@ class Drone(djitellopytest.Tello):
     behavior: behaviorFramework = None
     yaw_start = None #used in spinning
     spun_halfway = False
+    swarm = False
 
     #sensor Data
     sensoryState = None
@@ -41,7 +40,8 @@ class Drone(djitellopytest.Tello):
     telemetryReason = dict()
     refreshTracker = None
 
-    def __init__(self,identifier = None, 
+    def __init__(self,identifier = None,
+                 swarm = False, 
                  behavior: behaviorFramework = None,
                  tello_ip = '192.168.10.1',
                  vs_udp_ip = '0.0.0.0',
@@ -50,6 +50,7 @@ class Drone(djitellopytest.Tello):
                  state_udp_port = 8890,
                  local_computer_IP = '0.0.0.0',):
         # cv2.VideoCapture()
+        self.swarm = swarm
         self.identifier = identifier
         self.opState = State.Grounded
         if behavior is not None:
@@ -60,7 +61,7 @@ class Drone(djitellopytest.Tello):
             # This is where we will implement connecting to a drone through the router
             self.connect()
             self.set_video_bitrate(djitellopytest.Tello.BITRATE_AUTO)
-            # self.set_video_fps(djitellopytest.Tello.FPS_15)
+            # self.set_video_fps(djitellopytest.Tello.FPS_5)
             self.set_video_resolution(djitellopytest.Tello.RESOLUTION_480P)
 
             self.set_speed(self.MAXSPEED)
@@ -80,7 +81,6 @@ class Drone(djitellopytest.Tello):
             self.sensoryState = SensoryState()
 
         #setup useful classes
-        self.noiseGenerator = PerlinNoise(octaves=1, seed=7)
         self.refreshTracker = RefreshTracker()
 
     #region INTERNAL UTILITY FUNCTIONS
@@ -155,7 +155,8 @@ class Drone(djitellopytest.Tello):
 
     def end_flight(self):
         self.stop()
-        cv2.destroyWindow(self.identifier)
+        if not RUNNING_WITH_GUI:
+            cv2.destroyWindow(self.identifier)
     #endregion
     #region MOVEMENT FUNCTIONS
     def stop(self): # lands, cuts stream and connection with drone
@@ -171,7 +172,8 @@ class Drone(djitellopytest.Tello):
         return self.sensoryState.globalPose
     
     def swarmMovement(self,swarmMovementVector):
-        self.swarm_force = swarmMovementVector
+        if self.swarm:
+            self.swarm_force = swarmMovementVector
 
     def moveDirection(self,direction = np.array([[0], [0], [0], [0]])):
         """Set the speed of the drone based on xyz and yaw
@@ -293,7 +295,7 @@ class Drone(djitellopytest.Tello):
 
     def operate(self,exitLoop = False):
         # creating window
-        if WITH_CAMERA:
+        if WITH_CAMERA and not RUNNING_WITH_GUI:
             cv2.namedWindow(self.identifier, cv2.WINDOW_NORMAL)
         while cv2.waitKey(20) != 27: # Escape
             #sensing
@@ -302,12 +304,13 @@ class Drone(djitellopytest.Tello):
                     self.sensoryState.update(self.get_current_state())
                 else:
                     self.sensoryState.update()
-                if self.sensoryState.returnedImage:
+                if self.sensoryState.returnedImage and not RUNNING_WITH_GUI:
                     cv2.imshow(self.identifier,self.sensoryState.image)
             # self.refreshTracker.update()
             # self.refreshTracker.printAVG()
 
-            self.operatorOverride()
+            if not self.swarm:
+                self.operatorOverride()
 
             # State Switching 
             match self.opState:

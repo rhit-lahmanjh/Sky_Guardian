@@ -9,11 +9,12 @@ import time as t
 DEBUG_PRINTS = True
 
 class MissionPadMap():
+    
     DISTANCE_BETWEEN_MISSION_PADS = 50
-    X_MIN_BOUNDARY = 50
+    X_MIN_BOUNDARY = 0
     X_MAX_BOUNDARY = 100
     Y_MIN_BOUNDARY = 0
-    Y_MAX_BOUNDARY = 50
+    Y_MAX_BOUNDARY = 100
     missionPadShift = np.array([[0,0],
                             [0,DISTANCE_BETWEEN_MISSION_PADS],
                             [0,2*DISTANCE_BETWEEN_MISSION_PADS],
@@ -40,7 +41,7 @@ class SensoryState():
     yawOffsetSet = False
     
     sensorReadings = dict()
-    videoCapture = None
+    videoCapture:cv2.VideoCapture = None
     videoAnalyzer = None
     returnedImage = False
     image = None
@@ -48,7 +49,7 @@ class SensoryState():
 
     WITH_DRONE = False
 
-    def __init__(self, initialReadings = None,videoCapture = None):
+    def __init__(self, initialReadings:dict = None,videoCapture:cv2.VideoCapture = None):
         if initialReadings != None:
             for key in initialReadings:
                 queue = deque()
@@ -134,7 +135,7 @@ class SensoryState():
             self.missionPadSector = 1
             print("SWITCH FROM 0 TO 1")
 
-    def __clearBuffer__(self, cap):
+    def __clearBuffer__(self, cap:cv2.VideoCapture):
         """ Emptying buffer frame """
         while True:
             start_time = t.time()

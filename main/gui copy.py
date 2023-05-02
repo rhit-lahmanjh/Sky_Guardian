@@ -16,9 +16,7 @@ import base64
 import threading
 from flet import * 
 from sensoryState import SensoryState
-
-# tello_address = ('192.168.10.1', 8889)
-# local_address = ('', 9000)
+from swarm import Swarm
         
 logging.getLogger("flet_core").setLevel(logging.FATAL)
 
@@ -31,18 +29,25 @@ def main(page: ft.Page):
     page.theme = Theme(font_family="Space")
 
     # drone connection
+    #alpha specific
     alphaIP = '192.168.0.140'
     alphaCmdPort = 8889
-    local1_address = ('192.168.0.245',9010)
-    drone1 = Drone(identifier = 'chuck',behavior = behavior1(),tello_ip=alphaIP)
-    drone2 = Drone(identifier = 'cheese',behavior = behavior1(),tello_ip=alphaIP)
+    alphaStatePort = 8890
+    alpha_vs_port = 11111
 
-    # drone1 = Drone(identifier = 'test', behavior = None)
-    cap = drone1.sensoryState.videoCapture
+    #beta specific
+    betaIP = '192.168.0.248'
+    betaCmdPort = 8891
+    betaStatePort = 8892
+    beta_vs_port = 11112
+    drone1 = Drone(identifier = 'alpha',behavior = behavior1(),tello_ip=alphaIP,control_udp_port=alphaCmdPort,state_udp_port=alphaStatePort, vs_udp_port=alpha_vs_port)
+    drone2 = Drone(identifier = 'beta',behavior = behavior1(),tello_ip=betaIP,control_udp_port=betaCmdPort,state_udp_port = betaStatePort, vs_udp_port=beta_vs_port)
+
+    swarm = Swarm(drone1,drone2)
 
     # Setting up threading
     threads = []
-    FSM_thread = threading.Thread(target=drone1.operate)
+    FSM_thread = threading.Thread(target=swarm.operate)
     threads.append(FSM_thread)
     FSM_thread.start()
 
@@ -51,7 +56,7 @@ def main(page: ft.Page):
     # Button functions
     def drone1_launch(e):
         print("Drone 1 State: Takeoff")
-        drone1.opState = State.Takeoff
+        swarm.drone1.opState = State.Takeoff
         page.update()
     
     def drone2_launch(e):
@@ -61,7 +66,7 @@ def main(page: ft.Page):
 
     def drone1_land(e):
         print("Drone 1 State: Landed")
-        drone1.opState = State.Land
+        swarm.drone1.opState = State.Land
         page.update()
     
     def drone2_land(e):
@@ -71,7 +76,7 @@ def main(page: ft.Page):
 
     def drone1_hover(e):
         print("Drone 1 State: Hover")  
-        drone1.opState = State.Hover
+        swarm.drone1.opState = State.Hover
         page.update()
     
     def drone2_hover(e):
@@ -84,7 +89,7 @@ def main(page: ft.Page):
         print("Drone 1 State: Hover")           
         print("Drone 2 State: Hover")
 
-        drone1.opState = State.Hover
+        swarm.drone1.opState = State.Hover
         # drone2.opState = State.Hover
         page.update()        
 
@@ -234,7 +239,7 @@ def main(page: ft.Page):
                     [
                         # command buttons for Launch and Land
                         drone1_column,
-                            ReactionInput(drone1),
+                            ReactionInput(swarm.drone1),
                         # User input control for Reactions & Behaviors
                     ]
                 ),
@@ -248,7 +253,7 @@ def main(page: ft.Page):
                         # command buttons for Launch and Land
                         drone2_column,
 
-                        ReactionInput(drone2),
+                        ReactionInput(swarm.drone2),
                         # User input control for Reactions & Behaviors
                     ]
                 ),

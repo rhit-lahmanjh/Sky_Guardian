@@ -1,6 +1,7 @@
 from drone import Drone
 import numpy as np
 import math
+import keyboard 
 
 
 class Swarm():
@@ -17,13 +18,13 @@ class Swarm():
 
     def operate(self):
         while not self.turnOff: # Escape
-            if self.drone1.getPose()[0] != 0 and self.drone2.getPose()[0] != 0:
-                separateDroneTwoForceVector = self.handleDroneTwoCollision(self.drone1.getPose(), self.drone2.getPose())
-                print(f"Global: {separateDroneTwoForceVector}")
-                print(f"Drone 1: {self.drone1.transformGlobalToDroneSpace(-separateDroneTwoForceVector[0:3])}")
-                print(f"Drone 2: {self.drone2.transformGlobalToDroneSpace(separateDroneTwoForceVector[0:3])}")
-            #     self.drone1.swarmMovement(self.drone1.transformGlobalToDroneSpace(-separateDroneTwoForceVector))
-            #     self.drone2.swarmMovement(self.drone2.transformGlobalToDroneSpace(separateDroneTwoForceVector))
+            # if self.drone1.getPose()[0] != 0 and self.drone2.getPose()[0] != 0:
+            #     separateDroneTwoForceVector = self.handleDroneTwoCollision(self.drone1.getPose(), self.drone2.getPose())
+            #     print(f"Global: {separateDroneTwoForceVector}")
+            #     print(f"Drone 1: {self.drone1.transformGlobalToDroneSpace(-separateDroneTwoForceVector[0:3])}")
+            #     print(f"Drone 2: {self.drone2.transformGlobalToDroneSpace(separateDroneTwoForceVector[0:3])}")
+            # #     self.drone1.swarmMovement(self.drone1.transformGlobalToDroneSpace(-separateDroneTwoForceVector))
+            # #     self.drone2.swarmMovement(self.drone2.transformGlobalToDroneSpace(separateDroneTwoForceVector))
             self.drone1.operate(exitLoop = True)
             self.drone2.operate(exitLoop = True)
         self.drone1.end_flight()
