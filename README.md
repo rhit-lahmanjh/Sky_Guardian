@@ -226,7 +226,7 @@ Once these safety features are implemented properly either through hardware or s
 <summary>Networking</summary>
 
 <br>
-<img src = "Networking\Picture of connection.PNG">
+<img src = "Networking\Diagram for Drone Connectivity.jpg">
 </details> 
 
 # Getting Started
