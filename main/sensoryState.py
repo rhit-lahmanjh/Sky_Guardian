@@ -5,32 +5,35 @@ from video_analyzer import VideoAnalyzer
 import time as t
 
 # update dependent on pad layout
-DISTANCE_BETWEEN_MISSION_PADS = 50
-X_MIN_BOUNDARY = 50
-X_MAX_BOUNDARY = 100
-Y_MIN_BOUNDARY = 0
-Y_MAX_BOUNDARY = 50
+
 DEBUG_PRINTS = True
+
+class MissionPadMap():
+    DISTANCE_BETWEEN_MISSION_PADS = 50
+    X_MIN_BOUNDARY = 50
+    X_MAX_BOUNDARY = 100
+    Y_MIN_BOUNDARY = 0
+    Y_MAX_BOUNDARY = 50
+    missionPadShift = np.array([[0,0],
+                            [0,DISTANCE_BETWEEN_MISSION_PADS],
+                            [0,2*DISTANCE_BETWEEN_MISSION_PADS],
+                            [0,3*DISTANCE_BETWEEN_MISSION_PADS],
+                            [DISTANCE_BETWEEN_MISSION_PADS,0],
+                            [DISTANCE_BETWEEN_MISSION_PADS,DISTANCE_BETWEEN_MISSION_PADS],
+                            [DISTANCE_BETWEEN_MISSION_PADS,2*DISTANCE_BETWEEN_MISSION_PADS],
+                            [DISTANCE_BETWEEN_MISSION_PADS,3*DISTANCE_BETWEEN_MISSION_PADS],
+                            [2*DISTANCE_BETWEEN_MISSION_PADS,0],
+                            [2*DISTANCE_BETWEEN_MISSION_PADS,DISTANCE_BETWEEN_MISSION_PADS],
+                            [2*DISTANCE_BETWEEN_MISSION_PADS,2*DISTANCE_BETWEEN_MISSION_PADS],
+                            [2*DISTANCE_BETWEEN_MISSION_PADS,3*DISTANCE_BETWEEN_MISSION_PADS],
+                            [3*DISTANCE_BETWEEN_MISSION_PADS,0],
+                            [3*DISTANCE_BETWEEN_MISSION_PADS,DISTANCE_BETWEEN_MISSION_PADS],
+                            [3*DISTANCE_BETWEEN_MISSION_PADS,2*DISTANCE_BETWEEN_MISSION_PADS],
+                            [3*DISTANCE_BETWEEN_MISSION_PADS,3*DISTANCE_BETWEEN_MISSION_PADS],])
 
 class SensoryState():
     globalPose = np.ones((4,1))
     localPose = np.ones((4,1))
-    missionPadShift = np.array([[0,0],
-                                [0,DISTANCE_BETWEEN_MISSION_PADS],
-                                [0,2*DISTANCE_BETWEEN_MISSION_PADS],
-                                [0,3*DISTANCE_BETWEEN_MISSION_PADS],
-                                [DISTANCE_BETWEEN_MISSION_PADS,0],
-                                [DISTANCE_BETWEEN_MISSION_PADS,DISTANCE_BETWEEN_MISSION_PADS],
-                                [DISTANCE_BETWEEN_MISSION_PADS,2*DISTANCE_BETWEEN_MISSION_PADS],
-                                [DISTANCE_BETWEEN_MISSION_PADS,3*DISTANCE_BETWEEN_MISSION_PADS],
-                                [2*DISTANCE_BETWEEN_MISSION_PADS,0],
-                                [2*DISTANCE_BETWEEN_MISSION_PADS,DISTANCE_BETWEEN_MISSION_PADS],
-                                [2*DISTANCE_BETWEEN_MISSION_PADS,2*DISTANCE_BETWEEN_MISSION_PADS],
-                                [2*DISTANCE_BETWEEN_MISSION_PADS,3*DISTANCE_BETWEEN_MISSION_PADS],
-                                [3*DISTANCE_BETWEEN_MISSION_PADS,0],
-                                [3*DISTANCE_BETWEEN_MISSION_PADS,DISTANCE_BETWEEN_MISSION_PADS],
-                                [3*DISTANCE_BETWEEN_MISSION_PADS,2*DISTANCE_BETWEEN_MISSION_PADS],
-                                [3*DISTANCE_BETWEEN_MISSION_PADS,3*DISTANCE_BETWEEN_MISSION_PADS],])
     missionPadSector = 0
     missionPadVisibleID = 0
     yawOffset = 0
@@ -84,7 +87,7 @@ class SensoryState():
             if self.returnedImage:
                 [self.visibleObjects,self.image] = self.videoAnalyzer.detectObjects(self.image)
 
-    def __updatePose__(self,currentReadings = None):
+    def __updatePose__(self,currentReadings:dict = None):
         if currentReadings != None:
             newPadID = currentReadings.get('mid')
 
@@ -107,8 +110,8 @@ class SensoryState():
                 self.localPose[3] = currentReadings.get('yaw') - self.yawOffset
 
                 # update global pose depending on sector and pad
-                self.globalPose[0] = currentReadings.get('x') + self.missionPadShift[newPadID-1 + (self.missionPadSector*8),0]
-                self.globalPose[1] = currentReadings.get('y') + self.missionPadShift[newPadID-1,1]
+                self.globalPose[0] = currentReadings.get('x') + MissionPadMap.missionPadShift[newPadID-1 + (self.missionPadSector*8),0]
+                self.globalPose[1] = currentReadings.get('y') + MissionPadMap.missionPadShift[newPadID-1,1]
                 self.globalPose[2] = currentReadings.get('z')
                 self.globalPose[3] = currentReadings.get('yaw') - self.yawOffset
 
@@ -118,7 +121,6 @@ class SensoryState():
         oldX = self.localPose[0,0]
         newX = currentReadings.get('x')
 
-        print(oldX.shape)
         print(f"old X {oldX}")
         print(f"new X {newX}")
         print(f"new pad id {newPadID}")
@@ -152,7 +154,7 @@ class SensoryState():
             float: _description_
         """
         if(average):
-            pastXreadings = list(self.sensorReadings.get(sensor)) #TODO UPDATE
+            pastXreadings = list(self.sensorReadings.get(sensor)) 
             return sum(pastXreadings)/len(pastXreadings)
         else:
             return self.sensorReadings.get(sensor)[-1]
