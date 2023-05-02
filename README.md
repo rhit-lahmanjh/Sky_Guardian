@@ -4,7 +4,7 @@
 
 inTellogence is an open-source codebase for people to learn drone control topics made by senior students at Rose-Hulman Institute of Technology located in Terre Haute, IN.
 
-![Header](imgs/inTellogence_logo.png)
+![Header](imgs/inTellogence_logo.PNG)
 
 # Table of Contents
 
