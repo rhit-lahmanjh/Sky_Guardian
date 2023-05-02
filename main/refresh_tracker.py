@@ -16,6 +16,7 @@ class State(Enum):
     Hover = 10
     Drift = 11
     NoPad = 12
+    GoToGoal = 13
 
 class RefreshTracker():
     refreshRateQueue = None

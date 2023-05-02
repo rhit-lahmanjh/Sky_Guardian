@@ -20,25 +20,20 @@ RECORD_SENSOR_STATE = True
 clamp = lambda n, minn, maxn: max(min(maxn, n), minn)
 
 class Drone(djitellopytest.Tello):
-    #video I THINK THIS IS DEPRICATED
-    vidCap = None
-    vision = None
 
     #movement
     MAXSPEED = 20
     opState = None
-    prevState = None
-    hoverDebounce = 0
-    noiseGenerator = None
-    xyNoiseStorage = .5
-    thetaStorage = .1
-    STOP = np.array([0.0,0.0,0.0,0.0])
-    prevDirection = None
-    recentlySentLandCommand = False
-    wanderCounter = 20
-    randomWanderVec = np.zeros((4,1)) #NOTE: [x,y,z,yaw]
-    swarmVector = np.zeros((4,1))
+    hover_debounce = 0
+    stop_force = np.array([0.0,0.0,0.0,0.0])
+    previous_direction = None
+    recently_sent_land = False
+    wander_counter = 20
+    random_wander_force = np.zeros((4,1)) #NOTE: [x,y,z,yaw]
+    swarm_force = np.zeros((4,1))
     behavior: behaviorFramework = None
+    yaw_start = None #used in spinning
+    spun_halfway = False
 
     #sensor Data
     sensoryState = None
@@ -92,12 +87,12 @@ class Drone(djitellopytest.Tello):
 
     def __randomWander__(self):
         if self.wanderCounter >= 10:
-            self.randomWanderVec[0] = rand.randint(-15,15)
-            self.randomWanderVec[1] = rand.randint(-15,15)
+            self.random_wander_force[0] = rand.randint(-15,15)
+            self.random_wander_force[1] = rand.randint(-15,15)
             self.wanderCounter = 0
 
         self.wanderCounter += 1
-        return self.randomWanderVec
+        return self.random_wander_force
     
     def __avoidBoundary__(self):
         movementForceMagnitude = 1.2
@@ -125,24 +120,22 @@ class Drone(djitellopytest.Tello):
     
     def transformGlobalToDroneSpace(self,force:np.array((3,1)),yaw = 0):
         globalSpaceForce = force
-        # print(f"Global Space Force: {globalSpaceForce}")
+
         transformationMatrix = np.array([[math.cos(yaw),-math.sin(yaw),0],
                                          [math.sin(yaw),math.cos(yaw),0],
                                          [0,0,1],])
         
         droneSpaceForce = np.matmul(transformationMatrix,globalSpaceForce)
-        # print(f"Drone Space Force: {droneSpaceForce}")
+
         res = np.zeros((4,1))
-        # print(res[0:3].shape)
-        # print(droneSpaceForce.shape)
         res[0:3] = droneSpaceForce
         return res
     
     def operatorOverride(self):
         # land interrupt
-        if(key.is_pressed('l') and not self.recentlySentLandCommand):
+        if(key.is_pressed('l') and not self.recently_sent_land):
             self.opState = State.Land
-            self.recentlySentLandCommand = True
+            self.recently_sent_land = True
             return
         if key.is_pressed('w'):
             self.move_forward(100)
@@ -151,8 +144,8 @@ class Drone(djitellopytest.Tello):
             if self.prevState == None:
                 self.prevState = self.opState
                 self.opState = State.Hover
-                self.hoverDebounce = t.time();
-            if self.prevState != None and (t.time() - self.hoverDebounce)> 1:
+                self.hover_debounce = t.time();
+            if self.prevState != None and (t.time() - self.hover_debounce)> 1:
                 self.opState = self.prevState
                 self.prevState = None
             return
@@ -178,7 +171,7 @@ class Drone(djitellopytest.Tello):
         return self.sensoryState.globalPose
     
     def swarmMovement(self,swarmMovementVector):
-        self.swarmVector = swarmMovementVector
+        self.swarm_force = swarmMovementVector
 
     def moveDirection(self,direction = np.array([[0], [0], [0], [0]])):
         """Set the speed of the drone based on xyz and yaw
@@ -189,7 +182,7 @@ class Drone(djitellopytest.Tello):
         yaw              : turn or element 4
         """
         if np.max(direction[0:2]) > self.MAXSPEED:
-            direction = self.normalizeMovementVector(direction=direction)
+            direction = self.normalize_force(direction=direction)
 
         cmd = f'rc {np.round_(direction[0,0],1)} {np.round_(direction[1,0],1)} {np.round_(direction[2,0],1)} {np.round_(direction[3,0],1)}'
         if WITH_DRONE:
@@ -197,12 +190,12 @@ class Drone(djitellopytest.Tello):
         else:
             print(cmd)
     
-    def normalizeMovementVector(self, direction = np.array([[0], [0], [0], [0]])):
+    def normalize_force(self, direction = np.array([[0], [0], [0], [0]])):
         xyNorm = np.linalg.norm(direction[0:2])
         direction[0:2] = direction[0:2]*self.MAXSPEED/xyNorm
         return direction
                 
-    def fullScan(self):
+    def rotate_clockwise(self):
         self.moveDirection([0,0,0,10])
 
     def hover(self):
@@ -321,7 +314,7 @@ class Drone(djitellopytest.Tello):
                 case State.Grounded:
                     if(DEBUG_PRINTS):
                         print('Landed')
-                    print(f"{self.identifier} Swarm Vector: {self.swarmVector}")
+                    print(f"{self.identifier} Swarm Vector: {self.swarm_force}")
                     if key.is_pressed('t'):
                         self.opState = State.Takeoff
                         print("Attempting to take off")
@@ -352,16 +345,24 @@ class Drone(djitellopytest.Tello):
                         self.land()
                     self.opState = State.Grounded
 
-                case State.Scan:
-                    if(DEBUG_PRINTS):
+                case State.Scan: 
+                    if self.yaw_start == None:
+                        self.yaw_start = self.sensoryState.globalPose[3] 
+                    elif abs(self.yaw_start-self.sensoryState.globalPose[3]) > 20 and not self.spun_halfway:
+                        self.spun_halfway = True
+                    elif abs(self.yaw_start-self.sensoryState.globalPose[3]) < 20 and self.spun_halfway:
+                        self.opState = State
+                        self.yaw_start = None
+                        self.spun_halfway = False
+                    if DEBUG_PRINTS:
                         print('Scanning')
-                    # self.fullScan()
+                    self.rotate_clockwise()
                     continue
 
                 case State.Wander:
                     if(DEBUG_PRINTS):
                         print("Wandering")
-                    wanderVec = np.add(self.__randomWander__(),self.__avoidBoundary__(),self.swarmVector)
+                    wanderVec = np.add(self.__randomWander__(),self.__avoidBoundary__(),self.swarm_force)
                     if self.behavior is not None:
                         reactionMovement = self.behavior.runReactions(drone = self, input = self.sensoryState, currentMovement = wanderVec)
                         wanderVec = np.add(wanderVec, reactionMovement)
