@@ -11,18 +11,32 @@ import cv2
 import base64
 import threading
 from flet import * 
+from behaviors.behavior import behavior1
+
 
 # tello_address = ('192.168.10.1', 8889)
 # local_address = ('', 9000)
         
+alphaIP = '192.168.0.140'
+alphaCmdPort = 8889
+local1_address = ('192.168.0.245',9010)
+joseph_local_address = '192.168.0.248'
+alpha_vs_port = 11111
+
 def main(page: ft.Page):
     # drone connection
+<<<<<<< HEAD
     alphaIP = '192.168.0.140'
     alphaCmdPort = 8889
     local1_address = ('192.168.0.245',9010)
     drone1 = Drone(identifier = 'chuck',behavior = behavior1(),tello_ip=alphaIP)
 
     # drone1 = Drone(identifier = 'test', behavior = None)
+=======
+    # drone1 = Drone(identifier = 'test', behavior = None)
+    drone1 = Drone(identifier = 'alpha',behavior = behavior1(),tello_ip=alphaIP,control_udp_port=alphaCmdPort,vs_udp_port=alpha_vs_port)
+
+>>>>>>> 94436e32b44a78773d216f7e52c1def1466ce891
     cap = drone1.sensoryState.videoCapture
 
     # Setting up threading

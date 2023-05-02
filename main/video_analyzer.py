@@ -9,7 +9,7 @@ class VideoAnalyzer():
     visionNet: YOLO
     
     netPathList = ["yolov8n.pt", "yolov8s.pt","yolov8m.pt","yolov8l.pt","yolov8x.pt"]
-    netIndex = 3
+    netIndex = 2
     confidenceLevel = 0
 
     def __init__(self,conf = CONFIDENCE_CUTOFF):

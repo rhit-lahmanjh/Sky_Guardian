@@ -47,3 +47,8 @@ seaborn>=0.11.0
 # pycocotools>=2.0.6  # COCO mAP
 # roboflow
 # ultralytics  # HUB https://hub.ultralytics.com
+
+flet~=0.3.2
+djitellopy~=2.4.0
+keyboard~=0.13.5
+chardet~=4.0.0

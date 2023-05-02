@@ -41,6 +41,9 @@ class Tello:
     CONTROL_UDP_PORT = 8889 #NOTE changed to passed in
     STATE_UDP_PORT = 8890 #NOTE changed to passed in
 
+    # Local Computer IP address for router control
+    LOCAL_COMPUTER_IP = '0.0.0.0'
+
     # Constants for video settings
     BITRATE_AUTO = 0
     BITRATE_1MBPS = 1
@@ -98,7 +101,8 @@ class Tello:
                  vs_udp_ip = '0.0.0.0',
                  vs_udp_port = 11111,
                  control_udp_port = 8889,
-                 state_udp_port = 8890,):
+                 state_udp_port = 8890,
+                 local_computer_IP = '0.0.0.0',):
 
         global threads_initialized, client_socket, drones
         self.TELLO_IP = tello_ip
@@ -106,6 +110,7 @@ class Tello:
         self.VS_UDP_PORT = vs_udp_port
         self.CONTROL_UDP_PORT = control_udp_port
         self.STATE_UDP_PORT = state_udp_port
+        self.LOCAL_COMPUTER_IP = local_computer_IP
 
         self.address = (host, Tello.CONTROL_UDP_PORT)
         self.stream_on = False
@@ -116,7 +121,10 @@ class Tello:
         if not threads_initialized:
             # Run Tello command responses UDP receiver on background
             client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            client_socket.bind(('192.168.0.245', Tello.CONTROL_UDP_PORT))
+            if self.LOCAL_COMPUTER_IP != '0.0.0.0':
+                client_socket.bind((self.LOCAL_COMPUTER_IP, self.CONTROL_UDP_PORT))
+            else:
+                client_socket.bind(("", Tello.CONTROL_UDP_PORT))
             response_receiver_thread = Thread(target=Tello.udp_response_receiver)
             response_receiver_thread.daemon = True
             response_receiver_thread.start()
@@ -550,6 +558,7 @@ class Tello:
                 if self.get_current_state():
                     t = i / REPS  # in seconds
                     Tello.LOGGER.debug("'.connect()' received first state packet after {} seconds".format(t))
+                    self.send_command_with_return(f"port {self.STATE_UDP_PORT} {self.VS_UDP_PORT}") #NOTE CHANGE
                     break
                 time.sleep(1 / REPS)
 

@@ -7,7 +7,7 @@ from refresh_tracker import State
 from yoloClasses import vision_class
 
 
-### Reaction Format Interfaces
+### Reaction Format 
 class movementReaction:
 
     def __init__(self) -> None:
@@ -53,7 +53,7 @@ class pauseOnSoccerBall(blockingReaction):
     def react(self,drone,input, currentMovement = np.zeros((4,1))):
         if input.visibleObjects is not None:
             for object in input.visibleObjects:
-                if(int(object[1]) == vision_class.sports_ball):
+                if(int(object[5]) == vision_class.sports_ball):
                     drone.opstate = State.Hover
                     return
 

@@ -4,7 +4,7 @@
 
 inTellogence is an open-source codebase for people to learn drone control topics made by senior students at Rose-Hulman Institute of Technology located in Terre Haute, IN.
 
-![Header](imgs/header.png)
+![Header](imgs/inTellogence_logo.PNG)
 
 # Table of Contents
 
@@ -13,11 +13,14 @@ inTellogence is an open-source codebase for people to learn drone control topics
   - [Features](#features)
   - [System Components](#system-components)
 - [Getting Started](#getting-started)
-  - [Setting up drones and router](#setting-up-drones-and-router)
-  - [How to run requirements](#how-to-run-requirements)
+  - [Router and Drone Connection](#router-and-drone-connection)
+  - [Necessary Installations](#necessary-installations)
+  - [Mission Pad Setup](#mission-pad-setup)
 - [Examples](#examples)
-  - [Implementing Reactive Behaviors](#creating-a-reactive-behavior-to-an-object)
-- [Supplemental Documentation (UML, Performance Metrics, etc.)](#supplemental-documentation)
+  - [create a new behavior](#creating-a-reactive-behavior-to-an-object)
+  - [Adding a new button to the GUI](#adding-a-new-button-to-the-gui)
+  - [Adding a custom State](#add-a-custom-state)
+- [Supplemental Documentation](#supplemental-documentation)
 - [Troubleshooting resources](#troublehooting-resources)
 - [References](#references)
 - [Acknowledgements](#acknowledgements)
@@ -30,10 +33,10 @@ We hope that students or people enthusiastic about learning about drones are abl
 inTellogence has the following features:
 - Ability to control 1 or 2 drones through a router
 - Use of Mission Pads to confine the drone to a space
-- Drone wander algorithm using a mix of pure random and smoothly changing trajectories via [Perlin Noise](https://www.khanacademy.org/computing/computer-programming/programming-natural-simulations/programming-noise/a/perlin-noise)
+- Finite state machine that uses potential fields navigation
 - Additional safety measures using industry hardware functional safety techniques
-- Pre-trained Computer Vision models to recognize objects
-- Ability to quickly implement reactive behaviors to objects and sensor readings
+- Integrates Ultralytics Yolov8 for object recognition
+- Ability to quickly implement and layer reactive behaviors to objects and sensor readings
 - [Flet](https://flet.dev)-powered language-agnostic GUI (Python, Go, C#)
 - Easy-to-understand & User-tested documentation
 
@@ -74,7 +77,8 @@ The code from <a href="https://www.youtube.com/watch?v=58aPh8rKKsk">Azu Technolo
 <details>
 <summary>Finite State Machine</summary>
 <br>
-General control of both drones is organized around a Finite State Machine (FSM). The primary state of wander is implemented alongside a few states that support smooth and safe operation. The general control logic is shown below. NOTE: ADD STATE TRANSITION CONDITIONS AT SOME POINT AND ADD LOST MISSION PAD AS WELL.<br> 
+General control of both drones is organized around a Finite State Machine (FSM). The primary state of wander is implemented alongside a few states that support smooth and safe operation. The general control logic is shown below.
+<br> 
 
 <img src="imgs/control_loop.png" width="500">
 </details> 
@@ -82,9 +86,9 @@ General control of both drones is organized around a Finite State Machine (FSM).
 <details>
 <summary>Reactive Control Through Potential Fields</summary>
 <br>
-The primary path planning approach for Sky Guardian lies in reactive control LINK through potential fields LINK. In order to allow the drones to wander in a constrained space, Tello mission pads are utitilized in a pre-defined map. These mission pads allow the drone to localize and respond appropriately when moving out of intended airspace. BELOW: diagram of drone measuring it's location and drone being pushed into the space CURRENTLY PLACEHOLDER.<br> 
+The primary path planning approach for Sky Guardian lies in <a href = https://youtu.be/umkyPWDrys4>reactive control through potential fields</a>. In order to allow the drones to wander in a constrained space, Tello mission pads are utitilized in a pre-defined map. These mission pads allow the drone to localize and respond appropriately when moving out of intended airspace, applying a movement force proportional to it's measured distance outside of desired airspace. <br> 
 
-<img src="imgs/mission_pad_blank.png" width="500">
+<img src="imgs/boundary_force.png" width="300">
 
 <br> 
 Sky Guardian provides an outline for implementing various reactions to certain stimuli. For our purposes, reactions are individual responses to certain stimuli (ie, the drone detects a banana) and behaviors are sets of those reactions. We have defined two types of reactions: blocking and movement. <br>
@@ -95,25 +99,23 @@ A movement reaction defines non-blocking instructions. So, it returns a movement
 </details> 
 
 <details>
-<summary>Object Recognition by OpenCV</summary>
+<summary>Object Recognition using Yolov8</summary>
 <br>
 
-TO BE UPDATED WITH YOLO INFORMATION
-Sky Guardian performs object recognition by implementing pre-trained Convolutional Neural Networks (CNN) via OpenCV's deep learning module. All video feed analysis is abstracted out into the VideoAnalyzer class from video_analyzer.py. To try a different network from the one provided, all that needs to be done is change which weights and configuration file is loaded //change if needed ADD MORE INFO ABOUT MODEL BEING RAN. <br>
+Sky Guardian performs object recognition by implementing <a href="https://github.com/ultralytics/ultralytics"> Ultralytics Yolov8 </a>. All video feed analysis is abstracted out into the VideoAnalyzer class from video_analyzer.py. This wrapper class adds the ability to automatically download all Object Recognition models, as well as adjust the model size (speed/accuracy tradeoff), and acceptable confidence level. To explore the other models available using Yolov8 (pose, image segmentation, etc), consider editing video_analyzer.py.<br>
 
-The CNN outputs several pieces of information about the objects detected. It's in the format of a Nx7 matrix, sorted in order of confidence. The indexes are shown below: <bv>
+The output of the network can be slightly confusing (this article was helpful determining syntax <a href=""> here</a>.)
+To access results in the form of an Nx6 matrix, use syntax along the lines of results[0].boxes.boxes The indexes are shown below: <br>
 
-0: None
-1: Class Label (default in reference)
-2: Confidence Level
-3: X bounding box coordinate
-4: Y bounding box coordinate
-5: bounding box width
-6: bounding box height
+0: x1 bounding box coordinate<br>
+1: y1 boudning box coordinate<br>
+2: x2 bounding box coordinate<br>
+3: y2 bounding box coordinate<br>
+4: confidence score<br>
+5 class label<br>
 
-The VideoAnalyzer automatically filters out detectiosn with a low confidence score, according to the default set in its global variables. //Addition: possibly add info about filtering if implemented <br>
+In order to speed up this detection process, this repository assumes the use of CUDA 11.8. This offloads the inference calculations to the GPU, which it can be parallelized. Installation instructions can be found in Getting Started. Yolov8 allows for very minimal setup in this respect.<br>
 
-CUDA: If we implement by the end of the year, it will also describe our approach to running inference through the GPU (installation requirements will be covered below) <br> 
 </details> 
 
 <details>
@@ -224,28 +226,57 @@ Once these safety features are implemented properly either through hardware or s
 <summary>Networking</summary>
 
 <br>
-Still don't know if we need this lol
+<img src = "Networking\Diagram for Drone Connectivity.jpg">
 </details> 
 
 # Getting Started
 We used the following materials for this project:
 - 2 Tello EDU drones
-- Router
-- Tello Mission Pads
-- etc. 
+- Router (we used the <a href= "https://www.amazon.com/TP-Link-AC1750-Smart-WiFi-Router/dp/B079JD7F7G/ref=sr_1_3?keywords=WiFi%2BRouters%2Bfor%2BHome&qid=1663443788&sr=8-3&ufe=app_do%3Aamzn1.fos.006c50ae-5d4c-4777-9bc0-4513d670b6bc&th=1">TP-Link AC1750 Smart WiFi Router (Archer A7)</a>
+- 16 Tello Mission Pads
 
-## Setting up drones and router
-This section will cover how to set up the router, connect your computer to it, connect the drone to it, and run the code through it.
-## How to run requirements
-This section will walk the user through setting up the environment through anaconda
-## Setting up the Mission Pads
-For Sky Guardian to work as expected, it's important to setup the mission pads as the drone expects to see them. This layout is shown below, where orientation, spacing and layout are important. Should you wish to adjust the spacing between the pads, this is found in the SensoryState class. NOTE: Because of observed inconsistency with the drone correctly measuring the yaw, the drone expects to begin facing the X direction as shown below.
-This section will include a graphic as to how to setup the mission pad layout, and point to the correct section of code (Currently in SensoryState.py, but should likely be moved) where they can create custom mission pad layouts.
+## Router and Drone Connection
+This section will cover how to set up the router, connect your computer to it, and connect the drones to it.
+
+## Necessary Installations
+
+### Verify that your GPU is supported by CUDA
+First, to verify that your system is GPU capable. Open your Device Manager and scroll to "Display Adapters." If your system has one, the GPU will be listed here. To ensure that your system is CUDA capable, make sure your GPU is one listed as supported here <a href="https://developer.nvidia.com/cuda-gpus">here</a>.
+
+<img src="imgs/gpu_capable.png" width="500">
+<em>Here, we can see our GPU is the Nvidia Quadro P1000</em>
+
+### Download and install Cuda (11.8) TODO
+
+This tutorial assumes you are using the environment manager <a href= "https://www.anaconda.com/">Anaconda</a>. See Supplemental documentation if you are unfamiliar with Anaconda, as it's an incredibly helpful tool for navigating python distributions.
+
+### Package Installation
+There are multiple options to install required packages.
+
+#### Anaconda Navigator
+Using from the environments page in Anaconda Navigator, simply import the inTellogence_environment.yaml file.
+
+#### Anaconda Prompt
+With your desired environment activated, and the inTellogence folder active, run the following command:
+
+  conda env create -f drone.yaml
+
+#### Without Anaconda
+A requirements file is included for convenience. install through the following command:
+
+  pip install -r requirements.txt
+
+## Mission Pad Setup
+For inTellogence to work as expected, it's important to setup the mission pads as the drone expects to see them, as mapping is currently not supported. This layout is shown below, where orientation, spacing and layout are important. Should you wish to adjust the spacing between the pads, these are defined as global constants in sensoryState.py, set by default to 50cm center to center. Since Tello EDU currently only supports 8 different mission pads, the flyable space is separated into two sectors, in which the drones track which quadrant they are in.
+
+IMPORTANT: When taking off, place the drones facing the X direction and in Sector 1.
+
+<img src="imgs/mission_pad_layout.png" width="500">
 
 # Examples
-## Creating a reactive behavior to an object
-## Adding a new button to the GUI
-## Adding a custom State
+## Create a new behavior
+## Add a new button to the GUI
+## Add a custom State
 
 # Supplemental Documentation
 # Troublehooting resources
