@@ -13,11 +13,14 @@ inTellogence is an open-source codebase for people to learn drone control topics
   - [Features](#features)
   - [System Components](#system-components)
 - [Getting Started](#getting-started)
-  - [Setting up drones and router](#setting-up-drones-and-router)
-  - [How to run requirements](#how-to-run-requirements)
+  - [Router and Drone Connection](#router-and-drone-connection)
+  - [Necessary Installations](#necessary-installations)
+  - [Mission Pad Setup](#mission-pad-setup)
 - [Examples](#examples)
-  - [Implementing Reactive Behaviors](#creating-a-reactive-behavior-to-an-object)
-- [Supplemental Documentation (UML, Performance Metrics, etc.)](#supplemental-documentation)
+  - [create a new behavior](#creating-a-reactive-behavior-to-an-object)
+  - [Adding a new button to the GUI](#adding-a-new-button-to-the-gui)
+  - [Adding a custom State](#add-a-custom-state)
+- [Supplemental Documentation](#supplemental-documentation)
 - [Troubleshooting resources](#troublehooting-resources)
 - [References](#references)
 - [Acknowledgements](#acknowledgements)
@@ -104,7 +107,6 @@ Sky Guardian performs object recognition by implementing <a href="https://github
 The output of the network can be slightly confusing (this article was helpful determining syntax <a href=""> here</a>.)
 To access results in the form of an Nx6 matrix, use syntax along the lines of results[0].boxes.boxes The indexes are shown below: <bv>
 
-# NOTE: the output structure of visibleObjects is an N x 6 array, [x1, y1, x2, y2, score, label]
 
 0: x1 bounding box coordinate
 1: y1 boudning box coordinate
@@ -235,10 +237,10 @@ We used the following materials for this project:
 - Router (we used the <a href= "https://www.amazon.com/TP-Link-AC1750-Smart-WiFi-Router/dp/B079JD7F7G/ref=sr_1_3?keywords=WiFi%2BRouters%2Bfor%2BHome&qid=1663443788&sr=8-3&ufe=app_do%3Aamzn1.fos.006c50ae-5d4c-4777-9bc0-4513d670b6bc&th=1">TP-Link AC1750 Smart WiFi Router (Archer A7)</a>
 - 16 Tello Mission Pads
 
-## Setting up drones and router
+## Router and Drone Connection
 This section will cover how to set up the router, connect your computer to it, and connect the drones to it.
 
-## Installations before running for the first time
+## Necessary Installations
 
 ### Verify that your GPU is supported by CUDA
 First, to verify that your system is GPU capable. Open your Device Manager and scroll to "Display Adapters." If your system has one, the GPU will be listed here. To ensure that your system is CUDA capable, make sure your GPU is one listed as supported here <a href="https://developer.nvidia.com/cuda-gpus">here</a>.
@@ -246,12 +248,12 @@ First, to verify that your system is GPU capable. Open your Device Manager and s
 <img src="imgs/gpu_capable.png" width="500">
 <em>Here, we can see our GPU is the Nvidia Quadro P1000</em>
 
-### Download and install Cuda ()
+### Download and install Cuda (11.8) TODO
 
 This tutorial assumes you are using the environment manager <a href= "https://www.anaconda.com/">Anaconda</a>. See Supplemental documentation if you are unfamiliar with Anaconda, as it's an incredibly helpful tool for navigating python distributions.
 
 ### Package Installation
-We provide two options to install required packages.
+There are multiple options to install required packages.
 
 #### Anaconda Navigator
 Using from the environments page in Anaconda Navigator, simply import the inTellogence_environment.yaml file.
@@ -259,12 +261,12 @@ Using from the environments page in Anaconda Navigator, simply import the inTell
 #### Anaconda Prompt
 With your desired environment activated, and the inTellogence folder active, run the following command:
 
-conda env create -f drone.yaml
+  conda env create -f drone.yaml
 
 #### Without Anaconda
 A requirements file is included for convenience. install through the following command:
 
-pip install -r requirements.txt
+  pip install -r requirements.txt
 
 ## Mission Pad Setup
 For inTellogence to work as expected, it's important to setup the mission pads as the drone expects to see them, as mapping is currently not supported. This layout is shown below, where orientation, spacing and layout are important. Should you wish to adjust the spacing between the pads, these are defined as global constants in sensoryState.py, set by default to 50cm center to center. Since Tello EDU currently only supports 8 different mission pads, the flyable space is separated into two sectors, in which the drones track which quadrant they are in.
@@ -274,9 +276,9 @@ IMPORTANT: When taking off, place the drones facing the X direction and in Secto
 <img src="imgs/mission_pad_layout.png" width="500">
 
 # Examples
-## Creating a reactive behavior to an object
-## Adding a new button to the GUI
-## Adding a custom State
+## Create a new behavior
+## Add a new button to the GUI
+## Add a custom State
 
 # Supplemental Documentation
 # Troublehooting resources
