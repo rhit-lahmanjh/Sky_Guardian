@@ -7,7 +7,7 @@ import time as t
 import numpy as np
 import math
 import random as rand
-from sensoryState import SensoryState
+from sensoryState import SensoryState,MissionPadMap
 import sensoryState
 from behaviors.behavior import behaviorFramework
 from refresh_tracker import RefreshTracker, State
@@ -101,15 +101,15 @@ class Drone(djitellopytest.Tello):
         yaw = -math.radians(self.sensoryState.globalPose[3,0])
 
         #discontinuous, forces are only applied once the drone passes the boundary
-        if self.sensoryState.globalPose[0,0] < sensoryState.X_MIN_BOUNDARY:
-            globalForce[0,0] = movementForceMagnitude*(sensoryState.X_MIN_BOUNDARY-self.sensoryState.globalPose[0,0])
-        elif self.sensoryState.globalPose[0,0] > sensoryState.X_MAX_BOUNDARY:
-            globalForce[0,0] = movementForceMagnitude*(sensoryState.X_MAX_BOUNDARY-self.sensoryState.globalPose[0,0])
+        if self.sensoryState.globalPose[0,0] < MissionPadMap.X_MIN_BOUNDARY:
+            globalForce[0,0] = movementForceMagnitude*(MissionPadMap.X_MIN_BOUNDARY-self.sensoryState.globalPose[0,0])
+        elif self.sensoryState.globalPose[0,0] > MissionPadMap.X_MAX_BOUNDARY:
+            globalForce[0,0] = movementForceMagnitude*(MissionPadMap.X_MAX_BOUNDARY-self.sensoryState.globalPose[0,0])
 
-        if self.sensoryState.globalPose[1,0] < sensoryState.Y_MIN_BOUNDARY:
-            globalForce[1,0] = movementForceMagnitude*(sensoryState.Y_MIN_BOUNDARY - self.sensoryState.globalPose[1,0])
-        elif self.sensoryState.globalPose[1] > sensoryState.Y_MAX_BOUNDARY:
-            globalForce[1,0] = movementForceMagnitude*(sensoryState.Y_MAX_BOUNDARY - self.sensoryState.globalPose[1,0])
+        if self.sensoryState.globalPose[1,0] < MissionPadMap.Y_MIN_BOUNDARY:
+            globalForce[1,0] = movementForceMagnitude*(MissionPadMap.Y_MIN_BOUNDARY - self.sensoryState.globalPose[1,0])
+        elif self.sensoryState.globalPose[1] > MissionPadMap.Y_MAX_BOUNDARY:
+            globalForce[1,0] = movementForceMagnitude*(MissionPadMap.Y_MAX_BOUNDARY - self.sensoryState.globalPose[1,0])
         
         res = self.transformGlobalToDroneSpace(globalForce,yaw=yaw)
 
