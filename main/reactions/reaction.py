@@ -1,4 +1,3 @@
-from ........users.lahmanjh.documents.github.sky_guardian.main.sensoryState import SensoryState
 from sensoryState import SensoryState
 import numpy as np
 # from drone import Drone
