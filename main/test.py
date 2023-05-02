@@ -1,24 +1,11 @@
+from yoloClasses import vision_class
 import flet as ft
 from flet import *
-from getkey import getkey, key
 
 def main(page:Page):
-
-	# opening the file in read mode
-    my_file = open("main/coco_class_labels.txt", "r")
-
-    # reading the file
-    data_read = my_file.read()
-
-    # replacing end splitting the text 
-    # when newline ('\n') is seen.
-    data = data_read.split("\n")
-    print(data)
-    print(type(data))
-    my_file.close()
-
+    
+    object_list = [e.name for e in vision_class]
     reaction_data = ["flipOnBanana", "bobOnScissors", "pauseOnSoccerBall", "followCellPhone", "RunFromBanana"]
-
     class ReactionInput(ft.UserControl):
         def build(self):
             self.resultdata = ListView()
@@ -81,7 +68,7 @@ def main(page:Page):
 
             # IF NOT BLANK YOU TEXTFIELD SEARCH THE RUN FUNCTION
             if not self.mysearch == "":
-                for item in data:
+                for item in object_list:
                     if self.mysearch in item:
                         self.result.append(item)
             
@@ -94,7 +81,7 @@ def main(page:Page):
             # IF NOT BLANK YOU TEXTFIELD SEARCH THE RUN FUNCTION
             if not self.mysearch == "":
                 self.resultcon.visible = True
-                for item in data:
+                for item in object_list:
                     if self.mysearch in item:
                         self.resultcon.offset = transform.Offset(0,0)
                         result.append(item)
@@ -153,7 +140,7 @@ def main(page:Page):
 
         # IF NOT BLANK YOU TEXTFIELD SEARCH THE RUN FUNCTION
         if not mysearch == "":
-            for item in data:
+            for item in object_list:
                 if mysearch in item:
                     result.append(item)
         
@@ -167,7 +154,7 @@ def main(page:Page):
         # IF NOT BLANK YOU TEXTFIELD SEARCH THE RUN FUNCTION
         if not mysearch == "":
             resultcon.visible = True
-            for item in data:
+            for item in object_list:
                 if mysearch in item:
                     resultcon.offset = transform.Offset(0,0)
                     result.append(item)
@@ -242,6 +229,6 @@ def main(page:Page):
             )
         )
     
-    page.add(ReactionInput(), ReactionInput())
+    page.add(ReactionInput())
 
 ft.app(target=main)
