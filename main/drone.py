@@ -1,4 +1,4 @@
-import djitellopytest
+import djitellopy_edited
 import cv2
 import keyboard as key
 import time as t
@@ -11,24 +11,26 @@ from refresh_tracker import RefreshTracker, State
 
 DEBUG_PRINTS = False
 WITH_DRONE = True
-WITH_CAMERA = True
+WITH_CAMERA = False
 RECORD_SENSOR_STATE = True
 RUNNING_WITH_GUI = False
 
 clamp = lambda n, minn, maxn: max(min(maxn, n), minn)
 
-class Drone(djitellopytest.Tello):
+class Drone(djitellopy_edited.Tello):
 
     #movement
     MAXSPEED = 20
     opState = None
+    prevState = None
     hover_debounce = 0
     stop_force = np.array([0.0,0.0,0.0,0.0])
     previous_direction = None
     recently_sent_land = False
     wander_counter = 20
-    random_wander_force = np.zeros((4,1)) #NOTE: [x,y,z,yaw]
-    swarm_force = np.zeros((4,1))
+    lost_pad_counter = 0
+    random_wander_force: np.array = None #NOTE: [x,y,z,yaw]
+    swarm_force: np.array = None 
     behavior: behaviorFramework = None
     yaw_start = None #used in spinning
     spun_halfway = False
@@ -51,18 +53,20 @@ class Drone(djitellopytest.Tello):
                  local_computer_IP = '0.0.0.0',):
         # cv2.VideoCapture()
         self.swarm = swarm
+        self.random_wander_force = np.zeros((4,1))
+        self.swarm_force = np.zeros((4,1))
         self.identifier = identifier
         self.opState = State.Grounded
         if behavior is not None:
             self.behavior = behavior
         if WITH_DRONE:
-            super().__init__(tello_ip = tello_ip, vs_udp_ip = vs_udp_ip, vs_udp_port = vs_udp_port, control_udp_port = control_udp_port, state_udp_port = state_udp_port, host=tello_ip,local_computer_IP=local_computer_IP)
+            super().__init__(vs_udp_ip = vs_udp_ip, vs_udp_port = vs_udp_port, control_udp_port = control_udp_port, state_udp_port = state_udp_port, host=tello_ip,local_computer_IP=local_computer_IP)
 
             # This is where we will implement connecting to a drone through the router
             self.connect()
-            self.set_video_bitrate(djitellopytest.Tello.BITRATE_AUTO)
+            self.set_video_bitrate(djitellopy_edited.Tello.BITRATE_AUTO)
             # self.set_video_fps(djitellopytest.Tello.FPS_5)
-            self.set_video_resolution(djitellopytest.Tello.RESOLUTION_480P)
+            self.set_video_resolution(djitellopy_edited.Tello.RESOLUTION_480P)
 
             self.set_speed(self.MAXSPEED)
             self.enable_mission_pads()
@@ -86,32 +90,33 @@ class Drone(djitellopytest.Tello):
     #region INTERNAL UTILITY FUNCTIONS
 
     def __randomWander__(self):
-        if self.wanderCounter >= 10:
+        if self.wander_counter >= 10:
             self.random_wander_force[0] = rand.randint(-15,15)
             self.random_wander_force[1] = rand.randint(-15,15)
+            self.random_wander_force[3] = rand.randint(-15,15)
             self.wanderCounter = 0
 
-        self.wanderCounter += 1
+        self.wander_counter += 1
         return self.random_wander_force
     
     def __avoidBoundary__(self):
-        movementForceMagnitude = 1.2
-        globalForce = np.zeros((3,1))
+        movement_force_magnitude = 1.2
+        global_force = np.zeros((3,1))
 
         yaw = -math.radians(self.sensoryState.globalPose[3,0])
 
         #discontinuous, forces are only applied once the drone passes the boundary
         if self.sensoryState.globalPose[0,0] < MissionPadMap.X_MIN_BOUNDARY:
-            globalForce[0,0] = movementForceMagnitude*(MissionPadMap.X_MIN_BOUNDARY-self.sensoryState.globalPose[0,0])
+            global_force[0,0] = movement_force_magnitude*(MissionPadMap.X_MIN_BOUNDARY-self.sensoryState.globalPose[0,0])
         elif self.sensoryState.globalPose[0,0] > MissionPadMap.X_MAX_BOUNDARY:
-            globalForce[0,0] = movementForceMagnitude*(MissionPadMap.X_MAX_BOUNDARY-self.sensoryState.globalPose[0,0])
+            global_force[0,0] = movement_force_magnitude*(MissionPadMap.X_MAX_BOUNDARY-self.sensoryState.globalPose[0,0])
 
         if self.sensoryState.globalPose[1,0] < MissionPadMap.Y_MIN_BOUNDARY:
-            globalForce[1,0] = movementForceMagnitude*(MissionPadMap.Y_MIN_BOUNDARY - self.sensoryState.globalPose[1,0])
+            global_force[1,0] = movement_force_magnitude*(MissionPadMap.Y_MIN_BOUNDARY - self.sensoryState.globalPose[1,0])
         elif self.sensoryState.globalPose[1] > MissionPadMap.Y_MAX_BOUNDARY:
-            globalForce[1,0] = movementForceMagnitude*(MissionPadMap.Y_MAX_BOUNDARY - self.sensoryState.globalPose[1,0])
+            global_force[1,0] = movement_force_magnitude*(MissionPadMap.Y_MAX_BOUNDARY - self.sensoryState.globalPose[1,0])
         
-        res = self.transformGlobalToDroneSpace(globalForce,yaw=yaw)
+        res = self.transformGlobalToDroneSpace(global_force,yaw=yaw)
 
         if DEBUG_PRINTS:
             print(f' Total Boundary Force: X: {res[0]} Y: {res[1]}')
@@ -293,31 +298,34 @@ class Drone(djitellopytest.Tello):
         print("Final Dictionary Value: " + str(self.telemetryCheck.values()))
         return all(self.telemetryCheck.values())
 
+    def verify_mission_pad(self):
+        if self.sensoryState.missionPadVisibleID == -1 and self.is_flying:
+            self.prevState = self.opState
+            self.opState = State.NoPad
+
     def operate(self,exitLoop = False):
         # creating window
         if WITH_CAMERA and not RUNNING_WITH_GUI:
             cv2.namedWindow(self.identifier, cv2.WINDOW_NORMAL)
         while cv2.waitKey(20) != 27: # Escape
             #sensing
-            if WITH_CAMERA:
-                if WITH_DRONE:
-                    self.sensoryState.update(self.get_current_state())
-                else:
-                    self.sensoryState.update()
-                if self.sensoryState.returnedImage and not RUNNING_WITH_GUI:
+            if WITH_DRONE:
+                self.sensoryState.update(self.get_current_state(), name = self.identifier)
+            else:
+                self.sensoryState.update()
+            if WITH_CAMERA and self.sensoryState.returnedImage and not RUNNING_WITH_GUI:
                     cv2.imshow(self.identifier,self.sensoryState.image)
-            # self.refreshTracker.update()
-            # self.refreshTracker.printAVG()
 
             if not self.swarm:
                 self.operatorOverride()
 
+            self.verify_mission_pad()
+            
             # State Switching 
             match self.opState:
                 case State.Grounded:
                     if(DEBUG_PRINTS):
                         print('Landed')
-                    print(f"{self.identifier} Swarm Vector: {self.swarm_force}")
                     if key.is_pressed('t'):
                         self.opState = State.Takeoff
                         print("Attempting to take off")
@@ -329,8 +337,6 @@ class Drone(djitellopytest.Tello):
                             print("Telemetry Checks Successful")
                             print('Taking off') 
                             self.takeoff()
-                            # t.sleep(2)
-                            # self.move_up(20)
                             self.opState = State.Hover # Hover for now, eventually scanning
                         else:
                             self.opState = State.Grounded
@@ -384,30 +390,23 @@ class Drone(djitellopytest.Tello):
                             reactionMovement = self.behavior.runReactions(drone = self, input = self.sensoryState, currentMovement = wanderVec)
                             wanderVec = np.add(wanderVec, reactionMovement)
                         self.moveDirection(wanderVec)
-                        self.checkNoPad()
 
                 case State.NoPad:
-                    # State when no MissionPad is detected
-                    # Mission Pad ID Numbers are Integers
-                    missionPadIDNumber = [1, 2, 3, 4, 5, 6, 7, 8]
-                    if self.get_mission_pad_id() != missionPadIDNumber:
-                        print('Mission Pads not detected')
-                        print('Elapsing 10 seconds to re-acquire pad ID')
-                        # Elapse 10 seconds, give the drone time to reacquire Mission Pad ID
-                        for i in range(10, 0, -1):
-                            missionPadIDNumber = [1, 2, 3, 4, 5, 6, 7, 8]
-                            print(i)
-                            t.sleep(1)
-                            # Check for Mission Pad IDs inside of elapsing time
-                            idNumber = self.get_mission_pad_id()
-                            if idNumber == missionPadIDNumber:
-                                self.opState = State.Wander
-                        # Switch to Landed state after elapsed time
-                        print('No Mission Pad detected. Landing...')
+                    if self.sensoryState.missionPadVisibleID == -1 and self.is_flying and self.lost_pad_counter <=5:
+                        print(f"{self.identifier} lost mission pads")
+                        print('Trying to re-acquire pad ID')
+                        # Elapse 5 cycles, give the drone time to reacquire Mission Pad ID
+                        self.moveDirection(self.__avoidBoundary__())
+                        self.lost_pad_counter += 1
+                    elif self.sensoryState.missionPadVisibleID == -1 and self.is_flying:
+                        print(f"{self.identifier} could not reacquire mission pad, landing...")
                         self.opState = State.Land
+                        self.lost_pad_counter = 0
                     else:
-                        # Mission Pad detected, switch back to Wander State
-                        print('Mission Pad detected.')
-                        self.opState = State.Wander
+                        self.opState = self.prevState
+                        print(f"{self.identifier} found mission pad")
+                        self.lost_pad_counter = 0
+                        return
+
             if exitLoop: break
 
