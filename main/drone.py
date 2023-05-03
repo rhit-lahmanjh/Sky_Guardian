@@ -9,10 +9,9 @@ from sensoryState import SensoryState,MissionPadMap
 from behaviors.behavior import behaviorFramework
 from refresh_tracker import RefreshTracker, State
 
-DEBUG_PRINTS = False
+DEBUG_PRINTS = True
 WITH_DRONE = True
-WITH_CAMERA = False
-RECORD_SENSOR_STATE = True
+WITH_CAMERA = True
 RUNNING_WITH_GUI = False
 
 clamp = lambda n, minn, maxn: max(min(maxn, n), minn)
@@ -51,7 +50,6 @@ class Drone(djitellopy_edited.Tello):
                  control_udp_port = 8889,
                  state_udp_port = 8890,
                  local_computer_IP = '0.0.0.0',):
-        # cv2.VideoCapture()
         self.swarm = swarm
         self.random_wander_force = np.zeros((4,1))
         self.swarm_force = np.zeros((4,1))
@@ -87,7 +85,7 @@ class Drone(djitellopy_edited.Tello):
         #setup useful classes
         self.refreshTracker = RefreshTracker()
 
-    #region INTERNAL UTILITY FUNCTIONS
+    #region UTILITY FUNCTIONS
 
     def __randomWander__(self):
         if self.wander_counter >= 10:
@@ -213,7 +211,7 @@ class Drone(djitellopy_edited.Tello):
         # Checks the battery charge before takeoff
         if self.opState.Grounded:
             print("Battery Charge: " + str(self.sensoryState.getSensorReading("bat")))
-            if self.sensoryState.getSensorReading("bat") > 50:
+            if self.sensoryState.getSensorReading("bat") > 25:
                 BatCheck = True
             else:
                 BatCheck = False
@@ -298,10 +296,10 @@ class Drone(djitellopy_edited.Tello):
         print("Final Dictionary Value: " + str(self.telemetryCheck.values()))
         return all(self.telemetryCheck.values())
 
-    def verify_mission_pad(self):
-        if self.sensoryState.missionPadVisibleID == -1 and self.is_flying:
-            self.prevState = self.opState
-            self.opState = State.NoPad
+    # def verify_mission_pad(self):
+    #     if self.sensoryState.missionPadVisibleID == -1 and self.is_flying:
+    #         self.prevState = self.opState
+    #         self.opState = State.NoPad
 
     def operate(self,exitLoop = False):
         # creating window
@@ -319,11 +317,14 @@ class Drone(djitellopy_edited.Tello):
             if not self.swarm:
                 self.operatorOverride()
 
-            self.verify_mission_pad()
+            # self.verify_mission_pad()
             
             # State Switching 
             match self.opState:
                 case State.Grounded:
+                    if self.identifier == 'beta':
+                        self.__avoidBoundary__()
+                    
                     if(DEBUG_PRINTS):
                         print('Landed')
                     if key.is_pressed('t'):

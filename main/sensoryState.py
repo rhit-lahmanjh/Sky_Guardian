@@ -9,10 +9,10 @@ DEBUG_PRINTS = False
 class MissionPadMap():
     
     DISTANCE_BETWEEN_MISSION_PADS = 50
-    X_MIN_BOUNDARY = 0
-    X_MAX_BOUNDARY = 100
-    Y_MIN_BOUNDARY = 0
-    Y_MAX_BOUNDARY = 100
+    X_MIN_BOUNDARY = 20
+    X_MAX_BOUNDARY = 180
+    Y_MIN_BOUNDARY = 20
+    Y_MAX_BOUNDARY = 180
     missionPadShift = np.array([[0,0],
                             [0,DISTANCE_BETWEEN_MISSION_PADS],
                             [0,2*DISTANCE_BETWEEN_MISSION_PADS],
