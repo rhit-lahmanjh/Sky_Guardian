@@ -28,11 +28,10 @@ class VideoAnalyzer():
     def detectObjects(self,img):
         objects = self.visionNet(img,conf=self.confidenceLevel)
         img = objects[0].plot()
-        # if self.device == "cuda:0":
-        #     return objects[0].boxes.boxes.cpu(), img
-        # else:
-        #     return objects[0].boxes.boxes, img
-        return objects[0].boxes.boxes.cpu(), img
+        if self.USING_CUDA:
+            return objects[0].boxes.boxes.cpu(), img
+        else:
+            return objects[0].boxes.boxes, img
 
     def increase_model_size(self):
         if self.netIndex == 5:

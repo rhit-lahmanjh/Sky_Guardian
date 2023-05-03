@@ -4,9 +4,7 @@ import cv2
 from video_analyzer import VideoAnalyzer
 import time as t
 
-# update dependent on pad layout
-
-DEBUG_PRINTS = True
+DEBUG_PRINTS = False
 
 class MissionPadMap():
     
@@ -33,23 +31,26 @@ class MissionPadMap():
                             [3*DISTANCE_BETWEEN_MISSION_PADS,3*DISTANCE_BETWEEN_MISSION_PADS],])
 
 class SensoryState():
-    globalPose = np.ones((4,1))
-    localPose = np.ones((4,1))
+    globalPose:np.array = None 
+    localPose:np.array = None 
     missionPadSector = 0
     missionPadVisibleID = 0
     yawOffset = 0
     yawOffsetSet = False
     
-    sensorReadings = dict()
+    sensorReadings: dict = None
     videoCapture:cv2.VideoCapture = None
     videoAnalyzer = None
     returnedImage = False
     image = None
-    visibleObjects = list()
+    visibleObjects: list = None
 
     WITH_DRONE = False
 
     def __init__(self, initialReadings:dict = None,videoCapture:cv2.VideoCapture = None):
+        self.sensorReadings = dict()
+        self.globalPose = np.ones((4,1))
+        self.localPose = np.ones((4,1))
         if initialReadings != None:
             for key in initialReadings:
                 queue = deque()
@@ -65,7 +66,7 @@ class SensoryState():
         self.videoCapture = cv2.VideoCapture(0)
         self.videoAnalyzer = VideoAnalyzer()
 
-    def update(self,currentReadings:dict = None):
+    def update(self,currentReadings:dict = None, name:str = None):
         if self.WITH_DRONE:
 
             currentReadings['yaw'] = -currentReadings.pop('yaw') # this corrects the yaw to be consistent with right hand rule
@@ -78,10 +79,9 @@ class SensoryState():
                 if(len(queue) > 10):
                     queue.popleft()
 
-
             if DEBUG_PRINTS:
-                print(f"Sector: {self.missionPadSector} Pad: {self.missionPadVisibleID} X: {self.globalPose[0]} Y: {self.globalPose[1]} Z: {self.globalPose[2]} YAW : {self.globalPose[3]}")
-                # print(f"Shifting by: {self.missionPadShift[padID-1,:]}")
+                print(f"{name} Sector: {self.missionPadSector} Pad: {self.missionPadVisibleID} X: {self.globalPose[0]} Y: {self.globalPose[1]} Z: {self.globalPose[2]} YAW : {self.globalPose[3]}")
+
         if self.videoCapture != None:
             self.__clearBuffer__(self.videoCapture)
             self.returnedImage, self.image = self.videoCapture.retrieve()
@@ -115,6 +115,8 @@ class SensoryState():
                 self.globalPose[1] = currentReadings.get('y') + MissionPadMap.missionPadShift[newPadID-1,1]
                 self.globalPose[2] = currentReadings.get('z')
                 self.globalPose[3] = currentReadings.get('yaw') - self.yawOffset
+            else:
+                self.missionPadVisibleID = newPadID
 
     def __determineMPSector__(self,currentReadings:dict = None):
         newPadID = currentReadings.get('mid')
@@ -122,10 +124,10 @@ class SensoryState():
         oldX = self.localPose[0,0]
         newX = currentReadings.get('x')
 
-        print(f"old X {oldX}")
-        print(f"new X {newX}")
-        print(f"new pad id {newPadID}")
-        print(f"old pad ID {oldPadID}")
+        # print(f"old X {oldX}")
+        # print(f"new X {newX}")
+        # print(f"new pad id {newPadID}")
+        # print(f"old pad ID {oldPadID}")
         # if ID 1-4 and changes to ID 5-8, with previous local negative x, current positive local x, moves from sector 1 to 0
         # if ID 5-8 and changes to ID 1-4, with previous positive local x, current negative local x moves from sector 0 to 1
         if newX > 0 and oldX < 0 and oldPadID > 0 and oldPadID < 5 and newPadID > 4 and newPadID < 9:

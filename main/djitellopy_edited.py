@@ -13,9 +13,11 @@ from djitellopy.enforce_types import enforce_types # NOTE THIS NEEDED TO BE PULL
 # from .enforce_types import enforce_types
 
 
-threads_initialized = False
+
 drones: Optional[dict] = {}
 client_socket: socket.socket
+threads_initialized = False
+
 
 
 @enforce_types
@@ -43,6 +45,7 @@ class Tello:
 
     # Local Computer IP address for router control
     LOCAL_COMPUTER_IP = '0.0.0.0'
+
 
     # Constants for video settings
     BITRATE_AUTO = 0
@@ -97,15 +100,15 @@ class Tello:
     def __init__(self,
                  host=TELLO_IP,
                  retry_count=RETRY_COUNT,
-                 tello_ip = '192.168.10.1',
                  vs_udp_ip = '0.0.0.0',
                  vs_udp_port = 11111,
                  control_udp_port = 8889,
                  state_udp_port = 8890,
                  local_computer_IP = '0.0.0.0',):
 
-        global threads_initialized, client_socket, drones
-        self.TELLO_IP = tello_ip
+        global drones, client_socket, threads_initialized
+        
+        self.TELLO_IP = host
         self.VS_UDP_IP = vs_udp_ip
         self.VS_UDP_PORT = vs_udp_port
         self.CONTROL_UDP_PORT = control_udp_port
@@ -122,23 +125,24 @@ class Tello:
             # Run Tello command responses UDP receiver on background
             client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             if self.LOCAL_COMPUTER_IP != '0.0.0.0':
-                client_socket.bind((self.LOCAL_COMPUTER_IP, self.CONTROL_UDP_PORT))
+                client_socket.bind((self.LOCAL_COMPUTER_IP, Tello.CONTROL_UDP_PORT))
             else:
                 client_socket.bind(("", Tello.CONTROL_UDP_PORT))
-            response_receiver_thread = Thread(target=Tello.udp_response_receiver)
+            
+            response_receiver_thread = Thread(target=self.udp_response_receiver)
             response_receiver_thread.daemon = True
             response_receiver_thread.start()
 
-            # Run state UDP receiver on background
-            state_receiver_thread = Thread(target=Tello.udp_state_receiver)
-            state_receiver_thread.daemon = True
-            state_receiver_thread.start()
-
             threads_initialized = True
+
+        # Run individual state UDP receiver on background
+        state_receiver_thread = Thread(target=self.udp_state_receiver)
+        state_receiver_thread.daemon = True
+        state_receiver_thread.start()
 
         drones[host] = {'responses': [], 'state': {}}
 
-        self.LOGGER.info("Tello instance was initialized. Host: '{}'. Port: '{}'.".format(host, Tello.CONTROL_UDP_PORT))
+        self.LOGGER.info("Tello instance was initialized. Host: '{}'. Port: '{}'.".format(host, self.CONTROL_UDP_PORT))
 
     def get_own_udp_object(self):
         """Get own object from the global drones dict. This object is filled
@@ -151,7 +155,7 @@ class Tello:
         return drones[host]
 
     @staticmethod
-    def udp_response_receiver():
+    def udp_response_receiver(self):
         """Setup drone UDP receiver. This method listens for responses of Tello.
         Must be run from a background thread in order to not block the main thread.
         Internal method, you normally wouldn't call this yourself.
@@ -161,7 +165,7 @@ class Tello:
                 data, address = client_socket.recvfrom(1024)
 
                 address = address[0]
-                Tello.LOGGER.debug('Data received from {} at client_socket'.format(address))
+                self.LOGGER.debug('Data received from {} at client_socket'.format(address))
 
                 if address not in drones:
                     continue
@@ -172,31 +176,31 @@ class Tello:
                 Tello.LOGGER.error(e)
                 break
 
-    @staticmethod
-    def udp_state_receiver():
+    def udp_state_receiver(self):
         """Setup state UDP receiver. This method listens for state information from
         Tello. Must be run from a background thread in order to not block
         the main thread.
         Internal method, you normally wouldn't call this yourself.
         """
         state_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        state_socket.bind(("", Tello.STATE_UDP_PORT))
+        state_socket.bind(("", self.STATE_UDP_PORT))
 
         while True:
             try:
                 data, address = state_socket.recvfrom(1024)
 
                 address = address[0]
-                Tello.LOGGER.debug('Data received from {} at state_socket'.format(address))
+                self.LOGGER.debug('Data received from {} at state_socket'.format(address))
 
                 if address not in drones:
                     continue
 
                 data = data.decode('ASCII')
                 drones[address]['state'] = Tello.parse_state(data)
+                # print("got state data")
 
             except Exception as e:
-                Tello.LOGGER.error(e)
+                self.LOGGER.error(e)
                 break
 
     @staticmethod
@@ -487,7 +491,7 @@ class Tello:
         # Commands very consecutive makes the drone not respond to them. So wait at least self.TIME_BTW_COMMANDS seconds
 
         self.LOGGER.info("Send command (no response expected): '{}'".format(command))
-        client_socket.sendto(command.encode('utf-8'), self.address)
+        self.client_socket.sendto(command.encode('utf-8'), self.address)
 
     def send_control_command(self, command: str, timeout: int = RESPONSE_TIMEOUT) -> bool:
         """Send control command to Tello and wait for its response.
