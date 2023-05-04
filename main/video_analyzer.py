@@ -2,7 +2,7 @@ from ultralytics import YOLO
 import torch.cuda
 import os.path
 
-CONFIDENCE_CUTOFF = .5
+CONFIDENCE_CUTOFF = .7
 
 class VideoAnalyzer():
 

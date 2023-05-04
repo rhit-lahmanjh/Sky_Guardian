@@ -98,7 +98,7 @@ class followCellPhone(movementReaction):
                 if(int(object[5]) == int(vision_class.cell_phone)):
                     imgWidth = input.image.shape[0]
                     res[3] = -.3*((imgWidth/2)-((object[2]+object[0])/2))
-                    res[1] = (object[2]-object[0])*20/imgWidth # move back (proportional to object width)
+                    res[1] = (object[2]-object[0])*60/imgWidth # move back (proportional to object width)
 
                     # print(f'Yaw: {res[3]}')
                     print(f"Following: {int(object[5])}")
@@ -114,7 +114,7 @@ class runFromBanana(movementReaction):
                 if(int(object[5]) == int(vision_class.banana)):
                     imgWidth = input.image.shape[0]
                     res[3] = -.3*((imgWidth/2)-((object[2]+object[0])/2))
-                    res[1] = -(object[2]-object[0])*20/imgWidth # move back
+                    res[1] = -(object[2]-object[0])*60/imgWidth # move back
 
                     # print(f'Yaw: {res[3]}')
                     print(f'RUN FROM SCARY BANANA: Reverse: {res[1]} Yaw: {res[3]}')

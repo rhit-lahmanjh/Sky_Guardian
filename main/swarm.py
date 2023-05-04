@@ -38,6 +38,8 @@ class Swarm():
             return
         elif key.is_pressed("j"):
             self.drone1.opState = State.Takeoff
+        elif key.is_pressed("e"):
+            self.drone1.opState = State.Drift
         
         #drone 2
         if(key.is_pressed('s') and not self.drone2.recently_sent_land):
@@ -58,6 +60,8 @@ class Swarm():
             return
         elif key.is_pressed("f"):
             self.drone2.opState = State.Takeoff
+        elif key.is_pressed("i"):
+            self.drone2.opState = State.Drift
         
     def operate(self):
         while not self.turnOff: # Escape

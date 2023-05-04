@@ -24,14 +24,6 @@ beta_vs_port = 11112
 alpha = Drone(identifier = 'alpha',behavior=behavior1(), tello_ip=alphaIP,control_udp_port=alphaCmdPort,state_udp_port=alphaStatePort, vs_udp_port=alpha_vs_port,swarm=True)
 beta = Drone(identifier = 'beta',behavior=behavior1(), tello_ip=betaIP,control_udp_port=betaCmdPort,state_udp_port = betaStatePort, vs_udp_port=beta_vs_port,swarm=True)
 
-# beta.takeoff()
-# direction = np.array([[20],[0],[0],[0]])
-# beta.moveDirection(direction=direction)
-#     # direction = -direction
-# t.sleep(5)
-# beta.land()
-
-
 swarm = Swarm(beta,alpha)
 
 swarm.operate()

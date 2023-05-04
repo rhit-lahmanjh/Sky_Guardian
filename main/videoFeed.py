@@ -27,8 +27,6 @@ import time as t
 
 logging.getLogger("flet_core").setLevel(logging.FATAL)
 
-
-
 # CV2 Window 
 class Countdown(ft.UserControl):
     def __init__(self, drone:Drone):
@@ -47,7 +45,7 @@ class Countdown(ft.UserControl):
         while True:
             returned, frame = [self.drone.sensoryState.returnedImage, self.drone.sensoryState.image]
 
-            print(f"not returned from drone {self.drone.identifier}")
+            # print(f"not returned from drone {self.drone.identifier}")
             if returned:
                 _, im_arr = cv2.imencode('.png', frame)
                 im_b64 = base64.b64encode(im_arr)
