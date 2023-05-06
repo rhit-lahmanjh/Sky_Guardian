@@ -26,6 +26,8 @@ from sensoryState import SensoryState
 from swarm import Swarm
 import time as t
 
+WITH_DRONES = False
+
 logging.getLogger("flet_core").setLevel(logging.FATAL)
 
 # CV2 Window 
@@ -72,16 +74,17 @@ def main(page: ft.Page):
     betaCmdPort = 8891
     betaStatePort = 8892
     beta_vs_port = 11112
-    drone1 = Drone(identifier = 'alpha',behavior = behavior1(),tello_ip=alphaIP,control_udp_port=alphaCmdPort,state_udp_port=alphaStatePort, vs_udp_port=alpha_vs_port)
-    drone2 = Drone(identifier = 'beta',behavior = behavior1(),tello_ip=betaIP,control_udp_port=betaCmdPort,state_udp_port = betaStatePort, vs_udp_port=beta_vs_port)
+    if(WITH_DRONES):
+        drone1 = Drone(identifier = 'alpha',behavior = behavior1(),tello_ip=alphaIP,control_udp_port=alphaCmdPort,state_udp_port=alphaStatePort, vs_udp_port=alpha_vs_port)
+        drone2 = Drone(identifier = 'beta',behavior = behavior1(),tello_ip=betaIP,control_udp_port=betaCmdPort,state_udp_port = betaStatePort, vs_udp_port=beta_vs_port)
 
-    swarm = Swarm(drone1,drone2)
+        swarm = Swarm(drone1,drone2)
 
-    # Setting up threading
-    threads = []
-    FSM_thread = threading.Thread(target=swarm.operate)
-    threads.append(FSM_thread)
-    FSM_thread.start()
+        # Setting up threading
+        threads = []
+        FSM_thread = threading.Thread(target=swarm.operate)
+        threads.append(FSM_thread)
+        FSM_thread.start()
 
     page.title = "inTellogence"
 
@@ -165,18 +168,17 @@ def main(page: ft.Page):
     drone1_column = ft.Column(
         [
             ft.Container(
-                content=ft.Row (
-                    ft.Column(
-                    drone1_items, 
-                    alignment=ft.MainAxisAlignment.CENTER,
-                    horizontal_alignment=ft.CrossAxisAlignment.CENTER),
-
-                    ft.Column(
-                        ft.OutlinedButton(text="Hover", on_click=drone1_hover),
-                        ft.OutlinedButton(text="Scan", on_click = drone1_scan),
-                        ft.OutlinedButton(text="Wander", on_click = drone1_wander),
-                        ft.OutlinedButton(text="Drift", on_click = drone1_drift)
-                    )
+                content=ft.Row([ft.Column(
+                                drone1_items, 
+                                alignment=ft.MainAxisAlignment.CENTER,
+                                horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+                                ft.Column([
+                                ft.OutlinedButton(text="Hover", on_click=drone1_hover),
+                                ft.OutlinedButton(text="Scan", on_click = drone1_scan),
+                                ft.OutlinedButton(text="Wander", on_click = drone1_wander),
+                                ft.OutlinedButton(text="Drift", on_click = drone1_drift)
+                                ])
+                                ]    
                 )
             ),
         ]
@@ -207,19 +209,19 @@ def main(page: ft.Page):
     drone2_column = ft.Column(
         [
             ft.Container(
-                content=ft.Row (
+                content=ft.Row ([
                     ft.Column(
                     drone2_items, 
                     alignment=ft.MainAxisAlignment.CENTER,
                     horizontal_alignment=ft.CrossAxisAlignment.CENTER),
 
-                    ft.Column(
+                    ft.Column([
                         ft.OutlinedButton(text="Hover", on_click=drone2_hover),
                         ft.OutlinedButton(text="Scan", on_click = drone2_scan),
                         ft.OutlinedButton(text="Wander", on_click = drone2_wander),
-                        ft.OutlinedButton(text="Drift", on_click = drone2_drift)
+                        ft.OutlinedButton(text="Drift", on_click = drone2_drift)]
                     )
-                )
+                ])
             ),
         ]
     )
@@ -242,10 +244,10 @@ def main(page: ft.Page):
                 padding=10,
                 border_radius = ft.border_radius.all(20),
                 content=ft.Column([
-                    Countdown(swarm.drone2),
+                    # Countdown(swarm.drone1),
                     ft.Text("Drone 1",
-                         size=20, weight="bold",
-                         color=ft.colors.WHITE),
+                    size=20, weight="bold",
+                    color=ft.colors.WHITE),
                 ]
                 ),
             )
@@ -258,26 +260,24 @@ def main(page: ft.Page):
                 padding=10,
                 border_radius = ft.border_radius.all(20),
                 content=ft.Column([
-                    Countdown(swarm.drone1),
+                    # Countdown(swarm.drone2),
                     ft.Text("Drone 2",
-                         size=20, weight="bold",
-                         color=ft.colors.WHITE),
+                    size=20, weight="bold",
+                    color=ft.colors.WHITE),
                 ]
                 ),
             )
     )
+    
 
-    page.add(
-        ft.Column(
-            drone1_column,
-            drone2_column,
-            spacing=50
-        ),
-        ft.Column(
-            d1_stream,
-            d2_stream,
-            spacing = 15
-        )
+    # page.add(drone1_column,drone2_column)
+
+    page.add(Row([Column([drone1_column,
+                        drone2_column],
+                        spacing=50),
+                Column([d1_stream,
+                            d2_stream],
+                            spacing = 15)])
     )
 
 ft.app(target=main)
