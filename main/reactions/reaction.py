@@ -10,6 +10,8 @@ from yoloClasses import vision_class
 ### Reaction Format 
 class movementReaction:
 
+    identifier = None
+
     def __init__(self) -> None:
         pass
 
@@ -18,6 +20,8 @@ class movementReaction:
 
 class blockingReaction:
 
+    identifier = None
+
     def __init__(self) -> None:
         pass
 
@@ -25,6 +29,8 @@ class blockingReaction:
         pass
 
 class definedBlockingReaction:
+
+    identifier = None
 
     def __init__(self,object: IntEnum) -> None:
         self.object = object
@@ -51,7 +57,6 @@ class followObject(movementReaction):
 
                     # print(f'Yaw: {res[3]}')
                     print(f"Following: {int(object[5])}")
-                    print(f'FOLLOW PHONE: Forward: {res[1]} Yaw: {res[3]}')
         return res
 
 
@@ -59,6 +64,8 @@ class followObject(movementReaction):
 # NOTE: the output structure of visibleObjects is an N x 6 array, [x1, y1, x2, y2, score, label]
 # reacting to a specific object
 class flipOnBanana(blockingReaction):
+
+    identifier = "Flip on Banana"
 
     def react(self, drone, input, currentMovement = np.zeros((4,1))):
         if input.visibleObjects is not None:
@@ -68,6 +75,8 @@ class flipOnBanana(blockingReaction):
                     drone.flip_left()
 
 class bobOnScissors(blockingReaction):
+
+    identifier = "Bob on Scissors"
 
     def react(self,drone,input, currentMovement = np.zeros((4,1))):
         if input.visibleObjects is not None:
@@ -80,16 +89,11 @@ class bobOnScissors(blockingReaction):
                     t.sleep(1)
                     return
                 
-class pauseOnSoccerBall(blockingReaction):
-    def react(self,drone,input, currentMovement = np.zeros((4,1))):
-        if input.visibleObjects is not None:
-            for object in input.visibleObjects:
-                if(int(object[5]) == vision_class.sports_ball):
-                    drone.opstate = State.Hover
-                    return
 
 class followCellPhone(movementReaction):
-    
+
+    identifier = "Follow Cell Phone"
+
     def react(self, input: SensoryState, currentMovement: np.array):
         res = np.zeros((4,1))
         if input.visibleObjects is not None:
@@ -106,6 +110,8 @@ class followCellPhone(movementReaction):
         return res
     
 class runFromBanana(movementReaction):
+
+    identifier = "Run from Banana"
     
     def react(self, input: SensoryState, currentMovement: np.array):
         res = np.zeros((4,1))

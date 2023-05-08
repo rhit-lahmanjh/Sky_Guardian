@@ -7,6 +7,7 @@ import math
 import random as rand
 from sensoryState import SensoryState,MissionPadMap
 from behaviors.behavior import behaviorFramework
+
 from refresh_tracker import RefreshTracker, State
 
 DEBUG_PRINTS = True
@@ -96,6 +97,10 @@ class Drone(djitellopy_edited.Tello):
 
         self.wander_counter += 1
         return self.random_wander_force
+    
+    def change_behavior(self,new_behavior:behaviorFramework = None):
+        if new_behavior is not None:
+            self.behavior = new_behavior
     
     def __avoidBoundary__(self):
         movement_force_magnitude = 1.2
