@@ -22,8 +22,8 @@ beta_vs_port = 11112
 
 #make drones
 alpha = Drone(identifier = 'alpha',behavior=behavior1(), tello_ip=alphaIP,control_udp_port=alphaCmdPort,state_udp_port=alphaStatePort, vs_udp_port=alpha_vs_port,swarm=True)
-beta = Drone(identifier = 'beta',behavior=behavior1(), tello_ip=betaIP,control_udp_port=betaCmdPort,state_udp_port = betaStatePort, vs_udp_port=beta_vs_port,swarm=True)
+beta = Drone(identifier = 'beta',behavior=behavior1(), tello_ip=betaIP,control_udp_port=betaCmdPort,state_udp_port=betaStatePort, vs_udp_port=beta_vs_port,swarm=True)
 
-swarm = Swarm(beta,alpha)
+swarm = Swarm(alpha,beta)
 
 swarm.operate()

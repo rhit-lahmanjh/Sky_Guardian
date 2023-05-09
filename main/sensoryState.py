@@ -10,9 +10,9 @@ class MissionPadMap():
     
     DISTANCE_BETWEEN_MISSION_PADS = 50
     X_MIN_BOUNDARY = 20
-    X_MAX_BOUNDARY = 180
+    X_MAX_BOUNDARY = 80
     Y_MIN_BOUNDARY = 20
-    Y_MAX_BOUNDARY = 180
+    Y_MAX_BOUNDARY = 30
     missionPadShift = np.array([[0,0],
                             [0,DISTANCE_BETWEEN_MISSION_PADS],
                             [0,2*DISTANCE_BETWEEN_MISSION_PADS],

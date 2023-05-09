@@ -11,7 +11,7 @@ from behaviors.behavior import behaviorFramework
 from refresh_tracker import RefreshTracker, State
 
 DEBUG_PRINTS = True
-WITH_DRONE = False
+WITH_DRONE = True
 WITH_CAMERA = True
 RUNNING_WITH_GUI = False
 
