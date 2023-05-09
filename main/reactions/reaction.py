@@ -1,3 +1,4 @@
+from logging.config import IDENTIFIER
 from sensoryState import SensoryState
 import numpy as np
 # from drone import Drone
@@ -42,6 +43,8 @@ class definedBlockingReaction:
 
 class followObject(movementReaction):
 
+    identifier = "Follow Object"
+
     def __init__(self,object: IntEnum) -> None:
         self.object = object
 
@@ -73,6 +76,9 @@ class flipOnBanana(blockingReaction):
                 if(int(object[5]) == vision_class.banana):
                     print('Banana Detected: Flipping')
                     drone.flip_left()
+
+    def get_identifier():
+        return IDENTIFIER
 
 class bobOnScissors(blockingReaction):
 

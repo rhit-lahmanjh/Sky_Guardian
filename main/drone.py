@@ -10,9 +10,9 @@ from behaviors.behavior import behaviorFramework
 
 from refresh_tracker import RefreshTracker, State
 
-DEBUG_PRINTS = True
-WITH_DRONE = True
-WITH_CAMERA = True
+DEBUG_PRINTS = False
+WITH_DRONE = False
+WITH_CAMERA = False
 RUNNING_WITH_GUI = False
 
 clamp = lambda n, minn, maxn: max(min(maxn, n), minn)
@@ -264,7 +264,7 @@ class Drone(djitellopy_edited.Tello):
         # Checks to make sure the pitch is not too far off
         # If the drone is too far from 0 degrees on pitch the takeoff
         # could be unsafe
-        print("Pitch: " + str(self.sensoryState.getSensorReading("pitch")))
+        # print("Pitch: " + str(self.sensoryState.getSensorReading("pitch")))
         pitch = abs(self.sensoryState.getSensorReading("pitch"))
         if pitch < 15:
             pitchCheck = True
@@ -275,7 +275,7 @@ class Drone(djitellopy_edited.Tello):
         # Checks to make sure the roll is not too far off
         # If the drone is too far from 0 degrees on roll the takeoff
         # could be unsafe
-        print("Roll: " + str(self.sensoryState.getSensorReading("roll")))
+        # print("Roll: " + str(self.sensoryState.getSensorReading("roll")))
         roll = abs(self.sensoryState.getSensorReading("roll"))
         if roll < 25:
             rollCheck = True
@@ -285,7 +285,7 @@ class Drone(djitellopy_edited.Tello):
 
         # Comment out function as needed until testing can confirm desired threshold value
         # Checks to ensure the drone is at a low enough height to ensure room during takeoff for safe ascent
-        print("Height: " + str(self.sensoryState.getSensorReading("h")))
+        # print("Height: " + str(self.sensoryState.getSensorReading("h")))
         if self.sensoryState.getSensorReading("h") < 90:
             HeightCheck = True
         else:
