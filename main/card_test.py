@@ -174,10 +174,10 @@ def main(page: ft.Page):
             def delete_reaction(e):
                 print("Deleting...")
                 for rc in self.items:
-                    if rc.selected == TRUE:
+                    if rc.selected == True:
                         print(rc.reaction.identifier + " is being deleted")
                         self.items.remove(rc)
-                        self.reactionList.remove(rc.reaction.identifier)
+                        self.reactionList.remove(rc.reaction)
                         self.drone.behavior.remove_reaction(rc.reaction.identifier)
                     card.update()
                 page.update()
@@ -203,12 +203,14 @@ def main(page: ft.Page):
                     def toggle_container(e):
                         if self.selected == True: 
                             self.selected = False
-                            displayBox.bgcolor = ft.colors.AMBER
+                            displayBox.bgcolor = ft.colors.BLUE
+                            print(self.selected)
                         
-
                         else:
                             self.selected = True
-                            displayBox.bgcolor =  ft.colors.BLUE
+                            displayBox.bgcolor =  ft.colors.AMBER
+                            print(self.selected)
+
                         displayBox.update()
                         self.page.update()
 
@@ -246,7 +248,7 @@ def main(page: ft.Page):
                                     clear_all_button
                                 ]
                             ), 
-                            # col
+                            col
                         ]
                     ),
                     width=400,
