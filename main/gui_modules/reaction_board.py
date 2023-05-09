@@ -1,7 +1,7 @@
 import itertools
 from drone import Drone
 from pickle import FALSE, TRUE
-from flet import *
+import flet as ft
 from main.drone import Drone
 from reaction_component import ReactionComponent
 from yoloClasses import vision_class
@@ -11,9 +11,8 @@ object_list = [obj.name for obj in vision_class]
 
 reaction_data = ["Flip", "Bob", "Pause", "Follow", "Run"]
 
-
 # make Class that allows the user to select an object and Reaction
-class ReactionInput(UserControl):
+class ReactionInput(ft.UserControl):
     id_counter = itertools.count()
 
     def __init__(self, drone:Drone, name:str):
@@ -23,16 +22,16 @@ class ReactionInput(UserControl):
         self.board_id = next(ReactionInput.id_counter)
         self.selectedObject = ""
         self.selectedBehavior = ""
-        self.badIcon = Icon(name=icons.QUESTION_MARK, color=colors.BLUE_GREY_300, size=30)
-        self.goodIcon = Icon(name=icons.CHECK, color=colors.GREEN_300, size=30)
-        self.add_reaction_button = OutlinedButton(icon=icons.ADD, height = 30, on_click=self.createReaction)
-        self.delete_reaction_button = OutlinedButton(icon=icons.DELETE, height = 30, on_click=self.deleteReaction)
-        self.clear_all_button = OutlinedButton(icon=icons.DELETE_SWEEP, height = 30, on_click=self.clear_all_reactions)
+        self.badIcon = ft.Icon(name=ft.icons.QUESTION_MARK, color=ft.colors.BLUE_GREY_300, size=30)
+        self.goodIcon = ft.Icon(name=ft.icons.CHECK, color=ft.colors.GREEN_300, size=30)
+        self.add_reaction_button = ft.OutlinedButton(icon=ft.icons.ADD, height = 30, on_click=self.createReaction)
+        self.delete_reaction_button = ft.OutlinedButton(icon=ft.icons.DELETE, height = 30, on_click=self.deleteReaction)
+        self.clear_all_button = ft.OutlinedButton(icon=ft.icons.DELETE_SWEEP, height = 30, on_click=self.clear_all_reactions)
 
         self.reaction_list = [
         ]
 
-        self.list_wrap = Column(
+        self.list_wrap = ft.Column(
             self.reaction_list,
             visable = True,
             vertical_alignment = "start",
@@ -41,24 +40,24 @@ class ReactionInput(UserControl):
             height = self.app.page.height -95
         )
 
-        self.dd = Dropdown(
+        self.dd = ft.Dropdown(
                     width=300,
                     options=[],
-                    label = Text("Select Behavior")
+                    label = ft.Text("Select Behavior")
         )
         
         for item in reaction_data:
-            self.dd.options.append(dropdown.Option(str(item)))
+            self.dd.options.append(ft.dropdown.Option(str(item)))
 
     def build(self):
 
-        self.view = Card( 
-                content=Container(
-                content=Column(
+        self.view = ft.Card( 
+                content=ft.Container(
+                content=ft.Column(
                 [ 
-                    Row(
+                    ft.Row(
                         content = [
-                            Text("Reactions"), 
+                            ft.Text("Reactions"), 
                             self.add_reaction_button,
                             self.delete_reaction_button,
                             self.clear_all_button
@@ -77,7 +76,7 @@ class ReactionInput(UserControl):
     def createReaction(self, e):
 
         def close_dig(e):
-            if(hasattr(e.control, "text") and not e.control.text == "Cancel") or (type(e.control) is TextField and e.control.value != ""):
+            if(hasattr(e.control, "text") and not e.control.text == "Cancel") or (type(e.control) is ft.TextField and e.control.value != ""):
                 new_reaction = ReactionComponent(self, self.selectedBehavior, self.selectedObject)
             self.add_reaction(new_reaction)
 
@@ -99,20 +98,20 @@ class ReactionInput(UserControl):
                 create_button.disabled = FALSE
 
             self.page.update()
-        dialog_text = TextField(label="Input Object from COCO dataset", on_submit=close_dig, on_change=textfield_change)
+        dialog_text = ft.TextField(label="Input Object from COCO dataset", on_submit=close_dig, on_change=textfield_change)
 
-        create_button = ElevatedButton(text="Create", bgcolor=colors.BLUE_200, on_click=close_dig, disabled=TRUE)
-        dialog = AlertDialog(
-            title = Text("Make a new reaction"),
-            content=Column([
-                Container(content = [
+        create_button = ft.ElevatedButton(text="Create", bgcolor=ft.colors.BLUE_200, on_click=close_dig, disabled=TRUE)
+        dialog = ft.AlertDialog(
+            title = ft.Text("Make a new reaction"),
+            content=ft.Column([
+                ft.Container(content = [
                     self.dd,
                     dialog_text, 
                 ],
-                padding = padding.symmetric(horizontal=5),
+                padding = ft.padding.symmetric(horizontal=5),
                 ),
-            Row([
-                ElevatedButton(
+            ft.Row([
+                ft.ElevatedButton(
                     text="Cancel", on_click=close_dig),
                     create_button
             ],

@@ -26,7 +26,7 @@ class behaviorFramework:
             res = res + reaction.react(input = input, currentMovement = currentMovement)
         return res
     
-    def add_reaction(self, new_blocking_reaction: rxt.blockingReaction = None, new_movement_reaction:rxt.movementReaction = None)
+    def add_reaction(self, new_blocking_reaction: rxt.blockingReaction = None, new_movement_reaction:rxt.movementReaction = None):
         if new_blocking_reaction is not None:
             self.blockingReactions.append(new_blocking_reaction)
 
