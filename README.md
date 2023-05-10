@@ -78,7 +78,7 @@ The code from <a href="https://www.youtube.com/watch?v=58aPh8rKKsk">Azu Technolo
 General control of both drones is organized around a Finite State Machine (FSM). The primary state of wander is implemented alongside a few states that support smooth and safe operation. The general control logic is shown below.
 <br> 
 
-<img src="imgs/control_loop.png" width="500">
+<img src="imgs/control_loop.png" width="1000">
 </details> 
 
 <details>
