@@ -2,7 +2,7 @@ from drone import Drone
 import numpy as np
 import math
 import keyboard as key
-from refresh_tracker import State
+from drone_states import State
 import time as t
 
 
@@ -68,17 +68,16 @@ class Swarm():
             self.operator_override()
             if self.drone1.getPose()[0] != 1 and self.drone2.getPose()[0] != 1:
                 separateDroneTwoForceVector = self.handleDroneTwoCollision(self.drone1.getPose(), self.drone2.getPose())
-                print(f"Global: {separateDroneTwoForceVector}")
-
-                print(f"Drone 1: {self.drone1.transformGlobalToDroneSpace(-separateDroneTwoForceVector[0:3])}")
-                print(f"Drone 2: {self.drone2.transformGlobalToDroneSpace(separateDroneTwoForceVector[0:3])}")
+                # print(f"Global: {separateDroneTwoForceVector}")
+                # print(f"Drone 1: {self.drone1.transformGlobalToDroneSpace(-separateDroneTwoForceVector[0:3])}")
+                # print(f"Drone 2: {self.drone2.transformGlobalToDroneSpace(separateDroneTwoForceVector[0:3])}")
                 self.drone1.swarmMovement(self.drone1.transformGlobalToDroneSpace(-separateDroneTwoForceVector[0:3]))
                 self.drone2.swarmMovement(self.drone2.transformGlobalToDroneSpace(separateDroneTwoForceVector[0:3]))
             # print(f"SSS {self.drone1.identifier} Sector: {self.drone1.sensoryState.missionPadSector} Pad: {self.drone1.sensoryState.missionPadVisibleID} X: {self.drone1.sensoryState.globalPose[0]} Y: {self.drone1.sensoryState.globalPose[1]} Z: {self.drone1.sensoryState.globalPose[2]} YAW : {self.drone1.sensoryState.globalPose[3]}")
             # print(f"SSS {self.drone2.identifier} Sector: {self.drone2.sensoryState.missionPadSector} Pad: {self.drone2.sensoryState.missionPadVisibleID} X: {self.drone2.sensoryState.globalPose[0]} Y: {self.drone2.sensoryState.globalPose[1]} Z: {self.drone2.sensoryState.globalPose[2]} YAW : {self.drone2.sensoryState.globalPose[3]}")
+            
             self.drone1.operate(exitLoop = True)
             self.drone2.operate(exitLoop = True)
-            t.sleep(.5)
         self.drone1.end_flight()
         self.drone2.end_flight()
 

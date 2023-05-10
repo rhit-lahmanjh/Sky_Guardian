@@ -11,7 +11,7 @@ from drone_states import State
 from behaviors.behavior import behaviorFramework
 from refresh_tracker import RefreshTracker
 
-DEBUG_PRINTS = True
+DEBUG_PRINTS = False
 WITH_DRONE = True
 WITH_CAMERA = True
 RUNNING_WITH_GUI = True
@@ -65,18 +65,19 @@ class Drone(djitellopy_edited.Tello):
             # This is where we will implement connecting to a drone through the router
             self.connect()
             self.set_video_bitrate(djitellopy_edited.Tello.BITRATE_AUTO)
-            # self.set_video_fps(djitellopytest.Tello.FPS_5)
             self.set_video_resolution(djitellopy_edited.Tello.RESOLUTION_480P)
 
             self.set_speed(self.MAXSPEED)
             self.enable_mission_pads()
 
             #setup video
+
             if WITH_CAMERA:
                 self.streamon()
                 self.sensoryState = SensoryState(self.get_current_state(),self.get_video_capture())
-            else:
+            elif not WITH_CAMERA:
                 self.sensoryState = SensoryState(self.get_current_state())
+            
         elif not WITH_DRONE and WITH_CAMERA:
             self.sensoryState = SensoryState()
             self.sensoryState.setupWebcam()
@@ -317,11 +318,16 @@ class Drone(djitellopy_edited.Tello):
                 self.sensoryState.update(self.get_current_state(), name = self.identifier)
             else:
                 self.sensoryState.update()
+                
             if WITH_CAMERA and self.sensoryState.returnedImage and not RUNNING_WITH_GUI:
                     cv2.imshow(self.identifier,self.sensoryState.image)
 
             if not self.swarm:
                 self.operatorOverride()
+
+            print(f"{self.identifier}")
+            self.refreshTracker.update()
+            self.refreshTracker.printAVG()
 
             # self.verify_mission_pad()
             

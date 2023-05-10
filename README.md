@@ -30,10 +30,10 @@ We hope that students or people enthusiastic about learning about drones are abl
 ## Features
 inTellogence has the following features:
 - Ability to control 1 or 2 drones through a router
-- Use of Mission Pads to confine the drone to a space
-- Finite state machine that uses potential fields navigation
+- Use of Tello Mission Pads to confine the drone to a space
+- Finite state machine that uses <a href = https://youtu.be/umkyPWDrys4>potential fields navigation</a>
 - Additional safety measures using industry functional safety techniques
-- Integrates Ultralytics Yolov8 for object recognition
+- Integrates <a href="https://github.com/ultralytics/ultralytics"> Ultralytics Yolov8</a> for object recognition
 - Ability to quickly implement and layer reactive behaviors to objects and sensor readings
 - [Flet](https://flet.dev)-powered language-agnostic GUI (Python, Go, C#)
 - Easy-to-understand & User-tested documentation
