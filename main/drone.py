@@ -13,7 +13,7 @@ from refresh_tracker import RefreshTracker, State
 DEBUG_PRINTS = True
 WITH_DRONE = True
 WITH_CAMERA = True
-RUNNING_WITH_GUI = False
+RUNNING_WITH_GUI = True
 
 clamp = lambda n, minn, maxn: max(min(maxn, n), minn)
 

@@ -364,40 +364,9 @@ def main(page: ft.Page):
             )
 
             return card
+        
+        # CV2 Window 
 
-    d1_stream = ft.Card(
-            elevation=30,
-            content=ft.Container(
-                bgcolor=ft.colors.WHITE24,
-                padding=10,
-                border_radius = ft.border_radius.all(20),
-                content=ft.Column([
-                    # Countdown(swarm.drone1),
-                    ft.Text("Drone 1",
-                    size=20, weight="bold",
-                    color=ft.colors.WHITE),
-                ]
-                ),
-            )
-    )
-
-    d2_stream = ft.Card(
-            elevation=30,
-            content=ft.Container(
-                bgcolor=ft.colors.WHITE24,
-                padding=10,
-                border_radius = ft.border_radius.all(20),
-                content=ft.Column([
-                    # Countdown(swarm.drone2),
-                    ft.Text("Drone 2",
-                    size=20, weight="bold",
-                    color=ft.colors.WHITE),
-                ]
-                ),
-            )
-    )
-
-    # CV2 Window 
     class Countdown(ft.UserControl):
         def __init__(self, drone:Drone):
             super().__init__()
@@ -415,7 +384,7 @@ def main(page: ft.Page):
             while True:
                 returned, frame = [self.drone.sensoryState.returnedImage, self.drone.sensoryState.image]
 
-                print(f"not returned from drone {self.drone.identifier}")
+                # print(f"not returned from drone {self.drone.identifier}")
                 if returned:
                     _, im_arr = cv2.imencode('.png', frame)
                     im_b64 = base64.b64encode(im_arr)
@@ -426,7 +395,41 @@ def main(page: ft.Page):
             self.img = ft.Image(
                 border_radius=ft.border_radius.all(20)
             )
-            return self.img    
+            return self.img  
+
+    d1_stream = ft.Card(
+            elevation=30,
+            content=ft.Container(
+                bgcolor=ft.colors.WHITE24,
+                padding=10,
+                border_radius = ft.border_radius.all(20),
+                content=ft.Column([
+                    Countdown(swarm.drone1),
+                    ft.Text("Drone 1",
+                    size=20, weight="bold",
+                    color=ft.colors.WHITE),
+                ]
+                ),
+            )
+    )
+
+    d2_stream = ft.Card(
+            elevation=30,
+            content=ft.Container(
+                bgcolor=ft.colors.WHITE24,
+                padding=10,
+                border_radius = ft.border_radius.all(20),
+                content=ft.Column([
+                    Countdown(swarm.drone2),
+                    ft.Text("Drone 2",
+                    size=20, weight="bold",
+                    color=ft.colors.WHITE),
+                ]
+                ),
+            )
+    )
+
+  
 
     page.add(
         ft.Container(
@@ -438,7 +441,7 @@ def main(page: ft.Page):
                         # command buttons for Hover, Scan, Wander, and Drift
                         ft.Column([
                             ft.FilledButton(text="Hover", on_click=drone1_hover),
-                            ft.FilledButton(text="Scan", on_click = drone1_scan),
+                            # ft.FilledButton(text="Scan", on_click = drone1_scan),
                             ft.FilledButton(text="Wander", on_click = drone1_wander),
                             ft.FilledButton(text="Drift", on_click = drone1_drift),
                             ],
@@ -465,7 +468,7 @@ def main(page: ft.Page):
                         # command buttons for Hover, Scan, Wander, and Drift
                         ft.Column([
                             ft.FilledButton(text="Hover", on_click=drone2_hover),
-                            ft.FilledButton(text="Scan", on_click = drone2_scan),
+                            # ft.FilledButton(text="Scan", on_click = drone2_scan),
                             ft.FilledButton(text="Wander", on_click = drone2_wander),
                             ft.FilledButton(text="Drift", on_click = drone2_drift),
                             ],
