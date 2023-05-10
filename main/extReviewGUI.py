@@ -410,7 +410,8 @@ def main(page: ft.Page):
                     color=ft.colors.WHITE),
                 ]
                 ),
-            )
+            ),
+            height=400
     )
 
     d2_stream = ft.Card(
@@ -426,7 +427,8 @@ def main(page: ft.Page):
                     color=ft.colors.WHITE),
                 ]
                 ),
-            )
+            ),
+            height=400
     )
 
   
@@ -450,7 +452,7 @@ def main(page: ft.Page):
                         ),
                         # User input control for Reactions & Behaviors
                         ReactionInput(swarm.drone1),
-                        d1_stream
+                        # d1_stream
                     ]
                 ),
                 width=400,
@@ -478,7 +480,7 @@ def main(page: ft.Page):
                         
                         # User input control for Reactions & Behaviors
                         ReactionInput(swarm.drone2),
-                        d2_stream
+                        # d2_stream
                     ]
                 ),
                 width=400,
