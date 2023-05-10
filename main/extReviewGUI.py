@@ -27,8 +27,7 @@ def main(page: ft.Page):
         "Space": "assets\space-grotesk.regular.ttf",
         "Kanit": "https://raw.githubusercontent.com/google/fonts/master/ofl/kanit/Kanit-Bold.ttf"
     }
-
-    page.theme = Theme(font_family="Space")
+    page.theme = Theme(font_family="Space", color_scheme_seed="blue")
     object_list = [obj.name for obj in vision_class]
     reaction_data = ["Flip on Banana", "Bob on Scissors", "Run from Banana", "Run from Object"]
 
