@@ -1,10 +1,7 @@
-import itertools
-import sys
-from drone import Drone
-from pickle import FALSE, TRUE
-import flet as ft
+#!/bin/env python
 from asyncio.windows_events import NULL
-from tkinter import dialog, font
+from pickle import FALSE, TRUE
+from tkinter import font
 from drone import (Drone, State)
 from behaviors.behavior import behavior1
 from reactions.reaction import bobOnScissors, flipOnBanana, followCellPhone, followObject, runFromBanana
@@ -22,17 +19,16 @@ import threading
 from flet import * 
 from sensoryState import SensoryState
 from swarm import Swarm
-
-sys.path.append('../')
+        
+logging.getLogger("flet_core").setLevel(logging.FATAL)
 
 def main(page: ft.Page):
-    page.title = "Card Example"
     page.fonts = {
         "Space": "assets\space-grotesk.regular.ttf",
         "Kanit": "https://raw.githubusercontent.com/google/fonts/master/ofl/kanit/Kanit-Bold.ttf"
     }
-    page.theme = ft.Theme(font_family="Space")
 
+    page.theme = Theme(font_family="Space")
     object_list = [obj.name for obj in vision_class]
     reaction_data = ["Flip on Banana", "Bob on Scissors", "Run from Banana", "Run from Object"]
 
@@ -59,25 +55,130 @@ def main(page: ft.Page):
     threads.append(FSM_thread)
     FSM_thread.start()
 
-    # reaction_list = []
+    page.title = "inTellogence Main Dashboard"
 
-    # def populate_reaction_list():
-    #     for br in behavior1.blockingReactions:
-    #         reaction_list.append(
-    #             ft.Container(
-    #                 content=ft.Text(value = br.identifier)
-    #             )
-    #         )
+    # Button functions
+    def drone1_launch(e):
+        swarm.drone1.opState = State.Takeoff
+        page.update()
+    
+    def drone2_launch(e):
+        swarm.drone2.opState = State.Takeoff
+        page.update()
 
-    #     for mr in behavior1.movementReactions:
-    #         reaction_list.append(
-    #             ft.Container(
-    #                 content=ft.Text(value = mr.identifier)
-    #             )
-    #         )
-        
-    #     return reaction_list
+    def drone1_land(e):
+        swarm.drone1.opState = State.Land
+        page.update()
+    
+    def drone2_land(e):
+        swarm.drone2.opState = State.Land
+        page.update()
 
+    def drone1_hover(e):
+        swarm.drone1.opState = State.Hover
+        page.update()
+    
+    def drone2_hover(e):
+        swarm.drone1.opState = State.Hover
+        page.update()
+
+    def drone1_scan(e):
+        swarm.drone1.opState = State.Scan
+        page.update()
+    
+    def drone2_scan(e):
+        swarm.drone2.opState = State.Scan
+        page.update()
+
+    def drone1_wander(e):
+        swarm.drone1.opState = State.Wander
+        page.update()
+    
+    def drone2_wander(e):
+        swarm.drone2.opState = State.Wander
+        page.update()
+    
+    def drone1_drift(e):
+        swarm.drone1.opState = State.Drift
+        page.update()
+    
+    def drone2_drift(e):
+        swarm.drone2.opState = State.Drift
+        page.update()     
+        # opening the file in read mode
+
+    # Creating Drone Manipulation Functions
+    drone1_launch_button = ft.Container(
+            content=ft.TextButton(text=""),
+            image_src="assets\drone_launch.png",
+            width=100,
+            height=100,
+            padding=padding.only(left=10, right=5, bottom=15),
+
+            on_click=drone1_launch
+        )
+
+    drone1_land_button = ft.Container(
+            content=ft.TextButton(text=""),
+            image_src="assets\drone_land.png",
+            width=100,
+            height=100,
+            padding=padding.only(left=10, right=5),
+
+            on_click=drone1_land
+        )
+
+    drone1_items = [
+        drone1_launch_button, ft.Text("LAUNCH", font_family="Space"), 
+        drone1_land_button, ft.Text("LAND",font_family="Space")
+    ]
+
+    drone1_column = ft.Column(
+        [
+            ft.Container(
+                content=ft.Column(
+                    drone1_items, 
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+            ),
+        ]
+    )
+
+    drone2_launch_button = ft.Container(
+            content=ft.TextButton(text=""),
+            image_src="assets\drone_launch.png",
+            width=100,
+            height=100,
+
+            on_click=drone2_launch
+        )
+
+    drone2_land_button = ft.Container(
+            content=ft.TextButton(text=""),
+            image_src="assets\drone_land.png",
+            width=100,
+            height=100,
+
+            on_click=drone2_land
+        )
+
+    drone2_items = [
+        drone2_launch_button, ft.Text("LAUNCH", font_family="Space"), 
+        drone2_land_button, ft.Text("LAND",font_family="Space")
+    ]
+    
+    drone2_column = ft.Column(
+        [
+            ft.Container(
+                content=ft.Column(
+                    drone2_items, 
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+            ),
+        ]
+    )
+
+    ## REACTION INPUT CLASS
     class ReactionInput(ft.UserControl):
         def __init__(self, drone:Drone):
             super().__init__()
@@ -102,18 +203,6 @@ def main(page: ft.Page):
                 page.update()
 
             def textfield_change(e):
-                # val = dialog_text.value
-
-                # for item in object_list:
-                #     if val in item:
-                #         self.selectedObject = item
-                #         self.objectIsSelected = TRUE
-
-                # if dialog_text.value == "" or self.objectIsSelected == FALSE:
-                #     create_button.disabled = TRUE
-                # else:
-                #     create_button.disabled = FALSE
-
                 if dialog_text.value == "":
                     create_button.disabled = True
                 else:
@@ -276,16 +365,124 @@ def main(page: ft.Page):
 
             return card
 
-    def delete_reaction(e):
-        print("DELETE")
-        page.update()
-
-    def clear_all_reactions(e):
-        print("CLEAR")
-        page.update()
-
-    page.add(
-        ReactionInput(drone1)
+    d1_stream = ft.Card(
+            elevation=30,
+            content=ft.Container(
+                bgcolor=ft.colors.WHITE24,
+                padding=10,
+                border_radius = ft.border_radius.all(20),
+                content=ft.Column([
+                    # Countdown(swarm.drone1),
+                    ft.Text("Drone 1",
+                    size=20, weight="bold",
+                    color=ft.colors.WHITE),
+                ]
+                ),
+            )
     )
 
-ft.app(target=main)
+    d2_stream = ft.Card(
+            elevation=30,
+            content=ft.Container(
+                bgcolor=ft.colors.WHITE24,
+                padding=10,
+                border_radius = ft.border_radius.all(20),
+                content=ft.Column([
+                    # Countdown(swarm.drone2),
+                    ft.Text("Drone 2",
+                    size=20, weight="bold",
+                    color=ft.colors.WHITE),
+                ]
+                ),
+            )
+    )
+
+    # CV2 Window 
+    class Countdown(ft.UserControl):
+        def __init__(self, drone:Drone):
+            super().__init__()
+            self.drone = drone
+
+        def did_mount(self):
+            self.running = True
+            self.th = threading.Thread(target=self.update_timer, args=(), daemon=True)
+            self.th.start()
+
+        def will_unmount(self):
+            self.running = False
+
+        def update_timer(self):
+            while True:
+                returned, frame = [self.drone.sensoryState.returnedImage, self.drone.sensoryState.image]
+
+                print(f"not returned from drone {self.drone.identifier}")
+                if returned:
+                    _, im_arr = cv2.imencode('.png', frame)
+                    im_b64 = base64.b64encode(im_arr)
+                    self.img.src_base64 = im_b64.decode("utf-8")
+                self.update()
+
+        def build(self):
+            self.img = ft.Image(
+                border_radius=ft.border_radius.all(20)
+            )
+            return self.img    
+
+    page.add(
+        ft.Container(
+                content=ft.Row([
+                        ft.Text("Drone 1", style=ft.TextThemeStyle.TITLE_LARGE), 
+
+                        # command buttons for Launch and Land
+                        drone1_column,
+                        # command buttons for Hover, Scan, Wander, and Drift
+                        ft.Column([
+                            ft.FilledButton(text="Hover", on_click=drone1_hover),
+                            ft.FilledButton(text="Scan", on_click = drone1_scan),
+                            ft.FilledButton(text="Wander", on_click = drone1_wander),
+                            ft.FilledButton(text="Drift", on_click = drone1_drift),
+                            ],
+                            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                            horizontal_alignment=ft.CrossAxisAlignment.CENTER
+                        ),
+                        # User input control for Reactions & Behaviors
+                        ReactionInput(swarm.drone1),
+                        d1_stream
+                    ]
+                ),
+                width=400,
+                height=250,
+                margin = margin.only(bottom=25, left=20)
+            ),
+        ft.Container(
+                content=ft.Row(
+                    [
+                        ft.Text("Drone 2", style=ft.TextThemeStyle.TITLE_LARGE), 
+
+                        # command buttons for Launch and Land
+                        drone2_column,
+
+                        # command buttons for Hover, Scan, Wander, and Drift
+                        ft.Column([
+                            ft.FilledButton(text="Hover", on_click=drone2_hover),
+                            ft.FilledButton(text="Scan", on_click = drone2_scan),
+                            ft.FilledButton(text="Wander", on_click = drone2_wander),
+                            ft.FilledButton(text="Drift", on_click = drone2_drift),
+                            ],
+                            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                            ),
+                        
+                        # User input control for Reactions & Behaviors
+                        ReactionInput(swarm.drone2),
+                        d2_stream
+                    ]
+                ),
+                width=400,
+                height=250,
+                margin=margin.only(top=80, left=20)
+            ),
+    )
+
+ft.app(target=main, assets_dir="assets")
+cv2.destroyAllWindows()
