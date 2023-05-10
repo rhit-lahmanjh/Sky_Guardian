@@ -30,10 +30,10 @@ We hope that students or people enthusiastic about learning about drones are abl
 ## Features
 inTellogence has the following features:
 - Ability to control 1 or 2 drones through a router
-- Use of Tello Mission Pads to confine the drone to a space
-- Finite state machine that uses <a href = https://youtu.be/umkyPWDrys4>potential fields navigation</a>
+- Use of Mission Pads to confine the drone to a space
+- Finite state machine that uses potential fields navigation
 - Additional safety measures using industry functional safety techniques
-- Integrates <a href="https://github.com/ultralytics/ultralytics"> Ultralytics Yolov8</a> for object recognition
+- Integrates Ultralytics Yolov8 for object recognition
 - Ability to quickly implement and layer reactive behaviors to objects and sensor readings
 - [Flet](https://flet.dev)-powered language-agnostic GUI (Python, Go, C#)
 - Easy-to-understand & User-tested documentation
@@ -44,17 +44,12 @@ inTellogence has the following features:
 <br>
 inTellogence uses <a href="https://flet.dev">Flet</a>, a simplified <a href="https://flutter.dev">Flutter</a> model, to build the GUI. Python is currently supported, but Go and C# are <a href="https://flet.dev/roadmap/">coming soon</a>.<br> 
 
-When first starting the program, the GUI brings you to a "landing" page where a user will be able to connect 1 or 2 drones. <br> 
-<br> 
-<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/SMPTE_Color_Bars.svg/1200px-SMPTE_Color_Bars.svg.png" width="500">
+When first starting the program, the GUI brings you to a "landing" page where a user will be able to connect 1 or 2 drones.
 
-After verifying that the drone(s) are connected, the user can continue to a Main Dashboard that displays the OpenCV window output, various sensor readings, text input for chosen object identification, and buttons to Launch, Land, Hover an inidividual drone or both drones simultaneosly. <br> 
+After verifying that the drone(s) are connected, the user can continue to a Main Dashboard that displays the OpenCV window output, various sensor readings, text input for chosen object identification, and buttons to Launch, Land, Hover an inidividual drone or both drones simultaneosly.<br> 
 <br> 
-<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/SMPTE_Color_Bars.svg/1200px-SMPTE_Color_Bars.svg.png" width="500">
+<img src="https://github.com/rhit-lahmanjh/inTellogence/blob/main/imgs/drone_screenshot.PNG" width="500">
 <br>
-There is also a window for the User to adjust various settings.<br> 
-<br> 
-<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/SMPTE_Color_Bars.svg/1200px-SMPTE_Color_Bars.svg.png" width="500">
 
 The GUI uses the following components<br> 
 <details>
@@ -78,7 +73,7 @@ The code from <a href="https://www.youtube.com/watch?v=58aPh8rKKsk">Azu Technolo
 General control of both drones is organized around a Finite State Machine (FSM). The primary state of wander is implemented alongside a few states that support smooth and safe operation. The general control logic is shown below.
 <br> 
 
-<img src="imgs/control_loop.png" width="1000">
+<img src="imgs/control_loop.png" width="500">
 </details> 
 
 <details>
@@ -141,193 +136,7 @@ The left side of the V-model is conceptual development and product development. 
 </details>
 </p>
 ---
-<p>Safety Features are designed during conceptual development in a process called the ‘<a href="https://arxiv.org/pdf/1704.06140.pdf">Hazard Analysis and Risk Assessment</a>’ or HARA. HARA uses an <a href="https://www.synopsys.com/automotive/what-is-asil.html">ASIL risk rating</a> chart to properly classify the specific HARA line item in question. Collisions in this project receive a SIL1 rating based off initial severity (S1), initial exposure (E3), and initial avoidability (C2). More information on the HARA can be found in the supplemental documentation. </p>
-
-Once these safety features are implemented properly either through hardware or software measures, they are then testing as single units, in integration testing, and regression testing to ensure that everything works properly. From there, the project can be deployed with assurance that there are safety features present to actively mitigate risks.
-
-</details> 
-
-<details>
-<summary>Networking</summary>
-
-<br>
-Two different approaches to swarm control are centralized and decentralized control. 
-
-In decentralized control, each drone has a unique "brain" and makes decisions on its own, with limited information from other actors in the swarm.
-
-In centralized control, computation is done from a centralized controller, that then sends commands to individual actors to follow through. 
-
-This project utilized a centralized control structure with communication over Wi-Fi, through a router, as seen below.
-
-
-<img src = "imgs\Diagram for Drone Connectivity.jpg">
-</details> 
-
-# Getting Started
-We used the following materials for this project:
-- 2 Tello EDU drones
-- Router (we used the <a href= "https://www.amazon.com/TP-Link-AC1750-Smart-WiFi-Router/dp/B079JD7F7G/ref=sr_1_3?keywords=WiFi%2BRouters%2Bfor%2BHome&qid=1663443788&sr=8-3&ufe=app_do%3Aamzn1.fos.006c50ae-5d4c-4777-9bc0-4513d670b6bc&th=1">TP-Link AC1750 Smart WiFi Router (Archer A7)</a>
-- 16 Tello Mission Pads (a printable version is in ref, but originally from <a href="https://tellopilots.com/threads/download-official-ryze-tello-edu-mission-pads.2756/">here</a>)
-
-## Router and Drone Connection
-This section will cover how to set up the router, connect your computer to it, and connect the drones to it.
-
-1. Connect router to power source and turn on.
-2. Disconnect from the wifi you are connected to. 
-3. Connect to the router.
-4. Find the non 5G SSID and click connect.
-5. Locate the password to the router located on the bottom of the router. This should also include the specific router name.
-6. Download the program "Packet Sender".
-7. Turn on one of the Tello Edu Drones by clicking on the side power button.
-8. Connect the wifi to the tello edu drone.
-9. In Packet Sender, in the Name field type "command".
-10. In Packet Sender, in the ASCII field type "command".
-11. In Packet Sender, in the Address field type "192.168.10.1" and in the Port field type "8889".
-12. In Packet sender, click the "Send" button. The response should be a "ok" in the logs at the bottom.
-13. In Packet Sender, in the Name field type "configure ap".
-14. In Packet Sender, in the ASCII field type "ap ROUTER_NAME ROUTER_PASSWORD".
-15. Click the "Send" button. The response should be "Ok, drone will reboot in 3s".
-16. Repeat steps 8-15 for the other drones you would like to link up with the router.
-17. Turn off all drones. 
-18. Connect to the router. Type "espn.com" and fill in the login information displayed.
-19. Navigate to the DHCP section in the website.
-20. Turn on one of the drones and a new IP address should appear in the DHCP section. Record the IP address shown in the DHCP section.
-21. Repeat step 20 for all of the drones but ensure that only one drone is active at a time.
-22. Now all drones(have a recorded IP address) and add these drone IPs in the code.
-
-## Necessary Installations
-
-### Verify that your GPU is supported by CUDA
-First, to verify that your system is GPU capable. Open your Device Manager and scroll to "Display Adapters." If your system has one, the GPU will be listed here. To ensure that your system is CUDA capable, make sure your GPU is one listed as supported here <a href="https://developer.nvidia.com/cuda-gpus">here</a>.
-<br></br>
-
-<img src="imgs/gpu_capable.png" width="500">
-<em>Here, we can see our GPU is the Nvidia Quadro P1000</em>
-<br></br>
-
-### Download and install Cuda (11.8)
-Once you know things your system is compatible, the version we used can be found <a href=https://developer.nvidia.com/cuda-toolkit-archive>here</a>. Make sure to use 11.8. Installation is as easy as downloading and installing with all defaults!
-
-
-### Environment Setup
-
-This tutorial assumes you are using the environment manager <a href= "https://www.anaconda.com/">Anaconda</a>. See Supplemental Documentation if you are unfamiliar with Anaconda, as it's an incredibly helpful tool for navigating python distributions.
-<br></br>
-There are multiple options to install required packages.
-<br></br>
-
-<details> <summary> Anaconda Navigator </summary>
-
-Using from the environments page in Anaconda Navigator, simply import the inTellogence_environment.yaml file.
-</details>
-
-<details> <summary> Anaconda Prompt </summary>
-With your desired environment activated, and the inTellogence folder active, run the following command:
-
-<table><tr><td>conda env create -f drone.yaml</table></tr></td>
-
-</details>
-
-<details><summary>Without Anaconda</summary>
-A requirements file is included for convenience. Install through the following command in your virtual environment:
-
-<table><tr><td>pip install -r requirements.txt</table></tr></td>
-</details>
-
-<br>
-
-## Mission Pad Setup
-For inTellogence to work as expected, it's important to setup the mission pads as the drone expects to see them, as mapping is currently not supported. This layout is shown below, where orientation, spacing and layout are important. Should you wish to adjust the spacing between the pads, these are defined as global constants in MissionPadMap found in sensory_state.py, set by default to 50cm center to center. Since Tello EDU currently only supports 8 different mission pads, the flyable space is separated into two sectors, in which the drones track which quadrant they are in.
-
-IMPORTANT: When taking off, place the drones facing the X direction and in Sector 1
-
-<img src="imgs/mission_pad_layout.png" width="500">
-<br></br>
-
-# Examples
-<details><summary> Create a new behavior/reaction</summary>
-<br>
-There are two different types of reactions: movement and blocking. Let's create a new movement reaction, which will return a force vector to the drone. Open reaction.py
-<br></br>
-These reactions have access to all the sensory information from the drone via the input argument.
-<br></br>
-First extend the movementReaction class:
-
-```python
-class moveBackIfPerson(movementReaction):
-```
-
-Now lets add an identifier so the GUI can read it:
-
-```python
-identifier = "Move back if person"`
-```
-
-Define the reaction:
-
-```python
-def react(self,input: SensoryState, currentMovement: np.array):
-  res = np.zeros((4,1)) #base column array to return the force vector
-  if input.visibleObjects is not None: # don't iterate through something not there!
-    for object in input.visibleObjects:
-      if(int(object[5]) == int(vision_class.person)):
-        res[1] = 5 # move the drone back
-
-  return res
-  #Note that additional information about the structure of "visible Objects" can be found above in "Object Recognition using Yolov8"
-
-```
-Almost there! Now open behavior.py.
-
-Create a new behavior (set of reactions)
-
-```python
-class myNewBehavior(behaviorFramework):
-  # lets not add any blocking reactions
-  blockingReactions = [] 
-  # Lets add a previously made reaction with our new one!
-  movementReactions = [rxt.followCellPhone(),rxt.moveBackIfPerson()]
-```
-
-This behavior is what you will pass in when you create your drone object!
-
-</details>
-
-<details><summary> Add a new button to the GUI<summary>
-
-</details>
-
-<details><summary> Add a custom State </summary>
-Adding a new state is simple!
-
-In drone_states.py, just add the name of your new state, we'll call ours "Dance", with an arbitary, unique number:
-
-```python
-class State(Enum):
-    Grounded = 1
-    Takeoff = 2
-    Land = 3
-    Wander = 4
-    #new state
-    Dance = 5
-```
-
-Now, in drone.py, find the operate function. In it is a match-case block that changes the drone's actions based on the state. Let's add a new case:
-
-```python
-  case State.Land:
-    ...
-  case State.Dance:
-    self.dance(): 
-    if (conditional):
-      self.opState = State.NextState #pseudocode
-```
-Here, dance() could be whatever you want. Just make sure the function isn't blocking!
-</details>
-
-# Supplemental Documentation
-
-<summary>Hazard Analysis and Risk Assessment</summary>
+<p>Safety Features are designed during conceptual development in a process called the ‘<a href="https://arxiv.org/pdf/1704.06140.pdf">Hazard Analysis and Risk Assessment</a>’ or HARA. HARA uses an <a href="https://www.synopsys.com/automotive/what-is-asil.html">ASIL risk rating</a> chart to properly classify the specific HARA line item in question. Collisions in this project receive a SIL1 rating based off initial severity (S1), initial exposure (E3), and initial avoidability (C2). </p>
 
 The HARA consists of the following steps:
 <details>
@@ -403,7 +212,112 @@ For this project, we utilized computer vision and coded responses that react bas
 ---
 </details> 
 
+Once these safety features are implemented properly either through hardware or software measures, they are then testing as single units, in integration testing, and regression testing to ensure that everything works properly. From there, the project can be deployed with assurance that there are safety features present to actively mitigate risks.
 
+</details> 
+
+<details>
+<summary>Networking</summary>
+
+<br>
+Two different approaches to swarm control are centralized and decentralized control. 
+
+In decentralized control, each drone has a unique "brain" and makes decisions on its own, with limited information from other actors in the swarm.
+
+In centralized control, computation is done from a centralized controller, that then sends commands to individual actors to follow through. 
+
+This project utilized a centralized control structure with communication over Wi-Fi, through a router, as seen below.
+
+
+<img src = "Networking\Diagram for Drone Connectivity.jpg">
+</details> 
+
+# Getting Started
+We used the following materials for this project:
+- 2 Tello EDU drones
+- Router (we used the <a href= "https://www.amazon.com/TP-Link-AC1750-Smart-WiFi-Router/dp/B079JD7F7G/ref=sr_1_3?keywords=WiFi%2BRouters%2Bfor%2BHome&qid=1663443788&sr=8-3&ufe=app_do%3Aamzn1.fos.006c50ae-5d4c-4777-9bc0-4513d670b6bc&th=1">TP-Link AC1750 Smart WiFi Router (Archer A7)</a>
+- 16 Tello Mission Pads
+
+## Router and Drone Connection
+This section will cover how to set up the router, connect your computer to it, and connect the drones to it.
+
+1. Connect router to power source and turn on.
+2. Disconnect from the wifi you are connected to. 
+3. Connect to the router.
+4. Find the non 5G SSID and click connect.
+5. Locate the password to the router located on the bottom of the router. This should also include the specific router name.
+6. Download the program "Packet Sender".
+7. Turn on one of the Tello Edu Drones by clicking on the side power button.
+8. Connect the wifi to the tello edu drone.
+9. In Packet Sender, in the Name field type "command".
+10. In Packet Sender, in the ASCII field type "command".
+11. In Packet Sender, in the Address field type "192.168.10.1" and in the Port field type "8889".
+12. In Packet sender, click the "Send" button. The response should be a "ok" in the logs at the bottom.
+13. In Packet Sender, in the Name field type "configure ap".
+14. In Packet Sender, in the ASCII field type "ap ROUTER_NAME ROUTER_PASSWORD".
+15. Click the "Send" button. The response should be "Ok, drone will reboot in 3s".
+16. Repeat steps 8-15 for the other drones you would like to link up with the router.
+17. Turn off all drones. 
+18. Connect to the router. Type "espn.com" and fill in the login information displayed.
+19. Navigate to the DHCP section in the website.
+20. Turn on one of the drones and a new IP address should appear in the DHCP section. Record the IP address shown in the DHCP section.
+21. Repeat step 20 for all of the drones but ensure that only one drone is active at a time.
+22. Now all drones(have a recorded IP address) and add these drone IPs in the code.
+
+## Necessary Installations
+
+### Verify that your GPU is supported by CUDA
+First, to verify that your system is GPU capable. Open your Device Manager and scroll to "Display Adapters." If your system has one, the GPU will be listed here. To ensure that your system is CUDA capable, make sure your GPU is one listed as supported here <a href="https://developer.nvidia.com/cuda-gpus">here</a>.
+<br></br>
+
+<img src="imgs/gpu_capable.png" width="500">
+<em>Here, we can see our GPU is the Nvidia Quadro P1000</em>
+<br></br>
+
+### Download and install Cuda (11.8)
+Once you know things your system is compatible, the version we used can be found <a href=https://developer.nvidia.com/cuda-toolkit-archive>here</a>. Make sure to use 11.8. Installation is as easy as downloading and installing with all defaults!
+
+
+### Environment Setup
+
+This tutorial assumes you are using the environment manager <a href= "https://www.anaconda.com/">Anaconda</a>. See Supplemental Documentation if you are unfamiliar with Anaconda, as it's an incredibly helpful tool for navigating python distributions.
+<br></br>
+There are multiple options to install required packages.
+<br></br>
+
+<details> <summary> Anaconda Navigator </summary>
+
+Using from the environments page in Anaconda Navigator, simply import the inTellogence_environment.yaml file.
+</details>
+
+<details> <summary> Anaconda Prompt </summary>
+With your desired environment activated, and the inTellogence folder active, run the following command:
+
+<table><tr><td>conda env create -f drone.yaml</table></tr></td>
+
+</details>
+
+<details><summary>Without Anaconda</summary>
+A requirements file is included for convenience. Install through the following command in your virtual environment:
+
+<table><tr><td>pip install -r requirements.txt</table></tr></td>
+</details>
+
+<br>
+
+## Mission Pad Setup
+For inTellogence to work as expected, it's important to setup the mission pads as the drone expects to see them, as mapping is currently not supported. This layout is shown below, where orientation, spacing and layout are important. Should you wish to adjust the spacing between the pads, these are defined as global constants in sensoryState.py, set by default to 50cm center to center. Since Tello EDU currently only supports 8 different mission pads, the flyable space is separated into two sectors, in which the drones track which quadrant they are in.
+
+IMPORTANT: When taking off, place the drones facing the X direction and in Sector 1
+
+<img src="imgs/mission_pad_layout.png" width="500">
+
+# Examples
+## Create a new behavior/reaction
+## Add a new button to the GUI
+## Add a custom State
+
+# Supplemental Documentation
 # Troublehooting resources
 + [Tello Drone User Manual](https://dl-cdn.ryzerobotics.com/downloads/Tello/Tello%20User%20Manual%20v1.4.pdf)
 + [Official Flet developer community](https://discord.gg/mMJHgYEqRK)

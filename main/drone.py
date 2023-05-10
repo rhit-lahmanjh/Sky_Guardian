@@ -12,8 +12,8 @@ from behaviors.behavior import behaviorFramework
 from refresh_tracker import RefreshTracker
 
 DEBUG_PRINTS = False
-WITH_DRONE = True
-WITH_CAMERA = True
+WITH_DRONE = False
+WITH_CAMERA = False
 RUNNING_WITH_GUI = True
 
 clamp = lambda n, minn, maxn: max(min(maxn, n), minn)
