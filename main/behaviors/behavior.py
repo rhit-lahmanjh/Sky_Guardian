@@ -1,8 +1,5 @@
-from sensoryState import SensoryState
+from sensory_state import SensoryState
 import numpy as np
-# from drone import Drone
-import time as t
-from enum import Enum
 
 import sys
 sys.path.append("..")

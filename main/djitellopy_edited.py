@@ -1,4 +1,7 @@
 """Library for interacting with DJI Ryze Tello drones.
+    This is from the djitellopy module by Damia Fuentes, available under an MIT License.
+    Minor modifications are made for connecting multiple drones, 
+    particularly streaming multiple video feeds at once.
 """
 
 # coding=utf-8

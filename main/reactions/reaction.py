@@ -1,11 +1,10 @@
 from logging.config import IDENTIFIER
-from sensoryState import SensoryState
+from sensory_state import SensoryState
 import numpy as np
-# from drone import Drone
 import time as t
 from enum import IntEnum
-from refresh_tracker import State
-from yoloClasses import vision_class
+from drone_states import State
+from yolo_classes import vision_class
 
 
 ### Reaction Format 

@@ -12,12 +12,12 @@ import socket
 import time
 import logging
 import numpy as np
-from yoloClasses import vision_class
+from yolo_classes import vision_class
 import cv2
 import base64
 import threading
 from flet import * 
-from sensoryState import SensoryState
+from sensory_state import SensoryState
 from swarm import Swarm
         
 logging.getLogger("flet_core").setLevel(logging.FATAL)

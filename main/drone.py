@@ -5,10 +5,11 @@ import time as t
 import numpy as np
 import math
 import random as rand
-from sensoryState import SensoryState,MissionPadMap
-from behaviors.behavior import behaviorFramework
+from sensory_state import SensoryState,MissionPadMap
+from drone_states import State
 
-from refresh_tracker import RefreshTracker, State
+from behaviors.behavior import behaviorFramework
+from refresh_tracker import RefreshTracker
 
 DEBUG_PRINTS = True
 WITH_DRONE = True

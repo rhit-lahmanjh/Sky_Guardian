@@ -1,8 +1,10 @@
-from drone import Drone
 from behaviors.behavior import behavior1
+from drone import Drone
+from device_info_reader import read_device_data
 
-alpha = Drone(identifier = 'alpha',behavior = behavior1())
-# alpha.operate()
+device_data = read_device_data()
 
-alpha.connect_to_wifi('TP-Link_382E','84662019')
+drone_to_connect = Drone(identifier = 'x')
+
+drone_to_connect.connect_to_wifi(device_data.get("ROUTER_SSID"),device_data.get("ROUTER_PASSWORD"))
 
