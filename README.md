@@ -234,7 +234,7 @@ In centralized control, computation is done from a centralized controller, that 
 This project utilized a centralized control structure with communication over Wi-Fi, through a router, as seen below.
 
 
-<img src = "Networking\Diagram for Drone Connectivity.jpg">
+<img src = "imgs\Diagram for Drone Connectivity.jpg">
 </details> 
 
 # Getting Started

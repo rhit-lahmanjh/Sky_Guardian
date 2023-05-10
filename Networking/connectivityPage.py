@@ -2,16 +2,15 @@ import flet as ft
 import time
 import threading
 import socket
+from device_info_reader import read_device_data,edit_device_data
 
-# tello_address = ('192.168.10.1', 8889)
-# local_address = ('', 9000)
+
 def main(page: ft.Page):
 
-    # tello_address = ('192.168.10.1', 8889)
-    # local_address = ('', 9000)
     page.title = "Drone Connection Page"
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
     page.horizontal_alignment = ft.CrossAxisAlignment.START
+    device_data = read_device_data()
 
     # Can only press one connect button at a time
     def droneOneConnect_button(e):
@@ -19,6 +18,8 @@ def main(page: ft.Page):
         print("Connecting to Drone 1")
         # User input should be the string or char input to the tello address
         userIPaddress1 = str(input1.value)
+        device_data.update({'DRONE1_IP':input1.value})
+        
         portValue = 8889
 
         print("Address assigned")
@@ -86,6 +87,7 @@ def main(page: ft.Page):
         # Input appropriate FSM drone logic
         # User input should be the string IP address
         userIPaddress2 = str(input2.value)
+        device_data.update({'DRONE2_IP':input2.value})
         portValue = 8889
 
         print("Address assigned")
@@ -157,6 +159,7 @@ def main(page: ft.Page):
     page.on_window_event = window_event
 
     def yes_click(e):
+        edit_device_data(device_data)
         page.window_destroy()
 
     def no_click(e):
@@ -166,24 +169,24 @@ def main(page: ft.Page):
     def continueButton(e):
         print("Routing to Dashboard")
 
-    input1 = ft.TextField(label="Enter IP Address, i.e. 192.168.0.248", on_submit=droneOneConnect_button)
+    input1 = ft.TextField(label="Enter New IP Address", on_submit=droneOneConnect_button)
 
     droneOneConnectionItems = [
         # Want to use input from text field
         input1,
-        ft.ElevatedButton(text="Connect", on_click=droneOneConnect_button, bgcolor=ft.colors.AMBER),
+        ft.ElevatedButton(text="Save",color=ft.colors.BLACK,on_click=droneOneConnect_button, bgcolor=ft.colors.AMBER),
     ]
 
-    input2 = ft.TextField(label="Enter IP Address, i.e. 192.168.0.140", on_submit=droneTwoConnect_button)
+    input2 = ft.TextField(label="Enter New IP Address", on_submit=droneTwoConnect_button)
 
     droneTwoConnectionItems = [
         # Want to use input from text field
         input2,
-        ft.ElevatedButton(text="Connect", on_click=droneTwoConnect_button, bgcolor=ft.colors.AMBER)
+        ft.ElevatedButton(text="Save",color=ft.colors.BLACK, on_click=droneTwoConnect_button, bgcolor=ft.colors.AMBER)
     ]
 
     droneContinueButtonItems = [
-        ft.ElevatedButton(text="Continue", on_click=continueButton, bgcolor=ft.colors.GREEN_200)
+        ft.ElevatedButton(text="Continue",color=ft.colors.BLACK, on_click=continueButton, bgcolor=ft.colors.GREEN_200)
     ]
 
     droneOneConnectionRow = ft.Row(
@@ -241,12 +244,12 @@ def main(page: ft.Page):
         actions_alignment=ft.MainAxisAlignment.END,
     )
 
-    dr1 = ft.Text(value="Drone 1 Router IP: 192.168.0.248", color="black")
+    dr1 = ft.Text(value=f"Current Drone 1 Router IP: {device_data.get('DRONE1_IP')}", color="white",scale=1,weight=4)
     page.controls.append(dr1)
-    dr2 = ft.Text(value="Drone 2 Router IP: 192.168.0.140", color="black")
+    dr2 = ft.Text(value=f"Current Drone 2 Router IP: {device_data.get('DRONE2_IP')}", color="white",scale=1,weight=4)
     page.controls.append(dr2)
-    ds = ft.Text(value="Drone Single IP: 192.168.10.1", color="black")
-    page.controls.append(ds)
+    # ds = ft.Text(value="Drone Single IP: 192.168.10.1", color="black")
+    # page.controls.append(ds)
     page.update()
 
 ft.app(target=main)
