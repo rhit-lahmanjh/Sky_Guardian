@@ -103,14 +103,11 @@ class followCellPhone(movementReaction):
         res = np.zeros((4,1))
         if input.visibleObjects is not None:
             for object in input.visibleObjects:
-                print(f"Indicies: {int(object[5])}")
                 if(int(object[5]) == int(vision_class.cell_phone)):
                     imgWidth = input.image.shape[0]
                     res[3] = -.3*((imgWidth/2)-((object[2]+object[0])/2))
                     res[1] = (object[2]-object[0])*60/imgWidth # move back (proportional to object width)
 
-                    # print(f'Yaw: {res[3]}')
-                    print(f"Following: {int(object[5])}")
                     print(f'FOLLOW PHONE: Forward: {res[1]} Yaw: {res[3]}')
         return res
     
@@ -127,7 +124,6 @@ class runFromBanana(movementReaction):
                     res[3] = -.3*((imgWidth/2)-((object[2]+object[0])/2))
                     res[1] = -(object[2]-object[0])*60/imgWidth # move back
 
-                    # print(f'Yaw: {res[3]}')
                     print(f'RUN FROM SCARY BANANA: Reverse: {res[1]} Yaw: {res[3]}')
         return res
 

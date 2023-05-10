@@ -241,7 +241,7 @@ This project utilized a centralized control structure with communication over Wi
 We used the following materials for this project:
 - 2 Tello EDU drones
 - Router (we used the <a href= "https://www.amazon.com/TP-Link-AC1750-Smart-WiFi-Router/dp/B079JD7F7G/ref=sr_1_3?keywords=WiFi%2BRouters%2Bfor%2BHome&qid=1663443788&sr=8-3&ufe=app_do%3Aamzn1.fos.006c50ae-5d4c-4777-9bc0-4513d670b6bc&th=1">TP-Link AC1750 Smart WiFi Router (Archer A7)</a>
-- 16 Tello Mission Pads
+- 16 Tello Mission Pads (a printable version is in ref, but originally from <a href="https://tellopilots.com/threads/download-official-ryze-tello-edu-mission-pads.2756/">here</a>)
 
 ## Router and Drone Connection
 This section will cover how to set up the router, connect your computer to it, and connect the drones to it.
@@ -311,16 +311,93 @@ A requirements file is included for convenience. Install through the following c
 <br>
 
 ## Mission Pad Setup
-For inTellogence to work as expected, it's important to setup the mission pads as the drone expects to see them, as mapping is currently not supported. This layout is shown below, where orientation, spacing and layout are important. Should you wish to adjust the spacing between the pads, these are defined as global constants in sensoryState.py, set by default to 50cm center to center. Since Tello EDU currently only supports 8 different mission pads, the flyable space is separated into two sectors, in which the drones track which quadrant they are in.
+For inTellogence to work as expected, it's important to setup the mission pads as the drone expects to see them, as mapping is currently not supported. This layout is shown below, where orientation, spacing and layout are important. Should you wish to adjust the spacing between the pads, these are defined as global constants in MissionPadMap found in sensory_state.py, set by default to 50cm center to center. Since Tello EDU currently only supports 8 different mission pads, the flyable space is separated into two sectors, in which the drones track which quadrant they are in.
 
 IMPORTANT: When taking off, place the drones facing the X direction and in Sector 1
 
 <img src="imgs/mission_pad_layout.png" width="500">
+<br></br>
 
 # Examples
-## Create a new behavior/reaction
-## Add a new button to the GUI
-## Add a custom State
+<details><summary> Create a new behavior/reaction</summary>
+<br>
+There are two different types of reactions: movement and blocking. Let's create a new movement reaction, which will return a force vector to the drone. Open reaction.py
+<br></br>
+These reactions have access to all the sensory information from the drone via the input argument.
+<br></br>
+First extend the movementReaction class:
+
+```python
+class moveBackIfPerson(movementReaction):
+```
+
+Now lets add an identifier so the GUI can read it:
+
+```python
+identifier = "Move back if person"`
+```
+
+Define the reaction:
+
+```python
+def react(self,input: SensoryState, currentMovement: np.array):
+  res = np.zeros((4,1)) #base column array to return the force vector
+  if input.visibleObjects is not None: # don't iterate through something not there!
+    for object in input.visibleObjects:
+      if(int(object[5]) == int(vision_class.person)):
+        res[1] = 5 # move the drone back
+
+  return res
+  #Note that additional information about the structure of "visible Objects" can be found above in "Object Recognition using Yolov8"
+
+```
+Almost there! Now open behavior.py.
+
+Create a new behavior (set of reactions)
+
+```python
+class myNewBehavior(behaviorFramework):
+  # lets not add any blocking reactions
+  blockingReactions = [] 
+  # Lets add a previously made reaction with our new one!
+  movementReactions = [rxt.followCellPhone(),rxt.moveBackIfPerson()]
+```
+
+This behavior is what you will pass in when you create your drone object!
+
+</details>
+
+<details><summary> Add a new button to the GUI<summary>
+
+</details>
+
+<details><summary> Add a custom State </summary>
+Adding a new state is simple!
+
+In drone_states.py, just add the name of your new state, we'll call ours "Dance", with an arbitary, unique number:
+
+```python
+class State(Enum):
+    Grounded = 1
+    Takeoff = 2
+    Land = 3
+    Wander = 4
+    #new state
+    Dance = 5
+```
+
+Now, in drone.py, find the operate function. In it is a match-case block that changes the drone's actions based on the state. Let's add a new case:
+
+```python
+  case State.Land:
+    ...
+  case State.Dance:
+    self.dance(): 
+    if (conditional):
+      self.opState = State.NextState #pseudocode
+```
+Here, dance() could be whatever you want. Just make sure the function isn't blocking!
+</details>
 
 # Supplemental Documentation
 # Troublehooting resources
