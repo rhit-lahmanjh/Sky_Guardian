@@ -9,16 +9,11 @@ from threading import Thread
 from typing import Optional, Union, Type, Dict
 
 import cv2 # type: ignore
-from djitellopy.enforce_types import enforce_types # NOTE THIS NEEDED TO BE PULLED FROM MAIN REPOSITORY
-# from .enforce_types import enforce_types
-
-
+from djitellopy.enforce_types import enforce_types
 
 drones: Optional[dict] = {}
 client_socket: socket.socket
 threads_initialized = False
-
-
 
 @enforce_types
 class Tello:
@@ -45,7 +40,6 @@ class Tello:
 
     # Local Computer IP address for router control
     LOCAL_COMPUTER_IP = '0.0.0.0'
-
 
     # Constants for video settings
     BITRATE_AUTO = 0
@@ -555,6 +549,7 @@ class Tello:
         """Enter SDK mode. Call this before any of the control functions.
         """
         self.send_control_command("command")
+        self.send_command_with_return(f"port {self.STATE_UDP_PORT} {self.VS_UDP_PORT}") #NOTE CHANGE
 
         if wait_for_state:
             REPS = 20
@@ -562,7 +557,6 @@ class Tello:
                 if self.get_current_state():
                     t = i / REPS  # in seconds
                     Tello.LOGGER.debug("'.connect()' received first state packet after {} seconds".format(t))
-                    self.send_command_with_return(f"port {self.STATE_UDP_PORT} {self.VS_UDP_PORT}") #NOTE CHANGE
                     break
                 time.sleep(1 / REPS)
 

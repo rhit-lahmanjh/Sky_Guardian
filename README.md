@@ -1,7 +1,5 @@
 # inTellogence
 
-[![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
-
 inTellogence is an open-source codebase for people to learn drone control topics made by senior students at Rose-Hulman Institute of Technology located in Terre Haute, IN.
 
 ![Header](imgs/inTellogence_logo.PNG)
@@ -17,24 +15,24 @@ inTellogence is an open-source codebase for people to learn drone control topics
   - [Necessary Installations](#necessary-installations)
   - [Mission Pad Setup](#mission-pad-setup)
 - [Examples](#examples)
-  - [create a new behavior](#creating-a-reactive-behavior-to-an-object)
+  - [Create a new behavior](#creating-a-reactive-behavior-to-an-object)
   - [Adding a new button to the GUI](#adding-a-new-button-to-the-gui)
   - [Adding a custom State](#add-a-custom-state)
 - [Supplemental Documentation](#supplemental-documentation)
-- [Troubleshooting resources](#troublehooting-resources)
+- [Troubleshooting Resources](#troublehooting-resources)
 - [References](#references)
 - [Acknowledgements](#acknowledgements)
 
 # About
 ## Purpose
-We hope that students or people enthusiastic about learning about drones are able to gain new knowledge through this repository and possible contribute to it.
+We hope that students or people enthusiastic about learning about drones are able to gain new knowledge through this repository and possibly contribute to it.
 
 ## Features
 inTellogence has the following features:
 - Ability to control 1 or 2 drones through a router
 - Use of Mission Pads to confine the drone to a space
 - Finite state machine that uses potential fields navigation
-- Additional safety measures using industry hardware functional safety techniques
+- Additional safety measures using industry functional safety techniques
 - Integrates Ultralytics Yolov8 for object recognition
 - Ability to quickly implement and layer reactive behaviors to objects and sensor readings
 - [Flet](https://flet.dev)-powered language-agnostic GUI (Python, Go, C#)
@@ -86,8 +84,9 @@ General control of both drones is organized around a Finite State Machine (FSM).
 <details>
 <summary>Reactive Control Through Potential Fields</summary>
 <br>
-The primary path planning approach for Sky Guardian lies in <a href = https://youtu.be/umkyPWDrys4>reactive control through potential fields</a>. In order to allow the drones to wander in a constrained space, Tello mission pads are utitilized in a pre-defined map. These mission pads allow the drone to localize and respond appropriately when moving out of intended airspace, applying a movement force proportional to it's measured distance outside of desired airspace. <br> 
+The primary path planning approach for Sky Guardian lies in <a href = https://youtu.be/umkyPWDrys4>reactive control through potential fields</a>. In order to allow the drones to wander in a constrained space, Tello mission pads are utitilized in a pre-defined map. These mission pads allow the drone to localize and respond appropriately when moving out of intended airspace, applying a movement force proportional to it's measured distance outside of desired airspace.
 
+<br> 
 <img src="imgs/boundary_force.png" width="300">
 
 <br> 
@@ -219,19 +218,23 @@ For this project, we utilized computer vision and coded responses that react bas
 </details> 
 
 Once these safety features are implemented properly either through hardware or software measures, they are then testing as single units, in integration testing, and regression testing to ensure that everything works properly. From there, the project can be deployed with assurance that there are safety features present to actively mitigate risks.
----
+
 </details> 
 
 <details>
 <summary>Networking</summary>
 
 <br>
-There are different types of swarm capabilities. One capability is where each drone has a unique "brain" and makes decisions on its own. The other type of swarm which we are trying to accomplish is centeralized control. Where, computation is occuring on a lower level device that is then sent to two or more objects to follow through. 
+Two different approaches to swarm control are centralized and decentralized control. 
 
-Goal is operating 2 drones simultaneously through a central computer, primarily through connecting to the drones through a router. This is seen in figure 1. The computation and analysis would occur on the cimputer and the commands would be sent through the router to the drones. 
+In decentralized control, each drone has a unique "brain" and makes decisions on its own, with limited information from other actors in the swarm.
+
+In centralized control, computation is done from a centralized controller, that then sends commands to individual actors to follow through. 
+
+This project utilized a centralized control structure with communication over Wi-Fi, through a router, as seen below.
+
 
 <img src = "Networking\Diagram for Drone Connectivity.jpg">
-                  Figure 1
 </details> 
 
 # Getting Started
@@ -247,46 +250,59 @@ This section will cover how to set up the router, connect your computer to it, a
 2. Disconnect from the wifi you are connected to. 
 3. Connect to the router.
 4. Find the non 5G SSID and click connect.
-5. Locate the password to the router located on the botto of the router. 
+5. Locate the password to the router located on the bottom of the router. 
 6. 
 
 ## Necessary Installations
 
 ### Verify that your GPU is supported by CUDA
 First, to verify that your system is GPU capable. Open your Device Manager and scroll to "Display Adapters." If your system has one, the GPU will be listed here. To ensure that your system is CUDA capable, make sure your GPU is one listed as supported here <a href="https://developer.nvidia.com/cuda-gpus">here</a>.
+<br></br>
 
 <img src="imgs/gpu_capable.png" width="500">
 <em>Here, we can see our GPU is the Nvidia Quadro P1000</em>
+<br></br>
 
-### Download and install Cuda (11.8) TODO
+### Download and install Cuda (11.8)
+Once you know things your system is compatible, the version we used can be found <a href=https://developer.nvidia.com/cuda-toolkit-archive>here</a>. Make sure to use 11.8. Installation is as easy as downloading and installing with all defaults!
 
-This tutorial assumes you are using the environment manager <a href= "https://www.anaconda.com/">Anaconda</a>. See Supplemental documentation if you are unfamiliar with Anaconda, as it's an incredibly helpful tool for navigating python distributions.
 
-### Package Installation
+### Environment Setup
+
+This tutorial assumes you are using the environment manager <a href= "https://www.anaconda.com/">Anaconda</a>. See Supplemental Documentation if you are unfamiliar with Anaconda, as it's an incredibly helpful tool for navigating python distributions.
+<br></br>
 There are multiple options to install required packages.
+<br></br>
 
-#### Anaconda Navigator
+<details> <summary> Anaconda Navigator </summary>
+
 Using from the environments page in Anaconda Navigator, simply import the inTellogence_environment.yaml file.
+</details>
 
-#### Anaconda Prompt
+<details> <summary> Anaconda Prompt </summary>
 With your desired environment activated, and the inTellogence folder active, run the following command:
 
-  conda env create -f drone.yaml
+<table><tr><td>conda env create -f drone.yaml</table></tr></td>
 
-#### Without Anaconda
-A requirements file is included for convenience. install through the following command:
+</details>
 
-  pip install -r requirements.txt
+<details><summary>Without Anaconda</summary>
+A requirements file is included for convenience. Install through the following command in your virtual environment:
+
+<table><tr><td>pip install -r requirements.txt</table></tr></td>
+</details>
+
+<br>
 
 ## Mission Pad Setup
 For inTellogence to work as expected, it's important to setup the mission pads as the drone expects to see them, as mapping is currently not supported. This layout is shown below, where orientation, spacing and layout are important. Should you wish to adjust the spacing between the pads, these are defined as global constants in sensoryState.py, set by default to 50cm center to center. Since Tello EDU currently only supports 8 different mission pads, the flyable space is separated into two sectors, in which the drones track which quadrant they are in.
 
-IMPORTANT: When taking off, place the drones facing the X direction and in Sector 1.
+IMPORTANT: When taking off, place the drones facing the X direction and in Sector 1
 
 <img src="imgs/mission_pad_layout.png" width="500">
 
 # Examples
-## Create a new behavior
+## Create a new behavior/reaction
 ## Add a new button to the GUI
 ## Add a custom State
 
