@@ -1,7 +1,5 @@
 # inTellogence
 
-inTellogence is an open-source codebase for people to learn drone control topics made by senior students at Rose-Hulman Institute of Technology located in Terre Haute, IN.
-
 ![Header](imgs/inTellogence_logo.PNG)
 
 # Table of Contents
@@ -24,8 +22,11 @@ inTellogence is an open-source codebase for people to learn drone control topics
 - [Acknowledgements](#acknowledgements)
 
 # About
+<p>Drones are quickly becoming utilized in the public sphere for entertainment, photography, surveillance, high-speed delivery, and remote healthcare. InTellogence is an open-source codebase made to supplement self-education for university students and hobbyists exploring drone control topics, using the low-cost DJI Tello Edu. It integrates multi-drone centralized control, computer vision, functional safety, and a custom Graphical User Interface (GUI). All code is written in Python, powered by popular packages such as OpenCV, FLET, and NVIDIA’s CUDA. InTellogence ultimately lowers the barrier of entry to drone robotics through detailed documentation and easily modified design . 
 ## Purpose
-We hope that students or people enthusiastic about learning about drones are able to gain new knowledge through this repository and possibly contribute to it.
+We hope that students or people enthusiastic about learning about drones are able to gain new knowledge through this repository and possibly contribute to it.</p>
+
+TODO Add hub and spoke
 
 ## Features
 inTellogence has the following features:
@@ -45,8 +46,10 @@ inTellogence has the following features:
 inTellogence uses <a href="https://flet.dev">Flet</a>, a simplified <a href="https://flutter.dev">Flutter</a> model, to build the GUI. Python is currently supported, but Go and C# are <a href="https://flet.dev/roadmap/">coming soon</a>.<br>
 <br> 
 
-When first starting the program, the GUI brings you to a "landing" page where a user will be able to connect 1 or 2 drones. <br> 
+When first starting the program, the GUI brings you to a connection setup page where a user will be able to connect 1 or 2 drones. <br> 
 <br> 
+
+TODO Connection Page Image
 
 After verifying that the drone(s) are connected, the user can continue to a Main Dashboard that displays the OpenCV window output, text input for chosen object identification, and buttons to Launch, Land, Hover an inidividual drone or both drones simultaneosly. <br> 
 <br> 
@@ -61,7 +64,7 @@ We use threading to allow the GUI to access drone functions while the drone flig
 
 <summary><b>OpenCV window for Flet</b></summary>
 <br>
-The code from <a href="https://www.youtube.com/watch?v=58aPh8rKKsk">Azu Technology</a> that creates a modern GUI for an OpenCV window was modified to display the OpenCV Tello video stream through the GUI. This repository is one of few, if not the only, that allows the Tello stremaing window to be viewed through Flet.<br><br>
+The code from <a href="https://www.youtube.com/watch?v=58aPh8rKKsk">Azu Technology</a> that creates a modern GUI for an OpenCV window was modified to display the OpenCV Tello video stream through the GUI. This repository is one of few, if not the only, that allows the Tello streaming window to be viewed through Flet.<br><br>
 </details>
 
 <details>
@@ -82,9 +85,11 @@ The primary path planning approach for Sky Guardian lies in <a href = https://yo
 <img src="imgs/boundary_force.png" width="300">
 
 <br> 
+
+TODO add more links throughout here.
 Sky Guardian provides an outline for implementing various reactions to certain stimuli. For our purposes, reactions are individual responses to certain stimuli (ie, the drone detects a banana) and behaviors are sets of those reactions. We have defined two types of reactions: blocking and movement. <br>
 
-A blocking reaction initiates a pre-defined set of instructions, during which the drone is incapable of performing any other movements. The trigger blocks the continuation of the control loop for a time. <br>
+A blocking reaction initiates a pre-defined set of instructions, during which the drone is incapable of performing any other movements. The stimuli trigger blocks the continuation of the control loop for a time. <br>
 
 A movement reaction defines non-blocking instructions. So, it returns a movement force according to the same idea as potential fields. Hence, a drone could tend to fly toward certain objects or away from others. <br>
 </details> 
@@ -394,5 +399,9 @@ For this project, we utilized computer vision and coded responses that react bas
 + [Official Flet developer community](https://discord.gg/mMJHgYEqRK)
 + [DJI Tello Online Community](https://tellopilots.com)
 # References
+REFERENCE INTERNAL REPORT ENGD CAPSTONE STUDENTS
+Reference Robot dynamics and control
+Reference Standards
+PAPERS MUST BE REFERENCED
 # Acknowledgements 
-We would like to our Capstone professors: Dr. Shradda Sangelkar and Dr. Jay McCormack, and external reviewers: Dr. Sriram Mohan, and Dr. Ryder Winck for their guidance, resources, and support throughout this project. We would also like to thank Dr. Sid Stamm, Dr. Amirmasoud Momenipour, Dr. Mark Hays, and Dr. Mellor for their subject-matter expertise. Lastly, we would like to thank you dear reader as our project only gains value if it is able to benefit someone else.
+We would like to thank our Capstone professors: Dr. Shraddha Sangelkar and Dr. Jay McCormack, and external reviewers: Dr. Sriram Mohan, and Dr. Ryder Winck for their guidance, resources, and support throughout this project. We would also like to thank Dr. Sid Stamm, Dr. Amirmasoud Momenipour, Dr. Mark Hays, and Dr. Mellor for their subject-matter expertise. Lastly, we would like to thank you dear reader as our project only gains value if it is able to benefit someone else.
