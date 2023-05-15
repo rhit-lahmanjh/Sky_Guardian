@@ -42,30 +42,26 @@ inTellogence has the following features:
 <details>
 <summary>Graphic User Interface (GUI)</summary>
 <br>
-inTellogence uses <a href="https://flet.dev">Flet</a>, a simplified <a href="https://flutter.dev">Flutter</a> model, to build the GUI. Python is currently supported, but Go and C# are <a href="https://flet.dev/roadmap/">coming soon</a>.<br> 
+inTellogence uses <a href="https://flet.dev">Flet</a>, a simplified <a href="https://flutter.dev">Flutter</a> model, to build the GUI. Python is currently supported, but Go and C# are <a href="https://flet.dev/roadmap/">coming soon</a>.<br>
+<br> 
 
 When first starting the program, the GUI brings you to a "landing" page where a user will be able to connect 1 or 2 drones. <br> 
 <br> 
 
-After verifying that the drone(s) are connected, the user can continue to a Main Dashboard that displays the OpenCV window output, various sensor readings, text input for chosen object identification, and buttons to Launch, Land, Hover an inidividual drone or both drones simultaneosly. <br> 
+After verifying that the drone(s) are connected, the user can continue to a Main Dashboard that displays the OpenCV window output, text input for chosen object identification, and buttons to Launch, Land, Hover an inidividual drone or both drones simultaneosly. <br> 
 <br> 
 <img src="imgs/drone_screenshot.PNG" width="500">
 <br>
 
-The GUI uses the following components<br> 
-<details>
-<summary>Multi-threading</summary>
-<br>
-We use threading to allow the GUI to access drone functions while the drone flight algorithm is running. This becomes a problem if the threads try to read/write the same piece of memory at the exact same time, but the chances of this happening are low for this project. 
----
-</details> 
-</details>
+The GUI uses the following components<br>
 
-<details>
-<summary>OpenCV window for Flet</summary>
+<summary><b>Multi-threading</b></summary>
 <br>
-The code from <a href="https://www.youtube.com/watch?v=58aPh8rKKsk">Azu Technology</a> that creates a modern GUI for an OpenCV window was modified to display the OpenCV Tello video stream through the GUI. This repository is one of few, if not the only, that allows the Tello stremaing window to be viewed through Flet. 
----
+We use threading to allow the GUI to access drone functions while the drone flight algorithm is running. This becomes a problem if the threads try to read/write the same piece of memory at the exact same time, but the chances of this happening are low for this project.<br><br>
+
+<summary><b>OpenCV window for Flet</b></summary>
+<br>
+The code from <a href="https://www.youtube.com/watch?v=58aPh8rKKsk">Azu Technology</a> that creates a modern GUI for an OpenCV window was modified to display the OpenCV Tello video stream through the GUI. This repository is one of few, if not the only, that allows the Tello stremaing window to be viewed through Flet.<br><br>
 </details>
 
 <details>
@@ -97,7 +93,7 @@ A movement reaction defines non-blocking instructions. So, it returns a movement
 <summary>Object Recognition using Yolov8</summary>
 <br>
 
-Sky Guardian performs object recognition by implementing <a href="https://github.com/ultralytics/ultralytics"> Ultralytics Yolov8 </a>. All video feed analysis is abstracted out into the VideoAnalyzer class from video_analyzer.py. This wrapper class adds the ability to automatically download all Object Recognition models, as well as adjust the model size (speed/accuracy tradeoff), and acceptable confidence level. To explore the other models available using Yolov8 (pose, image segmentation, etc), consider editing video_analyzer.py.<br>
+Sky Guardian performs object recognition by implementing <a href="https://github.com/ultralytics/ultralytics"> Ultralytics Yolov8 </a>. All video feed analysis is abstracted out into the VideoAnalyzer class from <i>video_analyzer.py</i>. This wrapper class adds the ability to automatically download all Object Recognition models, as well as adjust the model size (speed/accuracy tradeoff), and acceptable confidence level. To explore the other models available using Yolov8 (pose, image segmentation, etc), consider editing <i>video_analyzer.py</i>.<br>
 
 The output of the network can be slightly confusing (this article was helpful determining syntax <a href=""> here</a>.)
 To access results in the form of an Nx6 matrix, use syntax along the lines of results[0].boxes.boxes The indexes are shown below: <br>
@@ -127,16 +123,14 @@ In order to speed up this detection process, this repository assumes the use of 
 <li> Using mission pads to localize and properly constrain the flight environment that the Tello drones use to navigate. </li> 
 </p>
 
-<p>Functional Safety Engineering uses the <a href="https://www.iso.org/obp/ui/#iso:std:iso:26262:-9:ed-1:v1:en">V-model development process</a> from the <a href="https://www.iso.org/standard/43464.html">ISO26262</a> standard, which is shown below:
+<p>Functional Safety Engineering uses the <a href="https://www.iso.org/obp/ui/#iso:std:iso:26262:-9:ed-1:v1:en">V-model development process</a> from the <a href="https://www.iso.org/standard/43464.html">ISO26262</a> standard, which is shown below. <br><br>
 
-<details>
-<summary>V-model Example</summary>
+
 <img src="https://about.gitlab.com/images/iso-26262/v-model-iso-26262.png" width="500">
-<br>
-The left side of the V-model is conceptual development and product development. The bottom of the V-model is where the hardware and software designs are implemented. The right side of the V-model is where all testing activities of the design happen. 
-</details>
+<em>The left side of the V-model is conceptual development and product development. The bottom of the V-model is where the hardware and software designs are implemented. The right side of the V-model is where all testing activities of the design happen. </em>
+
+
 </p>
----
 <p>Safety Features are designed during conceptual development in a process called the ‘<a href="https://arxiv.org/pdf/1704.06140.pdf">Hazard Analysis and Risk Assessment</a>’ or HARA. HARA uses an <a href="https://www.synopsys.com/automotive/what-is-asil.html">ASIL risk rating</a> chart to properly classify the specific HARA line item in question. Collisions in this project receive a SIL1 rating based off initial severity (S1), initial exposure (E3), and initial avoidability (C2). More information on the HARA can be found in the supplemental documentation. </p>
 
 Once these safety features are implemented properly either through hardware or software measures, they are then testing as single units, in integration testing, and regression testing to ensure that everything works properly. From there, the project can be deployed with assurance that there are safety features present to actively mitigate risks.
@@ -194,12 +188,10 @@ This section will cover how to set up the router, connect your computer to it, a
 ## Necessary Installations
 
 ### Verify that your GPU is supported by CUDA
-First, to verify that your system is GPU capable. Open your Device Manager and scroll to "Display Adapters." If your system has one, the GPU will be listed here. To ensure that your system is CUDA capable, make sure your GPU is one listed as supported here <a href="https://developer.nvidia.com/cuda-gpus">here</a>.
-<br></br>
+First, verify that your system is GPU capable. Open your Device Manager and scroll to "Display Adapters." If your system has one, the GPU will be listed here. To ensure that your system is CUDA capable, make sure your GPU is one listed as supported here <a href="https://developer.nvidia.com/cuda-gpus">here</a>.<br><br>
 
 <img src="imgs/gpu_capable.png" width="500">
-<em>Here, we can see our GPU is the Nvidia Quadro P1000</em>
-<br></br>
+<em>Here, we can see our GPU is the Nvidia Quadro P1000</em><br><br>
 
 ### Download and install Cuda (11.8)
 Once you know things your system is compatible, the version we used can be found <a href=https://developer.nvidia.com/cuda-toolkit-archive>here</a>. Make sure to use 11.8. Installation is as easy as downloading and installing with all defaults!
@@ -234,7 +226,7 @@ A requirements file is included for convenience. Install through the following c
 <br>
 
 ## Mission Pad Setup
-For inTellogence to work as expected, it's important to setup the mission pads as the drone expects to see them, as mapping is currently not supported. This layout is shown below, where orientation, spacing and layout are important. Should you wish to adjust the spacing between the pads, these are defined as global constants in MissionPadMap found in sensory_state.py, set by default to 50cm center to center. Since Tello EDU currently only supports 8 different mission pads, the flyable space is separated into two sectors, in which the drones track which quadrant they are in.
+For inTellogence to work as expected, it's important to setup the mission pads as the drone expects to see them, as mapping is currently not supported. This layout is shown below, where orientation, spacing and layout are important. Should you wish to adjust the spacing between the pads, these are defined as global constants in MissionPadMap found in <i>sensory_state.py</i>, set by default to 50cm center to center. Since Tello EDU currently only supports 8 different mission pads, the flyable space is separated into two sectors, in which the drones track which quadrant they are in.
 
 IMPORTANT: When taking off, place the drones facing the X direction and in Sector 1
 
@@ -246,7 +238,7 @@ IMPORTANT: When taking off, place the drones facing the X direction and in Secto
 # Examples
 <details><summary> Create a new behavior/reaction</summary>
 <br>
-There are two different types of reactions: movement and blocking. Let's create a new movement reaction, which will return a force vector to the drone. Open reaction.py
+There are two different types of reactions: movement and blocking. Let's create a new movement reaction, which will return a force vector to the drone. Open <i>reaction.py</i>.
 <br></br>
 These reactions have access to all the sensory information from the drone via the input argument.
 <br></br>
@@ -276,7 +268,7 @@ def react(self,input: SensoryState, currentMovement: np.array):
   #Note that additional information about the structure of "visible Objects" can be found above in "Object Recognition using Yolov8"
 
 ```
-Almost there! Now open behavior.py.
+Almost there! Now open <i>behavior.py</i>.
 
 Create a new behavior (set of reactions)
 
@@ -299,7 +291,7 @@ This behavior is what you will pass in when you create your drone object!
 <details><summary> Add a custom State </summary>
 Adding a new state is simple!
 
-In drone_states.py, just add the name of your new state, we'll call ours "Dance", with an arbitary, unique number:
+In <i>drone_states.py</i>, just add the name of your new state, we'll call ours "Dance", with an arbitary, unique number:
 
 ```python
 class State(Enum):
@@ -311,7 +303,7 @@ class State(Enum):
     Dance = 5
 ```
 
-Now, in drone.py, find the operate function. In it is a match-case block that changes the drone's actions based on the state. Let's add a new case:
+Now, in <i>drone.py</i>, find the operate function. In it is a match-case block that changes the drone's actions based on the state. Let's add a new case:
 
 ```python
   case State.Land:
@@ -326,47 +318,42 @@ Here, dance() could be whatever you want. Just make sure the function isn't bloc
 
 # Supplemental Documentation
 
-<summary>Hazard Analysis and Risk Assessment</summary>
+
+
+<details><summary>Hazard Analysis and Risk Assessment</summary>
 
 The HARA consists of the following steps:
-<details>
-<summary>Assumptions</summary>
+<details><summary><b>Assumptions</b></summary>
 
 <br>
 Assumptions are created on how terminology is used and about the environment the product is in.
+<br> <br>
+<p>For this project, an example assumption is that the primary obstacles to be avoided will be stationary furniture and walls along with the users of the drones in the testing room.
 <br>
-For this project, an example assumption is that the primary obstacles to be avoided will be stationary furniture and walls along with the users of the drones in the testing room.
----
 </details> 
 
-<details>
-<summary>Existing External Mitigating Measures</summary>
+<details><summary><b>Existing External Mitigating Measures</b></summary>
 
 <br>
 These are risk reducing factors that are already present in an environment. They exist independently of the systems.
 <br>
-For this project, to prevent the drone from hitting people, the only person(s) that can be present in the testing room are the drone operators. This mitigating measure is not in any drone control systems.
----
+For this project, to prevent the drone from hitting people, the only person(s) that can be present in the testing room are the drone operators. This mitigating measure is not in any drone control systems.<br><br>
 </details> 
 
-<details>
-<summary>Operational Situations</summary>
+<details><summary><b>Operational Situations</b></summary>
 
 <br>
 These are the scenarios that the designers expect their product to be in regularly while it is operation/active/or in use. The designers will come up with ‘Considered Situational Attributes’ which are guide words that describe ‘motion’, ‘mode’, ‘obstacle exposure’, and ‘control’.
----
 </details> 
 
-<details>
-<summary>Guide words</summary>
+<details><summary><b>Guide words</b></summary>
 
 <br>
 In Functional Safety, guide words are created to produce operational scenarios. For this project some of our guide words were as follows: Mode = Launched, Motion = Forward, Control = Independent (not in swarm configuration), Obstacle Exposure = ‘Static’.An example operational scenario is ‘a single independent drone is launched and in a forward motion surveying a space with static objects.’
----
 </details> 
 
 <details>
-<summary>Hazard List</summary>
+<summary><b>Hazard List</b></summary>
 
 <br>
 List of potential hazards and their type pulled from a list in the ISO12100 standard. Relevant Mechanical Hazards for the project include:
@@ -376,7 +363,7 @@ List of potential hazards and their type pulled from a list in the ISO12100 stan
 </details> 
 
 <details>
-<summary>Hazardous Operation</summary>
+<summary><b>Hazardous Operation</b></summary>
 
 <br>
 Hazerdous Operation combines Tasks and Functions along with suggested guidewords pulled from the SAEJ2980 standard to create potential resulting malfunctions. The resulting malfunctions constitute Hazardous Operation.
@@ -385,7 +372,7 @@ In this project, when the ‘Automated drone(s) is exploring’ an environment �
 </details> 
 
 <details>
-<summary>Hazardous Events</summary>
+<summary><b>Hazardous Events</b></summary>
 
 <br>
 Hazerdous events combines Hazardous Operation and Operational Situation to describe the Hazardous Event that needs to be mitigated. 
@@ -393,16 +380,14 @@ In this project when the ‘Automated drone(s) is exploring’ an environment �
 ---
 </details> 
 
-<details>
-<summary>Risk Reduction Measure</summary>
+<details><summary><b>Risk Reduction Measure</b></summary>
 
 <br>
 These are the safety features, which could either be design based or policy/procedural based, that are implemented to reduce the HARA line item to a lower risk rating per the ASIL risk rating chart.
 For this project, we utilized computer vision and coded responses that react based on the type of object seen, as the basis for collision-based Risk Reduction Measures that lowered our SIL1 rating down to SIL0.
----
 </details> 
+</details><br>
 
-<br></br>
 # Troublehooting resources
 + [Tello Drone User Manual](https://dl-cdn.ryzerobotics.com/downloads/Tello/Tello%20User%20Manual%20v1.4.pdf)
 + [Official Flet developer community](https://discord.gg/mMJHgYEqRK)
