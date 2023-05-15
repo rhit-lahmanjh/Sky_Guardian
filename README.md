@@ -76,7 +76,7 @@ General control of both drones is organized around a Finite State Machine (FSM).
 <details>
 <summary>Reactive Control Through Potential Fields</summary>
 <br>
-The primary path planning approach for Sky Guardian lies in <a href = https://youtu.be/umkyPWDrys4>reactive control through potential fields</a>. In order to allow the drones to wander in a constrained space, Tello mission pads are utitilized in a pre-defined map. These mission pads allow the drone to localize and respond appropriately when moving out of intended airspace, applying a movement force proportional to it's measured distance outside of desired airspace.
+The primary path planning approach for Sky Guardian lies in <a href = https://youtu.be/umkyPWDrys4>reactive control through potential fields</a>. In order to allow the drones to wander in a constrained space, Tello mission pads are utitilized in a pre-defined map. These mission pads allow the drone to localize and respond appropriately when moving out of intended airspace, applying a movement force proportional to it's measured distance outside of desired airspace. If you're interested in some of the math behind this, check out Coordinate Modelling in Supplemental Documentation
 
 <br> 
 <img src="imgs/boundary_force.png" width="300">
@@ -319,6 +319,7 @@ Here, dance() could be whatever you want. Just make sure the function isn't bloc
 # Supplemental Documentation
 
 
+[Coordinate Modelling](Ref\Coordinate_Modelling.pdf)
 
 <details><summary>Hazard Analysis and Risk Assessment</summary>
 
