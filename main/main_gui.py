@@ -29,6 +29,7 @@ def main(page: ft.Page):
     }
 
     page.theme = Theme(font_family="Space")
+    page.theme_mode = ft.ThemeMode.LIGHT
     object_list = [obj.name for obj in vision_class]
     reaction_data = ["Flip on Banana", "Bob on Scissors", "Run from Banana", "Run from Object"]
 
@@ -410,8 +411,8 @@ def main(page: ft.Page):
                     color=ft.colors.WHITE),
                 ]
                 ),
-            ),
-            height=400
+            )
+            # ,height=400
     )
 
     d2_stream = ft.Card(
@@ -427,8 +428,8 @@ def main(page: ft.Page):
                     color=ft.colors.WHITE),
                 ]
                 ),
-            ),
-            height=400
+            )
+            # ,height=400
     )
 
   

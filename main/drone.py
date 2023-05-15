@@ -14,7 +14,7 @@ from refresh_tracker import RefreshTracker
 DEBUG_PRINTS = False
 WITH_DRONE = True
 WITH_CAMERA = True
-RUNNING_WITH_GUI = True
+RUNNING_WITH_GUI = False
 
 clamp = lambda n, minn, maxn: max(min(maxn, n), minn)
 
@@ -65,6 +65,7 @@ class Drone(djitellopy_edited.Tello):
             # This is where we will implement connecting to a drone through the router
             self.connect()
             self.set_video_bitrate(djitellopy_edited.Tello.BITRATE_AUTO)
+            # self.set_video_fps(djitellopy_edited.Tello.FPS_30)
             self.set_video_resolution(djitellopy_edited.Tello.RESOLUTION_480P)
 
             self.set_speed(self.MAXSPEED)

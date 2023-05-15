@@ -410,7 +410,7 @@ class Tello:
     def get_udp_video_address(self) -> str:
         """Internal method, you normally wouldn't call this youself.
         """
-        address_schema = 'udp://@{ip}:{port}'  # + '?overrun_nonfatal=1&fifo_size=5000'
+        address_schema = 'udp://@{ip}:{port}' + '?overrun_nonfatal=1&fifo_size=10000'
         address = address_schema.format(ip=self.VS_UDP_IP, port=self.VS_UDP_PORT)
         return address
 

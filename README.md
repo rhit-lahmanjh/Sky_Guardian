@@ -222,16 +222,17 @@ Using from the environments page in Anaconda Navigator, simply import the inTell
 </details>
 
 <details> <summary> Anaconda Prompt </summary>
+
 With your desired environment activated, and the inTellogence folder active, run the following command:
 
-<table><tr><td>conda env create -f drone.yaml</table></tr></td>
+```conda env create -f drone.yaml```
 
 </details>
 
 <details><summary>Without Anaconda</summary>
 A requirements file is included for convenience. Install through the following command in your virtual environment:
 
-<table><tr><td>pip install -r requirements.txt</table></tr></td>
+```pip install -r requirements.txt```
 </details>
 
 <br>
@@ -243,6 +244,8 @@ IMPORTANT: When taking off, place the drones facing the X direction and in Secto
 
 <img src="imgs/mission_pad_layout.png" width="500">
 <br></br>
+
+# Running the Code
 
 # Examples
 <details><summary> Create a new behavior/reaction</summary>
@@ -403,7 +406,7 @@ For this project, we utilized computer vision and coded responses that react bas
 ---
 </details> 
 
-
+<br></br>
 # Troublehooting resources
 + [Tello Drone User Manual](https://dl-cdn.ryzerobotics.com/downloads/Tello/Tello%20User%20Manual%20v1.4.pdf)
 + [Official Flet developer community](https://discord.gg/mMJHgYEqRK)
