@@ -135,7 +135,7 @@ def main(page: ft.Page):
     confirm_dialog = ft.AlertDialog(
         modal=True,
         title=ft.Text("Please Confirm"),
-        content=ft.Text("Do you wish to exit the app?"),
+        content=ft.Text("Do you wish to exit the page?"),
         actions=[
             ft.ElevatedButton("Yes", on_click=yes_click),
             ft.OutlinedButton("No", on_click=no_click),
