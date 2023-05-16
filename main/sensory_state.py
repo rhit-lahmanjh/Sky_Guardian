@@ -3,16 +3,21 @@ import numpy as np
 import cv2 
 from video_analyzer import VideoAnalyzer
 import time as t
+from configparser import ConfigParser
 
 DEBUG_PRINTS = False
 
+repo_properties = ConfigParser()
+repo_properties.read("main\\repo.properties")
+
+DISTANCE_BETWEEN_MISSION_PADS = repo_properties.getint("all","DISTANCE_BETWEEN_MISSION_PADS")
+
 class MissionPadMap():
+    X_MIN_BOUNDARY = repo_properties.getint("all","X_MIN_BOUNDARY")
+    X_MAX_BOUNDARY = repo_properties.getint("all","X_MAX_BOUNDARY")
+    Y_MIN_BOUNDARY = repo_properties.getint("all","Y_MIN_BOUNDARY")
+    Y_MAX_BOUNDARY = repo_properties.getint("all","Y_MAX_BOUNDARY")
     
-    DISTANCE_BETWEEN_MISSION_PADS = 50
-    X_MIN_BOUNDARY = 20
-    X_MAX_BOUNDARY = 180
-    Y_MIN_BOUNDARY = 20
-    Y_MAX_BOUNDARY = 180
     missionPadShift = np.array([[0,0],
                             [0,DISTANCE_BETWEEN_MISSION_PADS],
                             [0,2*DISTANCE_BETWEEN_MISSION_PADS],

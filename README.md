@@ -403,5 +403,9 @@ REFERENCE INTERNAL REPORT ENGD CAPSTONE STUDENTS
 Reference Robot dynamics and control
 Reference Standards
 PAPERS MUST BE REFERENCED
+<p>"Hazard Analysis and Risk Assessment beyond ISO 26262: Management of Complexity via Restructuring of Risk-Generating Process," in Safety of the Intended Functionality , SAE, 2020, pp.69-78.</p>
+
+<p>World Leaders in Research-Based User Experience. “10 Usability Heuristics for User Interface Design.” Nielsen Norman Group, https://www.nngroup.com/articles/ten-usability-heuristics/#poster.</p>
+
 # Acknowledgements 
 We would like to thank our Capstone professors: Dr. Shraddha Sangelkar and Dr. Jay McCormack, and external reviewers: Dr. Sriram Mohan, and Dr. Ryder Winck for their guidance, resources, and support throughout this project. We would also like to thank Dr. Sid Stamm, Dr. Amirmasoud Momenipour, Dr. Mark Hays, and Dr. Mellor for their subject-matter expertise. Lastly, we would like to thank you dear reader as our project only gains value if it is able to benefit someone else.

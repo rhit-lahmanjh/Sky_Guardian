@@ -1,6 +1,7 @@
 from ultralytics import YOLO
 import torch.cuda
 import os.path
+from configparser import ConfigParser
 
 CONFIDENCE_CUTOFF = .7
 
@@ -9,7 +10,7 @@ class VideoAnalyzer():
     visionNet: YOLO
     
     netPathList = ["yolov8n.pt", "yolov8s.pt","yolov8m.pt","yolov8l.pt","yolov8x.pt"]
-    netIndex = 1
+    netIndex: int
     confidenceLevel = 0
     USING_CUDA = False
 
@@ -22,6 +23,9 @@ class VideoAnalyzer():
             device = "cpu"
             print("Using CPU")
         self.__loadModels__()
+        repo_properties = ConfigParser()
+        repo_properties.read("main\\repo.properties")
+        self.netIndex =repo_properties.getint("all","YOLO_MODEL_SIZE")
         self.visionNet = YOLO(self.netPathList[self.netIndex-1])
         self.confidenceLevel = conf
     

@@ -115,7 +115,6 @@ def main(page: ft.Page):
             width=100,
             height=100,
             padding=padding.only(left=10, right=5, bottom=15),
-
             on_click=drone1_launch
         )
 

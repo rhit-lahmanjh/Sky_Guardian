@@ -7,14 +7,10 @@ import math
 import random as rand
 from sensory_state import SensoryState,MissionPadMap
 from drone_states import State
+from configparser import ConfigParser
 
 from behaviors.behavior import behaviorFramework
 from refresh_tracker import RefreshTracker
-
-DEBUG_PRINTS = False
-WITH_DRONE = True
-WITH_CAMERA = True
-RUNNING_WITH_GUI = False
 
 clamp = lambda n, minn, maxn: max(min(maxn, n), minn)
 
@@ -36,11 +32,15 @@ class Drone(djitellopy_edited.Tello):
     yaw_start = None #used in spinning
     spun_halfway = False
     swarm = False
+    DEBUG_PRINTS: bool
+    WITH_DRONE: bool
+    WITH_CAMERA: bool
+    RUNNING_WITH_GUI: bool
 
     #sensor Data
     sensoryState = None
-    telemetry = dict()
-    telemetryReason = dict()
+    telemetry: dict
+    telemetryReason: dict
     refreshTracker = None
 
     def __init__(self,identifier = None,
@@ -52,20 +52,31 @@ class Drone(djitellopy_edited.Tello):
                  control_udp_port = 8889,
                  state_udp_port = 8890,
                  local_computer_IP = '0.0.0.0',):
+        
         self.swarm = swarm
         self.random_wander_force = np.zeros((4,1))
         self.swarm_force = np.zeros((4,1))
         self.identifier = identifier
         self.opState = State.Grounded
+        self.telemetry = dict()
+        self.telemetryReason = dict()
         if behavior is not None:
             self.behavior = behavior
-        if WITH_DRONE:
+
+        self.repo_properties = ConfigParser()
+        self.repo_properties.read("main\\repo.properties")
+
+        self.DEBUG_PRINTS = self.repo_properties.getboolean("all","DEBUG_PRINTS")
+        self.WITH_DRONE = self.repo_properties.getboolean("all","WITH_DRONE")
+        self.WITH_CAMERA = self.repo_properties.getboolean("all","WITH_CAMERA")
+        self.RUNNING_WITH_GUI = self.repo_properties.getboolean("all","RUNNING_WITH_GUI")
+        
+        if self.WITH_DRONE:
             super().__init__(vs_udp_ip = vs_udp_ip, vs_udp_port = vs_udp_port, control_udp_port = control_udp_port, state_udp_port = state_udp_port, host=tello_ip,local_computer_IP=local_computer_IP)
 
             # This is where we will implement connecting to a drone through the router
             self.connect()
             self.set_video_bitrate(djitellopy_edited.Tello.BITRATE_AUTO)
-            # self.set_video_fps(djitellopy_edited.Tello.FPS_30)
             self.set_video_resolution(djitellopy_edited.Tello.RESOLUTION_480P)
 
             self.set_speed(self.MAXSPEED)
@@ -73,13 +84,13 @@ class Drone(djitellopy_edited.Tello):
 
             #setup video
 
-            if WITH_CAMERA:
+            if self.WITH_CAMERA:
                 self.streamon()
                 self.sensoryState = SensoryState(self.get_current_state(),self.get_video_capture())
-            elif not WITH_CAMERA:
+            else:
                 self.sensoryState = SensoryState(self.get_current_state())
             
-        elif not WITH_DRONE and WITH_CAMERA:
+        elif not self.WITH_DRONE and self.WITH_CAMERA:
             self.sensoryState = SensoryState()
             self.sensoryState.setupWebcam()
             print('setup complete')
@@ -124,7 +135,7 @@ class Drone(djitellopy_edited.Tello):
         
         res = self.transformGlobalToDroneSpace(global_force,yaw=yaw)
 
-        if DEBUG_PRINTS:
+        if self.DEBUG_PRINTS:
             print(f' Total Boundary Force: X: {res[0]} Y: {res[1]}')
 
         return res
@@ -166,7 +177,7 @@ class Drone(djitellopy_edited.Tello):
 
     def end_flight(self):
         self.stop()
-        if not RUNNING_WITH_GUI:
+        if not self.RUNNING_WITH_GUI:
             cv2.destroyWindow(self.identifier)
     #endregion
     #region MOVEMENT FUNCTIONS
@@ -174,7 +185,7 @@ class Drone(djitellopy_edited.Tello):
         print('Stopping')
         if self.is_flying:
             self.land()
-        if(WITH_DRONE):
+        if(self.WITH_DRONE):
             self.streamoff()
             self.end()
         self.sensoryState.videoCapture.release()
@@ -198,7 +209,7 @@ class Drone(djitellopy_edited.Tello):
             direction = self.normalize_force(direction=direction)
 
         cmd = f'rc {np.round_(direction[0,0],1)} {np.round_(direction[1,0],1)} {np.round_(direction[2,0],1)} {np.round_(direction[3,0],1)}'
-        if WITH_DRONE:
+        if self.WITH_DRONE:
             self.send_command_without_return(cmd)
         else:
             print(cmd)
@@ -311,16 +322,16 @@ class Drone(djitellopy_edited.Tello):
 
     def operate(self,exitLoop = False):
         # creating window
-        if WITH_CAMERA and not RUNNING_WITH_GUI:
+        if self.WITH_CAMERA and not self.RUNNING_WITH_GUI:
             cv2.namedWindow(self.identifier, cv2.WINDOW_NORMAL)
         while cv2.waitKey(20) != 27: # Escape
             #sensing
-            if WITH_DRONE:
+            if self.WITH_DRONE:
                 self.sensoryState.update(self.get_current_state(), name = self.identifier)
             else:
                 self.sensoryState.update()
                 
-            if WITH_CAMERA and self.sensoryState.returnedImage and not RUNNING_WITH_GUI:
+            if self.WITH_CAMERA and self.sensoryState.returnedImage and not self.RUNNING_WITH_GUI:
                     cv2.imshow(self.identifier,self.sensoryState.image)
 
             if not self.swarm:
@@ -338,14 +349,14 @@ class Drone(djitellopy_edited.Tello):
                     if self.identifier == 'beta':
                         self.__avoidBoundary__()
                     
-                    if(DEBUG_PRINTS):
+                    if(self.DEBUG_PRINTS):
                         print('Landed')
                     if key.is_pressed('t'):
                         self.opState = State.Takeoff
                         print("Attempting to take off")
 
                 case State.Takeoff:
-                    if WITH_DRONE:
+                    if self.WITH_DRONE:
                         safeToTakeOff = self.checkTelemetry()
                         if safeToTakeOff:
                             print("Telemetry Checks Successful")
@@ -364,7 +375,7 @@ class Drone(djitellopy_edited.Tello):
                     
                 case State.Land:
                     print("Landing")
-                    if WITH_DRONE:
+                    if self.WITH_DRONE:
                         self.land()
                     self.opState = State.Grounded
 
@@ -377,13 +388,13 @@ class Drone(djitellopy_edited.Tello):
                         self.opState = State
                         self.yaw_start = None
                         self.spun_halfway = False
-                    if DEBUG_PRINTS:
+                    if self.DEBUG_PRINTS:
                         print('Scanning')
                     self.rotate_clockwise()
                     continue
 
                 case State.Wander:
-                    if(DEBUG_PRINTS):
+                    if self.DEBUG_PRINTS:
                         print("Wandering")
                     wanderVec = np.add(self.__randomWander__(),self.__avoidBoundary__(),self.swarm_force)
                     if self.behavior is not None:
@@ -392,13 +403,13 @@ class Drone(djitellopy_edited.Tello):
                     self.moveDirection(wanderVec)
 
                 case State.Hover:
-                    if WITH_DRONE:
+                    if self.WITH_DRONE:
                         self.hover()
                     else:
                         print('Hovering')
 
                 case State.Drift:
-                    if WITH_DRONE:
+                    if self.WITH_DRONE:
                         wanderVec = self.__avoidBoundary__()
                         if self.behavior is not None:
                             reactionMovement = self.behavior.runReactions(drone = self, input = self.sensoryState, currentMovement = wanderVec)
