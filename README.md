@@ -146,14 +146,11 @@ Once these safety features are implemented properly either through hardware or s
 <summary>Networking</summary>
 
 <br>
-Two different approaches to swarm control are centralized and decentralized control. 
+The topic under discussion revolves around two distinct methodologies employed in swarm control, namely centralized and decentralized control. Decentralized control entails equipping each individual drone within the swarm with an exclusive "brain," enabling them to independently make decisions based on the limited information they receive from other members of the swarm.
 
-In decentralized control, each drone has a unique "brain" and makes decisions on its own, with limited information from other actors in the swarm.
+On the other hand, centralized control involves the utilization of a centralized controller for computational purposes. This controller undertakes the necessary computations and subsequently dispatches commands to the individual actors within the swarm, directing their actions accordingly.
 
-In centralized control, computation is done from a centralized controller, that then sends commands to individual actors to follow through. 
-
-This project utilized a centralized control structure with communication over Wi-Fi, through a router, as seen below.
-
+In the context of this particular project, a centralized control structure was adopted, wherein communication among the drones occurred over Wi-Fi, facilitated through a router, as visually depicted below.
 
 <img src = "imgs\DroneConnectivity.png">
 </details> 
