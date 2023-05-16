@@ -10,20 +10,20 @@ def main(page: ft.Page):
     device_data = read_device_data()
 
     def droneOneIPSaveButton(e):
-
         print("Storing Drone 1 IP Address")
-        device_data.update({'DRONE1_IP':input1.value})
+        device_data.update({'DRONE1_IP':droneOneIPInput.value})
 
     def droneTwoIPSaveButton(e):
-
         print("Storing Drone 2 IP Address")
-        device_data.update({'DRONE2_IP':input2.value})
+        device_data.update({'DRONE2_IP':droneTwoIPInput.value})
 
     def ssidSaveButton(e):
         print("Storing Router SSID")
+        device_data.update({'ROUTER_SSID':ssidInput})
 
     def passwordSaveButton(e):
         print("Storing Router Password")
+        device_data.update({'ROUTER_PASSWORD':routerPasswordInput})
 
 
     def window_event(e):
@@ -43,11 +43,11 @@ def main(page: ft.Page):
         confirm_dialog.open = False
         page.update()
 
-    input1 = ft.TextField(label="Enter New IP Address", on_submit=droneOneIPSaveButton)
+    droneOneIPInput = ft.TextField(label="Enter New IP Address", on_submit=droneOneIPSaveButton)
 
     droneOneConnectionItems = [
         # Want to use input from text field
-        input1,
+        droneOneIPInput,
         ft.ElevatedButton(text="Save", color=ft.colors.BLACK, on_click=droneOneIPSaveButton, bgcolor=ft.colors.AMBER),
     ]
 
@@ -62,11 +62,11 @@ def main(page: ft.Page):
         ]
     )
 
-    input2 = ft.TextField(label="Enter New IP Address", on_submit=droneTwoIPSaveButton)
+    droneTwoIPInput = ft.TextField(label="Enter New IP Address", on_submit=droneTwoIPSaveButton)
 
     droneTwoConnectionItems = [
         # Want to use input from text field
-        input2,
+        droneTwoIPInput,
         ft.ElevatedButton(text="Save", color=ft.colors.BLACK, on_click=droneTwoIPSaveButton, bgcolor=ft.colors.AMBER)
     ]
 
@@ -144,11 +144,11 @@ def main(page: ft.Page):
     )
 
     page.update()
-    dr1 = ft.Text(value=f"Current Drone 1 Router IP: {device_data.get('DRONE1_IP')}", color="white", scale=1, weight=4)
-    page.controls.append(dr1)
+    droneOneCurrentIPDisplay = ft.Text(value=f"Current Drone 1 Router IP: {device_data.get('DRONE1_IP')}", color="white", scale=1, weight=4)
+    page.controls.append(droneOneCurrentIPDisplay)
     page.update()
-    dr2 = ft.Text(value=f"Current Drone 2 Router IP: {device_data.get('DRONE2_IP')}", color="white", scale=1, weight=4)
-    page.controls.append(dr2)
+    droneTwoCurrentIPDisplay = ft.Text(value=f"Current Drone 2 Router IP: {device_data.get('DRONE2_IP')}", color="white", scale=1, weight=4)
+    page.controls.append(droneTwoCurrentIPDisplay)
     page.update()
 
 ft.app(target=main)
