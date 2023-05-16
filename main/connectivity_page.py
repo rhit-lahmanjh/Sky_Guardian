@@ -147,7 +147,13 @@ def main(page: ft.Page):
         # if SuccessfulConnection:
         #     page.add("Drone 2 Connection Successful")
         #     page.add(droneContinueButtonRow)
-        page.update()
+        # print("Successfully Connected to Drone")
+        # print("Closing socket")
+        # sock2.close()
+        # SuccessfulConnection = True
+        # if SuccessfulConnection:
+        #     page.add("Drone 2 Connection Successful")
+        # page.update()
 
 
     def window_event(e):
@@ -178,6 +184,17 @@ def main(page: ft.Page):
         ft.ElevatedButton(text="Save",color=ft.colors.BLACK,on_click=droneOneConnect_button, bgcolor=ft.colors.AMBER),
     ]
 
+    droneOneConnectionRow = ft.Row(
+        [
+            ft.Text(value="Drone 1", style=ft.TextThemeStyle.DISPLAY_SMALL, text_align=ft.TextAlign.CENTER),
+            ft.Container(
+                content=ft.Row(
+                    droneOneConnectionItems,
+                    alignment=ft.MainAxisAlignment.CENTER),
+            )
+        ]
+    )
+
     input2 = ft.TextField(label="Enter New IP Address", on_submit=droneTwoConnect_button)
 
     droneTwoConnectionItems = [
@@ -186,31 +203,20 @@ def main(page: ft.Page):
         ft.ElevatedButton(text="Save",color=ft.colors.BLACK, on_click=droneTwoConnect_button, bgcolor=ft.colors.AMBER)
     ]
 
+    droneTwoConnectionRow = ft.Row(
+        [
+            ft.Text(value="Drone 2", style=ft.TextThemeStyle.DISPLAY_SMALL, text_align=ft.TextAlign.CENTER),
+            ft.Container(
+                content=ft.Row(
+                    droneTwoConnectionItems,
+                    alignment=ft.MainAxisAlignment.CENTER),
+            )
+        ]
+    )
+
     droneContinueButtonItems = [
         ft.ElevatedButton(text="Continue",color=ft.colors.BLACK, on_click=continueButton, bgcolor=ft.colors.GREEN_200)
     ]
-
-    droneOneConnectionRow = ft.Row(
-        [
-            ft.Text(value="Drone 1", style=ft.TextThemeStyle.DISPLAY_SMALL,text_align=ft.TextAlign.CENTER),
-            ft.Container(
-                content=ft.Row(
-                    droneOneConnectionItems,
-                    alignment=ft.MainAxisAlignment.CENTER),
-                )
-        ]
-    )
-
-    droneTwoConnectionRow = ft.Row(
-        [
-        ft.Text(value="Drone 2", style=ft.TextThemeStyle.DISPLAY_SMALL, text_align=ft.TextAlign.CENTER),
-        ft.Container(
-            content=ft.Row(
-                droneTwoConnectionItems,
-                alignment=ft.MainAxisAlignment.CENTER),
-                )
-        ]
-    )
 
     droneContinueButtonRow = ft.Row(
         [
@@ -254,36 +260,3 @@ def main(page: ft.Page):
     page.update()
 
 ft.app(target=main)
-
-# csv code for writing to csv file
-# values = [userIPaddress1, portValue]
-# with open('Drone1.csv', 'w') as file:
-#     writer = csv.writer(file)
-#     writer.writerow(values)
-
-# Pickle Code for writing to txt file
-# with open("ip_fileDrone1.txt", "wb") as file_handler:
-#     pickle.dump((userIPaddress1, portValue), (file_handler))
-# input()
-
-# # csv code for writing to csv file
-# values = [userIPaddress2, portValue]
-# with open('Drone2.csv', 'w') as file:
-#     writer = csv.writer(file)
-#     writer.writerow(values)
-
-# Pickle Code for writing to txt file
-# with open("ip_fileDrone2.txt", "wb") as file_handler:
-#     pickle.dump((userIPaddress2, portValue), (file_handler))
-# input()
-
-# # csv code for writing to csv file
-# values = [userIPaddress2, portValue]
-# with open('Drone2.csv', 'w') as file:
-#     writer = csv.writer(file)
-#     writer.writerow(values)
-
-# Pickle Code for writing to txt file
-# with open("ip_fileDrone2.txt", "wb") as file_handler:
-#     pickle.dump((userIPaddress2, portValue), (file_handler))
-# input()
