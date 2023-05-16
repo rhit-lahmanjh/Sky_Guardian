@@ -150,5 +150,10 @@ def main(page: ft.Page):
     droneTwoCurrentIPDisplay = ft.Text(value=f"Current Drone 2 Router IP: {device_data.get('DRONE2_IP')}", color="white", scale=1, weight=4)
     page.controls.append(droneTwoCurrentIPDisplay)
     page.update()
+    currentRouterSSIDDisplay = ft.Text(value=f"Current Router SSID: {device_data.get('ROUTER_SSID')}", color="white", scale=1, weight=4)
+    page.controls.append(currentRouterSSIDDisplay)
+    page.update()
+    # Password printed to terminal, for security against OSINT/Public Knowledge password is not displayed on page
+    print(f"Current Router Password: {device_data.get('ROUTER_PASSWORD')}")
 
 ft.app(target=main)
