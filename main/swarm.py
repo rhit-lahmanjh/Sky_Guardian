@@ -4,7 +4,7 @@ import math
 import keyboard as key
 from drone_states import State
 import time as t
-
+from configparser import ConfigParser
 
 class Swarm():
 
@@ -17,52 +17,38 @@ class Swarm():
         #this should later be updated to have more than 2 if time allows
         self.drone1 = drone1
         self.drone2 = drone2
+        self.repo_properties = ConfigParser()
+        self.repo_properties.read("all","main\\repo.properties")
     
+    def override_drone(self,drone:Drone):
+        if(key.is_pressed(self.repo_properties.get("all","D1_LAND_KEY")) and not self.drone1.recently_sent_land):
+                drone.opState = State.Land
+                drone.recently_sent_land = True
+                return
+        elif key.is_pressed(self.repo_properties.get("all","D1_HOVER_KEY")):
+            if drone.prevState == None:
+                drone.prevState = self.drone1.opState
+                drone.opState = State.Hover
+                drone.hover_debounce = t.time();
+            if drone.prevState != None and (t.time() - self.drone1.hover_debounce)> 1:
+                drone.opState = self.drone1.prevState
+                drone.prevState = None
+            return
+        elif key.is_pressed(self.repo_properties.get("all","D1_WANDER_KEY")):
+            drone.opState = State.Wander
+            return
+        elif key.is_pressed(self.repo_properties.get("all","D1_TAKEOFF_KEY")):
+            drone.opState = State.Takeoff
+        elif key.is_pressed(self.repo_properties.get("all","D1_DRIFT_KEY")):
+            drone.opState = State.Drift
+
     def operator_override(self):
         #drone 1
-        if(key.is_pressed('l') and not self.drone1.recently_sent_land):
-            self.drone1.opState = State.Land
-            self.drone1.recently_sent_land = True
-            return
-        elif key.is_pressed('u'):
-            if self.drone1.prevState == None:
-                self.drone1.prevState = self.drone1.opState
-                self.drone1.opState = State.Hover
-                self.drone1.hover_debounce = t.time();
-            if self.drone1.prevState != None and (t.time() - self.drone1.hover_debounce)> 1:
-                self.drone1.opState = self.drone1.prevState
-                self.drone1.prevState = None
-            return
-        elif key.is_pressed('k'):
-            self.drone1.opState = State.Wander
-            return
-        elif key.is_pressed("j"):
-            self.drone1.opState = State.Takeoff
-        elif key.is_pressed("e"):
-            self.drone1.opState = State.Drift
-        
-        #drone 2
-        if(key.is_pressed('s') and not self.drone2.recently_sent_land):
-            self.drone2.opState = State.Land
-            self.drone2.recently_sent_land = True
-            return
-        elif key.is_pressed('r'):
-            if self.drone2.prevState == None:
-                self.drone2.prevState = self.drone2.opState
-                self.drone2.opState = State.Hover
-                self.drone2.hover_debounce = t.time();
-            if self.drone2.prevState != None and (t.time() - self.drone2.hover_debounce)> 1:
-                self.drone2.opState = self.drone2.prevState
-                self.drone2.prevState = None
-            return
-        elif key.is_pressed('d'):
-            self.drone2.opState = State.Wander
-            return
-        elif key.is_pressed("f"):
-            self.drone2.opState = State.Takeoff
-        elif key.is_pressed("i"):
-            self.drone2.opState = State.Drift
-        
+        if(key.is_pressed('1')):
+            self.override_drone(self.drone1)
+        if(key.is_pressed('2')):
+            self.override_drone(self.drone2)
+
     def operate(self):
         while not self.turnOff: # Escape
             self.drone1.operate(exitLoop = True)

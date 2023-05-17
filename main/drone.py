@@ -155,14 +155,14 @@ class Drone(djitellopy_edited.Tello):
     
     def operatorOverride(self):
         # land interrupt
-        if(key.is_pressed('l') and not self.recently_sent_land):
+        if(key.is_pressed(self.repo_properties.get("all","D1_LAND_KEY"))) and not self.recently_sent_land:
             self.opState = State.Land
             self.recently_sent_land = True
             return
         if key.is_pressed('w'):
             self.move_forward(100)
             t.sleep(1)
-        if key.is_pressed('h'):
+        if key.is_pressed(self.repo_properties.get("all","D1_HOVER_KEY")):
             if self.prevState == None:
                 self.prevState = self.opState
                 self.opState = State.Hover
@@ -171,7 +171,7 @@ class Drone(djitellopy_edited.Tello):
                 self.opState = self.prevState
                 self.prevState = None
             return
-        if key.is_pressed('r'):
+        if key.is_pressed(self.repo_properties.get("all","D1_WANDER_KEY")):
             self.opState = State.Wander
             return
 
@@ -351,7 +351,7 @@ class Drone(djitellopy_edited.Tello):
                     
                     if(self.DEBUG_PRINTS):
                         print('Landed')
-                    if key.is_pressed('t'):
+                    if key.is_pressed(self.repo_properties.get("all","D1_TAKEOFF_KEY")):
                         self.opState = State.Takeoff
                         print("Attempting to take off")
 
