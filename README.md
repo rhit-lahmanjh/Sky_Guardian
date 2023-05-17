@@ -26,7 +26,7 @@
 ## Purpose
 We hope that students or people enthusiastic about learning about drones are able to gain new knowledge through this repository and possibly contribute to it.</p>
 
-<img style="max-width:95%;border:5px solid black;" src="imgs/diagram_topics.PNG" width="500"> 
+<img style="max-width:95%;border:5px solid black;" src="imgs/diagram_topics.png" width="500"> 
 
 ## Features
 inTellogence has the following features:
