@@ -49,10 +49,9 @@ def main(page: ft.Page):
 
 
     drone1 = Drone(identifier = 'alpha',behavior = behavior1(),tello_ip=alphaIP,control_udp_port=alphaCmdPort,state_udp_port=alphaStatePort, vs_udp_port=alpha_vs_port)
-    # drone2 = Drone(identifier = 'beta',behavior = behavior1(),tello_ip=betaIP,control_udp_port=betaCmdPort,state_udp_port = betaStatePort, vs_udp_port=beta_vs_port)
+    drone2 = Drone(identifier = 'beta',behavior = behavior1(),tello_ip=betaIP,control_udp_port=betaCmdPort,state_udp_port = betaStatePort, vs_udp_port=beta_vs_port)
 
-    # swarm = Swarm(drone1,drone2)
-    swarm = Swarm(drone1)
+    swarm = Swarm(drone1,drone2)
 
     # Setting up threading
     threads = []
@@ -115,7 +114,7 @@ def main(page: ft.Page):
     # Creating Drone Manipulation Functions
     drone1_launch_button = ft.Container(
             content=ft.TextButton(text=""),
-            image_src="assets\drone_launch.png",
+            image_src="main\\assets\drone_launch.png",
             width=100,
             height=100,
             padding=ft.padding.only(left=10, right=5, bottom=15),
@@ -124,7 +123,7 @@ def main(page: ft.Page):
 
     drone1_land_button = ft.Container(
             content=ft.TextButton(text=""),
-            image_src="assets\drone_land.png",
+            image_src="main\\assets\drone_land.png",
             width=100,
             height=100,
             padding=ft.padding.only(left=10, right=5),
@@ -150,7 +149,7 @@ def main(page: ft.Page):
 
     drone2_launch_button = ft.Container(
             content=ft.TextButton(text=""),
-            image_src="assets\drone_launch.png",
+            image_src="main\\assets\drone_launch.png",
             width=100,
             height=100,
 
@@ -159,7 +158,7 @@ def main(page: ft.Page):
 
     drone2_land_button = ft.Container(
             content=ft.TextButton(text=""),
-            image_src="assets\drone_land.png",
+            image_src="main\\assets\drone_land.png",
             width=100,
             height=100,
 
@@ -378,7 +377,6 @@ def main(page: ft.Page):
 
         def did_mount(self):
             self.running = True
-            
             self.th = threading.Thread(target=self.update_timer, args=(), daemon=True)
             self.th.start()
 
@@ -389,19 +387,19 @@ def main(page: ft.Page):
             while True:
                 returned, frame = [self.drone.sensoryState.returnedImage, self.drone.sensoryState.image]
                 
-                print(f"not returned from drone {self.drone.identifier}")
+                # print(f"not returned from drone {self.drone.identifier}")
                 if returned:
-                    t.sleep(.2)
+                    t.sleep(.02)
                     _, im_arr = imencode('.png', frame)
                     im_b64 = base64.b64encode(im_arr)
                     self.img.src_base64 = im_b64.decode("utf-8")
-                    self.update()
+                self.img.update()
 
         def build(self):
             self.img = ft.Image(
                 border_radius=ft.border_radius.all(20),
                 gapless_playback=True,
-                height=300,
+                height=300
                 # width=
                 # fit=ft.ImageFit.FILL
             )
@@ -409,7 +407,7 @@ def main(page: ft.Page):
 
     d1_stream = Countdown(swarm.drone1)
 
-    d2_stream = Countdown(swarm.drone1)
+    d2_stream = Countdown(swarm.drone2)
 
     page.add(
         ft.Container(
@@ -455,7 +453,7 @@ def main(page: ft.Page):
                             ),
                         
                         # User input control for Reactions & Behaviors
-                        ReactionInput(swarm.drone1),
+                        ReactionInput(swarm.drone2),
                         d2_stream,
                     ]
                 ),

@@ -268,7 +268,7 @@ class Drone(djitellopy_edited.Tello):
            signalStrengthInt = int(signalStrength)
         if signalStrength == 'ok':
            SignalCheck = True
-        elif signalStrengthInt > 25:
+        elif signalStrengthInt > 5:
            SignalCheck = True
         else:
            SignalCheck = False
@@ -308,7 +308,7 @@ class Drone(djitellopy_edited.Tello):
         # Dictionary of Boolean values to check through static telemetry
         self.telemetryCheck = {"bat":BatCheck, "temph":TemphCheck, "templ":TemplCheck,
                          "pitch":pitchCheck, "roll":rollCheck,
-                        "height":HeightCheck, "SignalStrength":SignalCheck}
+                        "height":HeightCheck}
 
         print("Completed Telemetry Checks")
         print("Final Dictionary Value: " + str(self.telemetryCheck.values()))

@@ -13,12 +13,12 @@ class Swarm():
 
     turnOff = False
 
-    def __init__(self,drone1:Drone, drone2:Drone = None) -> None:
+    def __init__(self,drone1:Drone, drone2:Drone) -> None:
         #this should later be updated to have more than 2 if time allows
         self.drone1 = drone1
         self.drone2 = drone2
         self.repo_properties = ConfigParser()
-        self.repo_properties.read("all","main\\repo.properties")
+        self.repo_properties.read("main\\repo.properties")
     
     def override_drone(self,drone:Drone):
         if(key.is_pressed(self.repo_properties.get("all","D1_LAND_KEY")) and not self.drone1.recently_sent_land):
@@ -39,20 +39,23 @@ class Swarm():
             return
         elif key.is_pressed(self.repo_properties.get("all","D1_TAKEOFF_KEY")):
             drone.opState = State.Takeoff
+            print("TAKEOFF")
         elif key.is_pressed(self.repo_properties.get("all","D1_DRIFT_KEY")):
             drone.opState = State.Drift
 
     def operator_override(self):
         if(key.is_pressed('1')):
             self.override_drone(self.drone1)
+            print("DRONE 1")
         if(key.is_pressed('2')):
             self.override_drone(self.drone2)
+            print("DRONE 2")
 
     def operate(self):
         while not self.turnOff: # Escape
             self.drone1.operate(exitLoop = True)
-            t.sleep(.2)
-            # self.drone2.operate(exitLoop = True)
+            # t.sleep(.2)
+            self.drone2.operate(exitLoop = True)
             self.operator_override()
             # if self.drone1.getPose()[0] != 1 and self.drone2.getPose()[0] != 1:
             #     separateDroneTwoForceVector = self.handleDroneTwoCollision(self.drone1.getPose(), self.drone2.getPose())
@@ -61,7 +64,7 @@ class Swarm():
 
             
         self.drone1.end_flight()
-        # self.drone2.end_flight()
+        self.drone2.end_flight()
 
     # Pose is a np array of size (4,1), where [[xpos],[ypos],[zpos],[yaw]]
     # [0,0] = xpos, [1,0] = ypos, [2,0] = zpos
