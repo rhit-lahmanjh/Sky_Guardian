@@ -383,7 +383,7 @@ In this project when the ‘Automated drone(s) is exploring’ an environment �
 These are the safety features, which could either be design based or policy/procedural based, that are implemented to reduce the HARA line item to a lower risk rating per the ASIL risk rating chart.
 For this project, we utilized the Tello Mission Pads to constrain the drone to an airspace, and built a netted cage for redundancy, as the basis for collision-based Risk Reduction Measures that lowered our SIL1 rating down to SIL0.
 </details> 
-</details><br>
+</details>
 
 # Troublehooting resources
 + [Tello Drone User Manual](https://dl-cdn.ryzerobotics.com/downloads/Tello/Tello%20User%20Manual%20v1.4.pdf)
