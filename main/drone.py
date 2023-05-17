@@ -262,18 +262,17 @@ class Drone(djitellopy_edited.Tello):
 
         # Turns the string SNR value into an integer
         # Checks the Wi-Fi SNR value to determine signal strength
-        
-        #print("Signal Strength: " + self.query_wifi_signal_noise_ratio())
-        #signalStrength = self.query_wifi_signal_noise_ratio()
-        #if signalStrength != 'ok' and signalStrength != 'okay':
-        #    signalStrengthInt = int(signalStrength)
-        #if signalStrength == 'ok':
-        #    SignalCheck = True
-        #elif signalStrengthInt > 25:
-        #    SignalCheck = True
-        #else:
-        #    SignalCheck = False
-        #    self.telemetryReason["SignalStrength"] = "SNR below 25dB. Weak Connection."
+        print("Signal Strength: " + self.query_wifi_signal_noise_ratio())
+        signalStrength = self.query_wifi_signal_noise_ratio()
+        if signalStrength != 'ok' and signalStrength != 'okay':
+           signalStrengthInt = int(signalStrength)
+        if signalStrength == 'ok':
+           SignalCheck = True
+        elif signalStrengthInt > 25:
+           SignalCheck = True
+        else:
+           SignalCheck = False
+           self.telemetryReason["SignalStrength"] = "SNR below 25dB. Weak Connection."
 
         # Checks to make sure the pitch is not too far off
         # If the drone is too far from 0 degrees on pitch the takeoff
