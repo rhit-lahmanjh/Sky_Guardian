@@ -9,7 +9,11 @@ class VideoAnalyzer():
 
     visionNet: YOLO
     
-    netPathList = ["yolov8n.pt", "yolov8s.pt","yolov8m.pt","yolov8l.pt","yolov8x.pt"]
+    netPathList = ["yolov8n.pt", 
+                   "yolov8s.pt",
+                   "yolov8m.pt",
+                   "yolov8l.pt",
+                   "yolov8x.pt"]
     netIndex: int
     confidenceLevel = 0
     USING_CUDA = False

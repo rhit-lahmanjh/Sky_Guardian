@@ -13,7 +13,7 @@ class Swarm():
 
     turnOff = False
 
-    def __init__(self,drone1:Drone, drone2:Drone) -> None:
+    def __init__(self,drone1:Drone, drone2:Drone = None) -> None:
         #this should later be updated to have more than 2 if time allows
         self.drone1 = drone1
         self.drone2 = drone2
@@ -43,7 +43,6 @@ class Swarm():
             drone.opState = State.Drift
 
     def operator_override(self):
-        #drone 1
         if(key.is_pressed('1')):
             self.override_drone(self.drone1)
         if(key.is_pressed('2')):
@@ -52,7 +51,8 @@ class Swarm():
     def operate(self):
         while not self.turnOff: # Escape
             self.drone1.operate(exitLoop = True)
-            self.drone2.operate(exitLoop = True)
+            t.sleep(.2)
+            # self.drone2.operate(exitLoop = True)
             self.operator_override()
             # if self.drone1.getPose()[0] != 1 and self.drone2.getPose()[0] != 1:
             #     separateDroneTwoForceVector = self.handleDroneTwoCollision(self.drone1.getPose(), self.drone2.getPose())
@@ -61,7 +61,7 @@ class Swarm():
 
             
         self.drone1.end_flight()
-        self.drone2.end_flight()
+        # self.drone2.end_flight()
 
     # Pose is a np array of size (4,1), where [[xpos],[ypos],[zpos],[yaw]]
     # [0,0] = xpos, [1,0] = ypos, [2,0] = zpos

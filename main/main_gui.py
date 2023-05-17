@@ -1,54 +1,58 @@
 #!/bin/env python
 from asyncio.windows_events import NULL
 from pickle import FALSE, TRUE
-from tkinter import font
 from drone import (Drone, State)
 from behaviors.behavior import behavior1
 from reactions.reaction import bobOnScissors, flipOnBanana, followCellPhone, followObject, runFromBanana
-from reactions.reaction import blockingReaction, movementReaction
 import flet as ft
-import djitellopy
-import socket
-import time
 import logging
-import numpy as np
 from yolo_classes import vision_class
-import cv2
+from cv2 import imencode, destroyAllWindows
 import base64
 import threading
-from flet import * 
-from sensory_state import SensoryState
 from swarm import Swarm
+from configparser import ConfigParser
+from device_info_reader import read_device_data
+import time as t
+import cProfile
         
 logging.getLogger("flet_core").setLevel(logging.FATAL)
 
 def main(page: ft.Page):
     page.fonts = {
-        "Space": "assets\space-grotesk.regular.ttf",
-        "Kanit": "https://raw.githubusercontent.com/google/fonts/master/ofl/kanit/Kanit-Bold.ttf"
+        "Space": "assets\space-grotesk.regular.ttf"
+        # "Kanit": "https://raw.githubusercontent.com/google/fonts/master/ofl/kanit/Kanit-Bold.ttf"
     }
 
-    page.theme = Theme(font_family="Space")
-    page.theme_mode = ft.ThemeMode.LIGHT
-    object_list = [obj.name for obj in vision_class]
+    # page.theme = ft.Theme(font_family="Space")
     reaction_data = ["Flip on Banana", "Bob on Scissors", "Run from Banana", "Run from Object"]
 
     # drone connection
+    #device IDs
+    device_data = read_device_data()
+
+    #extra settings
+    repo_properties = ConfigParser()
+    repo_properties.read("main\\repo.properties")
+
     #alpha specific
-    alphaIP = '192.168.0.140'
-    alphaCmdPort = 8889
-    alphaStatePort = 8890
-    alpha_vs_port = 11111
+    alphaIP = device_data.get("DRONE1_IP")
+    alphaCmdPort = repo_properties.getint('no_edit',"DRONE1_COMMAND_PORT")
+    alphaStatePort = repo_properties.getint('no_edit',"DRONE1_STATE_PORT")
+    alpha_vs_port = repo_properties.getint('no_edit',"DRONE1_VIDEO_PORT")
 
     #beta specific
-    betaIP = '192.168.0.248'
-    betaCmdPort = 8891
-    betaStatePort = 8892
-    beta_vs_port = 11112
-    drone1 = Drone(identifier = 'alpha',behavior = behavior1(),tello_ip=alphaIP,control_udp_port=alphaCmdPort,state_udp_port=alphaStatePort, vs_udp_port=alpha_vs_port)
-    drone2 = Drone(identifier = 'beta',behavior = behavior1(),tello_ip=betaIP,control_udp_port=betaCmdPort,state_udp_port = betaStatePort, vs_udp_port=beta_vs_port)
+    betaIP = device_data.get("DRONE2_IP")
+    betaCmdPort = repo_properties.getint('no_edit',"DRONE2_COMMAND_PORT")
+    betaStatePort = repo_properties.getint('no_edit',"DRONE2_STATE_PORT")
+    beta_vs_port = repo_properties.getint('no_edit',"DRONE2_VIDEO_PORT")
 
-    swarm = Swarm(drone1,drone2)
+
+    drone1 = Drone(identifier = 'alpha',behavior = behavior1(),tello_ip=alphaIP,control_udp_port=alphaCmdPort,state_udp_port=alphaStatePort, vs_udp_port=alpha_vs_port)
+    # drone2 = Drone(identifier = 'beta',behavior = behavior1(),tello_ip=betaIP,control_udp_port=betaCmdPort,state_udp_port = betaStatePort, vs_udp_port=beta_vs_port)
+
+    # swarm = Swarm(drone1,drone2)
+    swarm = Swarm(drone1)
 
     # Setting up threading
     threads = []
@@ -114,7 +118,7 @@ def main(page: ft.Page):
             image_src="assets\drone_launch.png",
             width=100,
             height=100,
-            padding=padding.only(left=10, right=5, bottom=15),
+            padding=ft.padding.only(left=10, right=5, bottom=15),
             on_click=drone1_launch
         )
 
@@ -123,7 +127,7 @@ def main(page: ft.Page):
             image_src="assets\drone_land.png",
             width=100,
             height=100,
-            padding=padding.only(left=10, right=5),
+            padding=ft.padding.only(left=10, right=5),
 
             on_click=drone1_land
         )
@@ -233,7 +237,7 @@ def main(page: ft.Page):
                         ReactionComponent(self.reactionSelected, r)
                     )
                     card.update()
-                    page.update()
+                    # page.update()
                 except:
                     print("Error not found")
 
@@ -258,7 +262,7 @@ def main(page: ft.Page):
             for item in reaction_data:
                 self.dropdown_menu.options.append(ft.dropdown.Option(str(item)))
 
-            create_button = ElevatedButton(text="Create", bgcolor=colors.BLUE_200, on_click=add_selected_reaction_to_behavior, disabled=True)
+            create_button = ft.ElevatedButton(text="Create", bgcolor=ft.colors.BLUE_200, on_click=add_selected_reaction_to_behavior, disabled=True)
 
             dialog_text = ft.TextField(label="Input Object from COCO dataset", on_change=textfield_change)
 
@@ -266,13 +270,13 @@ def main(page: ft.Page):
             self.dlg_modal = ft.AlertDialog(
                 modal=True,
                 title=ft.Text("Add new reaction"),
-                content=Column([
+                content=ft.Column([
                             self.dropdown_menu,
-                            Container(content=dialog_text,
-                            padding=padding.symmetric(horizontal=5)),
+                            ft.Container(content=dialog_text,
+                            padding=ft.padding.symmetric(horizontal=5)),
 
-                            Row([
-                                ElevatedButton(text="Cancel", on_click=close_dlg),
+                            ft.Row([
+                                ft.ElevatedButton(text="Cancel", on_click=close_dlg),
                                 create_button
                                 ], 
                             alignment="spaceBetween"
@@ -291,8 +295,8 @@ def main(page: ft.Page):
                         self.items.remove(rc)
                         self.reactionList.remove(rc.reaction)
                         self.drone.behavior.remove_reaction(rc.reaction.identifier)
-                    card.update()
-                page.update()
+                card.update()
+                # page.update()
 
             add_reaction_button = ft.IconButton(icon=ft.icons.ADD, icon_size = 30, height = 50, on_click=open_dlg_modal)
             delete_reaction_button = ft.IconButton(icon=ft.icons.DELETE, icon_size = 30, height = 50, on_click=delete_reaction)
@@ -317,7 +321,7 @@ def main(page: ft.Page):
                             print(self.selected)
 
                         displayBox.update()
-                        self.page.update()
+                        # self.page.update()
 
                     displayBox = ft.Container(
                             content=ft.Text(value=self.name),
@@ -374,6 +378,7 @@ def main(page: ft.Page):
 
         def did_mount(self):
             self.running = True
+            
             self.th = threading.Thread(target=self.update_timer, args=(), daemon=True)
             self.th.start()
 
@@ -383,55 +388,28 @@ def main(page: ft.Page):
         def update_timer(self):
             while True:
                 returned, frame = [self.drone.sensoryState.returnedImage, self.drone.sensoryState.image]
-
-                # print(f"not returned from drone {self.drone.identifier}")
+                
+                print(f"not returned from drone {self.drone.identifier}")
                 if returned:
-                    _, im_arr = cv2.imencode('.png', frame)
+                    t.sleep(.2)
+                    _, im_arr = imencode('.png', frame)
                     im_b64 = base64.b64encode(im_arr)
                     self.img.src_base64 = im_b64.decode("utf-8")
-                self.update()
+                    self.update()
 
         def build(self):
             self.img = ft.Image(
-                border_radius=ft.border_radius.all(20)
+                border_radius=ft.border_radius.all(20),
+                gapless_playback=True,
+                height=300,
+                # width=
+                # fit=ft.ImageFit.FILL
             )
             return self.img  
 
-    d1_stream = ft.Card(
-            elevation=30,
-            content=ft.Container(
-                bgcolor=ft.colors.WHITE24,
-                padding=10,
-                border_radius = ft.border_radius.all(20),
-                content=ft.Column([
-                    Countdown(swarm.drone1),
-                    ft.Text("Drone 1",
-                    size=20, weight="bold",
-                    color=ft.colors.WHITE),
-                ]
-                ),
-            )
-            # ,height=400
-    )
+    d1_stream = Countdown(swarm.drone1)
 
-    d2_stream = ft.Card(
-            elevation=30,
-            content=ft.Container(
-                bgcolor=ft.colors.WHITE24,
-                padding=10,
-                border_radius = ft.border_radius.all(20),
-                content=ft.Column([
-                    Countdown(swarm.drone2),
-                    ft.Text("Drone 2",
-                    size=20, weight="bold",
-                    color=ft.colors.WHITE),
-                ]
-                ),
-            )
-            # ,height=400
-    )
-
-  
+    d2_stream = Countdown(swarm.drone1)
 
     page.add(
         ft.Container(
@@ -443,7 +421,6 @@ def main(page: ft.Page):
                         # command buttons for Hover, Scan, Wander, and Drift
                         ft.Column([
                             ft.FilledButton(text="Hover", on_click=drone1_hover),
-                            # ft.FilledButton(text="Scan", on_click = drone1_scan),
                             ft.FilledButton(text="Wander", on_click = drone1_wander),
                             ft.FilledButton(text="Drift", on_click = drone1_drift),
                             ],
@@ -452,12 +429,12 @@ def main(page: ft.Page):
                         ),
                         # User input control for Reactions & Behaviors
                         ReactionInput(swarm.drone1),
-                        # d1_stream
+                        d1_stream,
                     ]
                 ),
                 width=400,
                 height=250,
-                margin = margin.only(bottom=25, left=20)
+                margin = ft.margin.only(bottom=25, left=20)
             ),
         ft.Container(
                 content=ft.Row(
@@ -470,7 +447,6 @@ def main(page: ft.Page):
                         # command buttons for Hover, Scan, Wander, and Drift
                         ft.Column([
                             ft.FilledButton(text="Hover", on_click=drone2_hover),
-                            # ft.FilledButton(text="Scan", on_click = drone2_scan),
                             ft.FilledButton(text="Wander", on_click = drone2_wander),
                             ft.FilledButton(text="Drift", on_click = drone2_drift),
                             ],
@@ -479,15 +455,33 @@ def main(page: ft.Page):
                             ),
                         
                         # User input control for Reactions & Behaviors
-                        ReactionInput(swarm.drone2),
-                        # d2_stream
+                        ReactionInput(swarm.drone1),
+                        d2_stream,
                     ]
                 ),
                 width=400,
                 height=250,
-                margin=margin.only(top=80, left=20)
+                margin=ft.margin.only(top=80, left=20)
             ),
     )
 
 ft.app(target=main, assets_dir="assets")
-cv2.destroyAllWindows()
+destroyAllWindows()
+
+
+    # d1_stream = ft.Card(
+    #         elevation=30,
+    #         content=ft.Container(
+    #             bgcolor=ft.colors.WHITE24,
+    #             padding=10,
+    #             border_radius = ft.border_radius.all(20),
+    #             content=ft.Column([
+    #                 Countdown(swarm.drone1),
+    #                 ft.Text("Drone 1",
+    #                 size=20, weight="bold",
+    #                 color=ft.colors.WHITE),
+    #             ]
+    #             ),
+    #         )
+    #         # ,height=400
+    # )

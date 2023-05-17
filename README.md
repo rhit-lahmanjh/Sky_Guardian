@@ -26,7 +26,7 @@
 ## Purpose
 We hope that students or people enthusiastic about learning about drones are able to gain new knowledge through this repository and possibly contribute to it.</p>
 
-TODO Add hub and spoke
+<img style="max-width:95%;border:5px solid black;" src="imgs/diagram_topics.PNG" width="500"> 
 
 ## Features
 inTellogence has the following features:
@@ -46,15 +46,13 @@ inTellogence has the following features:
 inTellogence uses <a href="https://flet.dev">Flet</a>, a simplified <a href="https://flutter.dev">Flutter</a> model, to build the GUI. Python is currently supported, but Go and C# are <a href="https://flet.dev/roadmap/">coming soon</a>.<br>
 <br> 
 
-When first starting the program, the GUI brings you to a connection setup page where a user will be able to connect 1 or 2 drones. <br> 
+There are two distinct GUI pages. First, the connection page allows you to input device information, running <i>connectivity_page.py.</i> This brings you to a connection setup page where a user will be able to easily input device information for both drones.<br> 
 <br> 
 
-TODO Connection Page Image
-
+<img src="imgs/connection_page.png" width="500"><br>
 After verifying that the drone(s) are connected, the user can continue to a Main Dashboard that displays the OpenCV window output, text input for chosen object identification, and buttons to Launch, Land, Hover an inidividual drone or both drones simultaneosly. <br> 
-<br> 
-<img src="imgs/drone_screenshot.PNG" width="500">
-<br>
+
+<br><img src="imgs/drone_screenshot.PNG" width="500"><br>
 
 The GUI uses the following components<br>
 
@@ -79,12 +77,9 @@ General control of both drones is organized around a Finite State Machine (FSM).
 <details>
 <summary>Reactive Control Through Potential Fields</summary>
 <br>
-The primary path planning approach for Sky Guardian lies in <a href = https://youtu.be/umkyPWDrys4>reactive control through potential fields</a>. In order to allow the drones to wander in a constrained space, Tello mission pads are utitilized in a pre-defined map. These mission pads allow the drone to localize and respond appropriately when moving out of intended airspace, applying a movement force proportional to it's measured distance outside of desired airspace. If you're interested in some of the math behind this, check out Coordinate Modelling in Supplemental Documentation
+The primary path planning approach for Sky Guardian lies in <a href = https://youtu.be/umkyPWDrys4>reactive control through potential fields</a>. In order to allow the drones to wander in a constrained space, Tello mission pads are utitilized in a pre-defined map. These mission pads allow the drone to localize and respond appropriately when moving out of intended airspace, applying a movement force proportional to it's measured distance outside of desired airspace. If you're interested in the linear algebra behind this, check out Coordinate Modelling in <a href=#supplemental-documentation>Supplemental Documentation</a>
 
-<br> 
-<img src="imgs/boundary_force.png" width="300">
-
-<br> 
+<br> <img src="imgs/boundary_force.png" width="300"><br> 
 
 TODO add more links throughout here.
 Sky Guardian provides an outline for implementing various reactions to certain stimuli. For our purposes, reactions are individual responses to certain stimuli (ie, the drone detects a banana) and behaviors are sets of those reactions. We have defined two types of reactions: blocking and movement. <br>
