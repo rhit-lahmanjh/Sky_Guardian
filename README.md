@@ -26,7 +26,10 @@
 ## Purpose
 We hope that students or people enthusiastic about learning about drones are able to gain new knowledge through this repository and possibly contribute to it.</p>
 
-<img style="max-width:95%;border:5px solid black;" src="imgs/diagram_topics.png" width="500"> 
+<div style="text-align: center;">
+<img style="max-width:95%;border:5px solid black;" src="imgs/diagram_topics.png" width="500" class="center"> 
+</div>
+
 
 ## Features
 inTellogence has the following features:
@@ -49,10 +52,13 @@ inTellogence uses <a href="https://flet.dev">Flet</a>, a simplified <a href="htt
 There are two distinct GUI pages. First, the connection page allows you to input device information, running <i>connectivity_page.py.</i> This brings you to a connection setup page where a user will be able to easily input device information for both drones.<br> 
 <br> 
 
-<img src="imgs/connection_page.png" width="500"><br>
+<div style="text-align: center;">
+<img src="imgs/connection_page.png" width="500"></div><br>
 After verifying that the drone(s) are connected, the user can continue to a Main Dashboard that displays the OpenCV window output, text input for chosen object identification, and buttons to Launch, Land, Hover an inidividual drone or both drones simultaneosly. <br> 
 
-<br><img src="imgs/drone_screenshot.PNG" width="500"><br>
+<div style="text-align: center;">
+<img src="imgs/drone_screenshot.PNG" width="500">
+</div>
 
 The GUI uses the following components<br>
 
@@ -71,7 +77,9 @@ The code from <a href="https://www.youtube.com/watch?v=58aPh8rKKsk">Azu Technolo
 General control of both drones is organized around a Finite State Machine (FSM). The primary state of wander is implemented alongside a few states that support smooth and safe operation. The general control logic is shown below.
 <br> 
 
+<div style="text-align: center;">
 <img src="imgs/control_loop.png" width="1000">
+</div>
 </details> 
 
 <details>
@@ -79,7 +87,8 @@ General control of both drones is organized around a Finite State Machine (FSM).
 <br>
 The primary path planning approach for Sky Guardian lies in <a href = https://youtu.be/umkyPWDrys4>reactive control through potential fields</a>. In order to allow the drones to wander in a constrained space, Tello mission pads are utitilized in a pre-defined map. These mission pads allow the drone to localize and respond appropriately when moving out of intended airspace, applying a movement force proportional to it's measured distance outside of desired airspace. If you're interested in the linear algebra behind this, check out Coordinate Modelling in <a href=#supplemental-documentation>Supplemental Documentation</a>
 
-<br> <img src="imgs/boundary_force.png" width="300"><br> 
+
+<br><div style="text-align: center;"><img src="imgs/boundary_force.png" width="300"></div><br> 
 
 TODO add more links throughout here.
 Sky Guardian provides an outline for implementing various reactions to certain stimuli. For our purposes, reactions are individual responses to certain stimuli (ie, the drone detects a banana) and behaviors are sets of those reactions. We have defined two types of reactions: blocking and movement. <br>
@@ -125,8 +134,10 @@ In order to speed up this detection process, this repository assumes the use of 
 
 <p>Functional Safety Engineering uses the <a href="https://www.iso.org/obp/ui/#iso:std:iso:26262:-9:ed-1:v1:en">V-model development process</a> from the <a href="https://www.iso.org/standard/43464.html">ISO26262</a> standard, which is shown below. <br><br>
 
-
+<div style="text-align: center;">
 <img src="https://about.gitlab.com/images/iso-26262/v-model-iso-26262.png" width="500">
+</div>
+
 <em>The left side of the V-model is conceptual development and product development. The bottom of the V-model is where the hardware and software designs are implemented. The right side of the V-model is where all testing activities of the design happen. </em>
 
 
@@ -147,7 +158,9 @@ On the other hand, centralized control involves the utilization of a centralized
 
 In the context of this particular project, a centralized control structure was adopted, wherein communication among the drones occurred over Wi-Fi, facilitated through a router, as visually depicted below.
 
+<div style="text-align: center;">
 <img src = "imgs\DroneConnectivity.png">
+</div>
 </details> 
 
 # Getting Started
@@ -187,8 +200,12 @@ This section will cover how to set up the router, connect your computer to it, a
 ### Verify that your GPU is supported by CUDA
 First, verify that your system is GPU capable. Open your Device Manager and scroll to "Display Adapters." If your system has one, the GPU will be listed here. To ensure that your system is CUDA capable, make sure your GPU is one listed as supported here <a href="https://developer.nvidia.com/cuda-gpus">here</a>.<br><br>
 
+<div style="text-align: center;">
 <img src="imgs/gpu_capable.png" width="500">
-<em>Here, we can see our GPU is the Nvidia Quadro P1000</em><br><br>
+</div>
+<div style="text-align: center;">
+<em>Here, we can see our GPU is the Nvidia Quadro P1000</em></div><br><br>
+
 
 ### Download and install Cuda (11.8)
 Once you know things your system is compatible, the version we used can be found <a href=https://developer.nvidia.com/cuda-toolkit-archive>here</a>. Make sure to use 11.8. Installation is as easy as downloading and installing with all defaults!
@@ -227,7 +244,8 @@ For inTellogence to work as expected, it's important to setup the mission pads a
 
 IMPORTANT: When taking off, place the drones facing the X direction and in Sector 1
 
-<img src="imgs/mission_pad_layout.png" width="500">
+<div style="text-align: center;">
+<img src="imgs/mission_pad_layout.png" width="500"></div>
 <br></br>
 
 # Running the Code
@@ -395,6 +413,11 @@ REFERENCE INTERNAL REPORT ENGD CAPSTONE STUDENTS
 Reference Robot dynamics and control
 Reference Standards
 PAPERS MUST BE REFERENCED
+
+<p>Strother, C. (2023). Codes and Ethics Advisement to Sky Guardian Team. Internal RHIT report: unpublished.</p>
+
+<p>Berry, C. A. (2012). Mobile robotics for multidisciplinary study. Synthesis Lectures on Control and Mechatronics, 3(1), 1-95.</p>
+
 <p>"Hazard Analysis and Risk Assessment beyond ISO 26262: Management of Complexity via Restructuring of Risk-Generating Process," in Safety of the Intended Functionality , SAE, 2020, pp.69-78.</p>
 
 <p>World Leaders in Research-Based User Experience. “10 Usability Heuristics for User Interface Design.” Nielsen Norman Group, https://www.nngroup.com/articles/ten-usability-heuristics/#poster.</p>
