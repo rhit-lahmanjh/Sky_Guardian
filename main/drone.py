@@ -166,7 +166,7 @@ class Drone(djitellopy_edited.Tello):
             if self.prevState == None:
                 self.prevState = self.opState
                 self.opState = State.Hover
-                self.hover_debounce = t.time();
+                self.hover_debounce = t.time()
             if self.prevState != None and (t.time() - self.hover_debounce)> 1:
                 self.opState = self.prevState
                 self.prevState = None
@@ -308,7 +308,7 @@ class Drone(djitellopy_edited.Tello):
         # Dictionary of Boolean values to check through static telemetry
         self.telemetryCheck = {"bat":BatCheck, "temph":TemphCheck, "templ":TemplCheck,
                          "pitch":pitchCheck, "roll":rollCheck,
-                        "height":HeightCheck}
+                        "height":HeightCheck, "SignalStrength":SignalCheck}
 
         print("Completed Telemetry Checks")
         print("Final Dictionary Value: " + str(self.telemetryCheck.values()))
