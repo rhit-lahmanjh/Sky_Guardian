@@ -10,20 +10,39 @@ def main(page: ft.Page):
     device_data = read_device_data()
 
     def droneOneIPSaveButton(e):
-        print("Storing Drone 1 IP Address")
-        device_data.update({'DRONE1_IP':droneOneIPInput.value})
+        if droneOneIPInput != "":
+            print("Storing Drone 1 IP Address")
+            device_data.update({'DRONE1_IP':droneOneIPInput.value})
+            droneOneCurrentIPDisplay.value = f"Current Drone 1 Router IP: {device_data.get('DRONE1_IP')}"
+            droneOneCurrentIPDisplay.update()
+        else:
+            print("No Input")
 
     def droneTwoIPSaveButton(e):
-        print("Storing Drone 2 IP Address")
-        device_data.update({'DRONE2_IP':droneTwoIPInput.value})
+        if droneTwoIPInput != "":
+            print("Storing Drone 2 IP Address")
+            device_data.update({'DRONE2_IP':droneTwoIPInput.value})
+            droneTwoCurrentIPDisplay.value = f"Current Drone 2 Router IP: {device_data.get('DRONE2_IP')}"
+            droneTwoCurrentIPDisplay.update()
+        else:
+            print("No Input")
 
     def ssidSaveButton(e):
-        print("Storing Router SSID")
-        device_data.update({'ROUTER_SSID':ssidInput})
+        if ssidInput != "":
+            print("Storing Router SSID")
+            device_data.update({'ROUTER_SSID':ssidInput.value})
+            currentRouterSSIDDisplay.value = f"Current Router SSID: {device_data.get('DRONE1_IP')}"
+            currentRouterSSIDDisplay.update()
+        else:
+            print("No Input")
 
     def passwordSaveButton(e):
-        print("Storing Router Password")
-        device_data.update({'ROUTER_PASSWORD':routerPasswordInput})
+        if routerPasswordInput.value != "":
+            print(f"Storing Router Password as: {routerPasswordInput.value}")
+            device_data.update({'ROUTER_PASSWORD':routerPasswordInput.value})
+            page.update()
+        else:
+            print("No Input")
 
     def window_event(e):
         if e.data == "close":
@@ -80,7 +99,7 @@ def main(page: ft.Page):
         ]
     )
 
-    ssidInput = ft.TextField(label="Enter Router SSID Name", on_submit=ssidSaveButton)
+    ssidInput = ft.TextField(label="Enter SSID", on_submit=ssidSaveButton)
 
     ssidConnectionItems = [
         # using input from SSID text field
@@ -90,7 +109,7 @@ def main(page: ft.Page):
 
     ssidConnectionRow = ft.Row(
         [
-            ft.Text(value="SSID", style=ft.TextThemeStyle.DISPLAY_SMALL, text_align=ft.TextAlign.CENTER),
+            ft.Text(value="Router SSID", style=ft.TextThemeStyle.DISPLAY_SMALL, text_align=ft.TextAlign.CENTER),
             ft.Container(
                 content=ft.Row(
                     ssidConnectionItems,
@@ -99,7 +118,7 @@ def main(page: ft.Page):
         ]
     )
 
-    routerPasswordInput = ft.TextField(label="Enter Router Password", on_submit=passwordSaveButton)
+    routerPasswordInput = ft.TextField(label="Enter Password", on_submit=passwordSaveButton)
 
     routerPasswordConnectionItems = [
         # using input from router password text field
@@ -109,7 +128,7 @@ def main(page: ft.Page):
 
     routerPasswordConnectionRow = ft.Row(
         [
-            ft.Text(value="Password", style=ft.TextThemeStyle.DISPLAY_SMALL, text_align=ft.TextAlign.CENTER),
+            ft.Text(value="Router Password", style=ft.TextThemeStyle.DISPLAY_SMALL, text_align=ft.TextAlign.CENTER),
             ft.Container(
                 content=ft.Row(
                     routerPasswordConnectionItems,
@@ -142,16 +161,15 @@ def main(page: ft.Page):
         actions_alignment=ft.MainAxisAlignment.END,
     )
 
-    page.update()
     droneOneCurrentIPDisplay = ft.Text(value=f"Current Drone 1 Router IP: {device_data.get('DRONE1_IP')}", color="white", scale=1, weight=4)
     page.controls.append(droneOneCurrentIPDisplay)
-    page.update()
     droneTwoCurrentIPDisplay = ft.Text(value=f"Current Drone 2 Router IP: {device_data.get('DRONE2_IP')}", color="white", scale=1, weight=4)
     page.controls.append(droneTwoCurrentIPDisplay)
-    page.update()
     currentRouterSSIDDisplay = ft.Text(value=f"Current Router SSID: {device_data.get('ROUTER_SSID')}", color="white", scale=1, weight=4)
     page.controls.append(currentRouterSSIDDisplay)
+    routerPasswordDisplay = ft.Text(value="Router Password Printed to Terminal",color="white", scale=1, weight=4)
     page.update()
+
     # Password printed to terminal, for security against OSINT/Public Knowledge password is not displayed on page
     print(f"Current Router Password: {device_data.get('ROUTER_PASSWORD')}")
 
