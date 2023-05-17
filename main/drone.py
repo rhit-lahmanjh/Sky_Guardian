@@ -166,7 +166,7 @@ class Drone(djitellopy_edited.Tello):
             if self.prevState == None:
                 self.prevState = self.opState
                 self.opState = State.Hover
-                self.hover_debounce = t.time();
+                self.hover_debounce = t.time()
             if self.prevState != None and (t.time() - self.hover_debounce)> 1:
                 self.opState = self.prevState
                 self.prevState = None
@@ -262,18 +262,17 @@ class Drone(djitellopy_edited.Tello):
 
         # Turns the string SNR value into an integer
         # Checks the Wi-Fi SNR value to determine signal strength
-        
-        #print("Signal Strength: " + self.query_wifi_signal_noise_ratio())
-        #signalStrength = self.query_wifi_signal_noise_ratio()
-        #if signalStrength != 'ok' and signalStrength != 'okay':
-        #    signalStrengthInt = int(signalStrength)
-        #if signalStrength == 'ok':
-        #    SignalCheck = True
-        #elif signalStrengthInt > 25:
-        #    SignalCheck = True
-        #else:
-        #    SignalCheck = False
-        #    self.telemetryReason["SignalStrength"] = "SNR below 25dB. Weak Connection."
+        print("Signal Strength: " + self.query_wifi_signal_noise_ratio())
+        signalStrength = self.query_wifi_signal_noise_ratio()
+        if signalStrength != 'ok' and signalStrength != 'okay':
+           signalStrengthInt = int(signalStrength)
+        if signalStrength == 'ok':
+           SignalCheck = True
+        elif signalStrengthInt > 25:
+           SignalCheck = True
+        else:
+           SignalCheck = False
+           self.telemetryReason["SignalStrength"] = "SNR below 25dB. Weak Connection."
 
         # Checks to make sure the pitch is not too far off
         # If the drone is too far from 0 degrees on pitch the takeoff
@@ -309,7 +308,7 @@ class Drone(djitellopy_edited.Tello):
         # Dictionary of Boolean values to check through static telemetry
         self.telemetryCheck = {"bat":BatCheck, "temph":TemphCheck, "templ":TemplCheck,
                          "pitch":pitchCheck, "roll":rollCheck,
-                        "height":HeightCheck}
+                        "height":HeightCheck, "SignalStrength":SignalCheck}
 
         print("Completed Telemetry Checks")
         print("Final Dictionary Value: " + str(self.telemetryCheck.values()))
