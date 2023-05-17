@@ -146,16 +146,14 @@ Once these safety features are implemented properly either through hardware or s
 <details>
 <summary>Networking</summary>
 
-<br>
-The topic under discussion revolves around two distinct methodologies employed in swarm control, namely centralized and decentralized control. Decentralized control entails equipping each individual drone within the swarm with an exclusive "brain," enabling them to independently make decisions based on the limited information they receive from other members of the swarm.
+<p>The topic under discussion revolves around two distinct methodologies employed in swarm control, namely centralized and decentralized control. Decentralized control entails equipping each individual drone within the swarm with an exclusive "brain," enabling them to independently make decisions based on the limited information they receive from other members of the swarm.</p>
 
-On the other hand, centralized control involves the utilization of a centralized controller for computational purposes. This controller undertakes the necessary computations and subsequently dispatches commands to the individual actors within the swarm, directing their actions accordingly.
+<p>On the other hand, centralized control involves the utilization of a centralized controller for computational purposes. This controller undertakes the necessary computations and subsequently dispatches commands to the individual actors within the swarm, directing their actions accordingly.</p>
 
-In the context of this particular project, a centralized control structure was adopted, wherein communication among the drones occurred over Wi-Fi, facilitated through a router, as visually depicted below.
+<p>In the context of this particular project, a centralized control structure was adopted, wherein communication among the drones occurred over Wi-Fi, facilitated through a router, as visually depicted below.</p>
 
 <div style="text-align: center;">
-<img src = "imgs\DroneConnectivity.png">
-</div>
+<img src = "imgs\DroneConnectivity.png" height=250></div>
 </details> 
 
 # Getting Started
