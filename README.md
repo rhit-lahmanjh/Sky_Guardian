@@ -22,14 +22,14 @@
 - [Acknowledgements](#acknowledgements)
 
 # About
-<p>Drones are quickly becoming utilized in the public sphere for entertainment, photography, surveillance, high-speed delivery, and remote healthcare. InTellogence is an open-source codebase made to supplement self-education for university students and hobbyists exploring drone control topics, using the low-cost DJI Tello Edu. It integrates multi-drone centralized control, computer vision, functional safety, and a custom Graphical User Interface (GUI). All code is written in Python, powered by popular packages such as OpenCV, FLET, and NVIDIA’s CUDA. InTellogence ultimately lowers the barrier of entry to drone robotics through detailed documentation and easily modified design . 
+<p>Drones are quickly becoming utilized in the public sphere for entertainment, photography, surveillance, high-speed delivery, and remote healthcare. InTellogence is an open-source codebase made to supplement self-education for university students and hobbyists exploring drone control topics, using the low-cost DJI Tello Edu. It integrates multi-drone centralized control, computer vision, functional safety, and a custom Graphical User Interface (GUI). All code is written in Python, powered by popular packages such as OpenCV, FLET, and NVIDIA’s CUDA. InTellogence ultimately lowers the barrier of entry to drone robotics through detailed documentation and easily modified design.</p>
+
 ## Purpose
-We hope that students or people enthusiastic about learning about drones are able to gain new knowledge through this repository and possibly contribute to it.</p>
+<p>We hope that students or people enthusiastic about learning about drones are able to gain new knowledge through this repository and possibly contribute to it.</p>
 
 <div style="text-align: center;">
 <img style="max-width:95%;border:5px solid black;" src="imgs/diagram_topics.png" width="500" class="center"> 
 </div>
-
 
 ## Features
 inTellogence has the following features:
@@ -43,24 +43,23 @@ inTellogence has the following features:
 - Easy-to-understand & User-tested documentation
 
 ## System Components
-<details>
-<summary>Graphic User Interface (GUI)</summary>
-<br>
-inTellogence uses <a href="https://flet.dev">Flet</a>, a simplified <a href="https://flutter.dev">Flutter</a> model, to build the GUI. Python is currently supported, but Go and C# are <a href="https://flet.dev/roadmap/">coming soon</a>.<br>
-<br> 
 
-There are two distinct GUI pages. First, the connection page allows you to input device information, running <i>connectivity_page.py.</i> This brings you to a connection setup page where a user will be able to easily input device information for both drones.<br> 
-<br> 
+  <details><summary>Graphic User Interface (GUI)</summary><br>
+    <p>inTellogence uses <a href="https://flet.dev">Flet</a>, a simplified <a href="https://flutter.dev">Flutter</a> model, to build the GUI. Python is currently supported, but Go and C# are <a href="https://flet.dev/roadmap/">coming soon</a>.
+    </p> 
+
+<p>There are two distinct GUI pages. First, the connection page allows you to input device information, running <i>connectivity_page.py.</i> This brings you to a connection setup page where a user will be able to easily input device information for both drones.</p><br> 
 
 <div style="text-align: center;">
-<img src="imgs/connection_page.png" width="500"></div><br>
-After verifying that the drone(s) are connected, the user can continue to a Main Dashboard that displays the OpenCV window output, text input for chosen object identification, and buttons to Launch, Land, Hover an inidividual drone or both drones simultaneosly. <br> 
+  <img src="imgs/connection_page.png" width="500"></div><br>
+
+<p>After verifying that the drone(s) are connected, the user can continue to a Main Dashboard that displays the OpenCV window output, text input for chosen object identification, and buttons to Launch, Land, Hover an inidividual drone or both drones simultaneosly.</p> <br> 
 
 <div style="text-align: center;">
 <img src="imgs/drone_screenshot.PNG" width="500">
-</div>
+</div><br>
 
-The GUI uses the following components<br>
+<p>The GUI uses the following components</p><br>
 
 <summary><b>Multi-threading</b></summary>
 <br>
@@ -73,9 +72,7 @@ The code from <a href="https://www.youtube.com/watch?v=58aPh8rKKsk">Azu Technolo
 
 <details>
 <summary>Finite State Machine</summary>
-<br>
-General control of both drones is organized around a Finite State Machine (FSM). The primary state of wander is implemented alongside a few states that support smooth and safe operation. The general control logic is shown below.
-<br> 
+  <p>General control of both drones is organized around a Finite State Machine (FSM). The primary state of wander is implemented alongside a few states that support smooth and safe operation. The general control logic is shown below.</p> 
 
 <div style="text-align: center;">
 <img src="imgs/control_loop.png" width="1000">
@@ -83,19 +80,17 @@ General control of both drones is organized around a Finite State Machine (FSM).
 </details> 
 
 <details>
-<summary>Reactive Control Through Potential Fields</summary>
-<br>
-The primary path planning approach for Sky Guardian lies in <a href = https://youtu.be/umkyPWDrys4>reactive control through potential fields</a>. In order to allow the drones to wander in a constrained space, Tello mission pads are utitilized in a pre-defined map. These mission pads allow the drone to localize and respond appropriately when moving out of intended airspace, applying a movement force proportional to it's measured distance outside of desired airspace. If you're interested in the linear algebra behind this, check out Coordinate Modelling in <a href=#supplemental-documentation>Supplemental Documentation</a>
+<summary>Reactive Control Through Potential Fields</summary><br>
+  <p>The primary path planning approach for Sky Guardian lies in <a href = https://youtu.be/umkyPWDrys4>reactive control through potential fields</a>. In order to allow the drones to wander in a constrained space, Tello mission pads are utitilized in a pre-defined map. These mission pads allow the drone to localize and respond appropriately when moving out of intended airspace, applying a movement force proportional to it's measured distance outside of desired airspace. If you're interested in the linear algebra behind this, check out Coordinate Modelling in <a href=#supplemental-documentation>Supplemental Documentation</a></p>
 
 
-<br><div style="text-align: center;"><img src="imgs/boundary_force.png" width="300"></div><br> 
+<div style="text-align: center;"><img src="imgs/boundary_force.png" width="300"></div><br> 
 
-TODO add more links throughout here.
 Sky Guardian provides an outline for implementing various reactions to certain stimuli. For our purposes, reactions are individual responses to certain stimuli (ie, the drone detects a banana) and behaviors are sets of those reactions. We have defined two types of reactions: blocking and movement. <br>
 
 A blocking reaction initiates a pre-defined set of instructions, during which the drone is incapable of performing any other movements. The stimuli trigger blocks the continuation of the control loop for a time. <br>
 
-A movement reaction defines non-blocking instructions. So, it returns a movement force according to the same idea as potential fields. Hence, a drone could tend to fly toward certain objects or away from others. <br>
+A movement reaction defines non-blocking instructions. So, it returns a movement vector according to the same idea as potential fields. Hence, a drone could tend to fly toward certain objects or away from others. <br>
 </details> 
 
 <details>
@@ -248,8 +243,6 @@ IMPORTANT: When taking off, place the drones facing the X direction and in Secto
 <img src="imgs/mission_pad_layout.png" width="500"></div>
 <br></br>
 
-# Running the Code
-
 # Examples
 <details><summary> Create a new behavior/reaction</summary>
 <br>
@@ -296,12 +289,9 @@ class myNewBehavior(behaviorFramework):
 ```
 
 This behavior is what you will pass in when you create your drone object!
-
 </details>
 
-<details><summary> Add a new button to the GUI<summary>
-
-</details>
+<details><summary> Add a new button to the GUI<summary></details>
 
 <details><summary> Add a custom State </summary>
 Adding a new state is simple!
@@ -332,7 +322,6 @@ Here, dance() could be whatever you want. Just make sure the function isn't bloc
 </details>
 
 # Supplemental Documentation
-
 
 [Coordinate Modelling](Ref/Coordinate_Modelling.pdf)
 
@@ -409,14 +398,14 @@ For this project, we utilized computer vision and coded responses that react bas
 + [Official Flet developer community](https://discord.gg/mMJHgYEqRK)
 + [DJI Tello Online Community](https://tellopilots.com)
 # References
-REFERENCE INTERNAL REPORT ENGD CAPSTONE STUDENTS
-Reference Robot dynamics and control
 Reference Standards
 PAPERS MUST BE REFERENCED
 
 <p>Strother, C. (2023). Codes and Ethics Advisement to Sky Guardian Team. Internal RHIT report: unpublished.</p>
 
 <p>Berry, C. A. (2012). Mobile robotics for multidisciplinary study. Synthesis Lectures on Control and Mechatronics, 3(1), 1-95.</p>
+
+<p>Winck, Ryder. "Coordinate Transformations” Class lecture, Robot Dynamics and Control, Rose-Hulman Institute of Technology, Terre Haute, IN, December, 2022.</p>
 
 <p>"Hazard Analysis and Risk Assessment beyond ISO 26262: Management of Complexity via Restructuring of Risk-Generating Process," in Safety of the Intended Functionality , SAE, 2020, pp.69-78.</p>
 
