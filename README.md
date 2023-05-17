@@ -350,7 +350,7 @@ In Functional Safety, guide words are created to produce operational scenarios. 
 <summary><b>Hazard List</b></summary>
 
 <br>
-List of potential hazards and their type pulled from a list in the ISO12100 standard. Relevant Mechanical Hazards for the project include:
+List of potential hazards and their type pulled from a list in the <a href=https://www.cencenelec.eu/media/CEN-CENELEC/Areas%20of%20Work/CENELEC%20sectors/Mechanical%20and%20Machines/Documents/Quicklinks/eniso12100relationmachinerydirective.pdf>ISO12100</a> standard. Relevant Mechanical Hazards for the project include:
 <li> Impact due to collision with stationary object</li>
 <li> Impact due to collision with moving object</li>
 </details> 
@@ -358,8 +358,8 @@ List of potential hazards and their type pulled from a list in the ISO12100 stan
 <details>
 <summary><b>Hazardous Operation</b></summary>
 <br>
-Hazardous Operation combines Tasks and Functions along with suggested guidewords pulled from the SAEJ2980 standard to create potential resulting malfunctions. The resulting malfunctions constitute Hazardous Operation.
-In this project, when the ‘Automated drone(s) is exploring’ an environment ‘as intended’, there is hazard exposure do to obstacles that are present in the environment. The resulting malfunction is an errant flight path if a collision occurs.
+Hazardous Operation combines Tasks and Functions along with suggested guidewords pulled from the <a href=https://www.nhtsa.gov/sites/nhtsa.gov/files/documents/13498a_812_573_alcsystemreport.pdf>SAEJ2980</a> standard to create potential resulting malfunctions. The resulting malfunctions constitute Hazardous Operation.
+In this project, when the ‘Automated drone(s) is exploring’ an environment ‘as intended’, there is hazard exposure do to obstacles that are present in the environment. The resulting malfunction is an errant flight path if a collision occurs.<br>
 </details> 
 
 <details>
