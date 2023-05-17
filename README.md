@@ -169,23 +169,17 @@ This section will cover how to set up the router, connect your computer to it, a
 3. Connect to the router.
 4. Find the non 5G SSID and click connect.
 5. Locate the password to the router located on the bottom of the router. This should also include the specific router name.
-6. Download the program "Packet Sender".
-7. Turn on one of the Tello Edu Drones by clicking on the side power button.
-8. Connect the wifi to the tello edu drone.
-9. In Packet Sender, in the Name field type "command".
-10. In Packet Sender, in the ASCII field type "command".
-11. In Packet Sender, in the Address field type "192.168.10.1" and in the Port field type "8889".
-12. In Packet sender, click the "Send" button. The response should be a "ok" in the logs at the bottom.
-13. In Packet Sender, in the Name field type "configure ap".
-14. In Packet Sender, in the ASCII field type "ap ROUTER_NAME ROUTER_PASSWORD".
-15. Click the "Send" button. The response should be "Ok, drone will reboot in 3s".
-16. Repeat steps 8-15 for the other drones you would like to link up with the router.
-17. Turn off all drones. 
-18. Connect to the router. Type "espn.com" and fill in the login information displayed.
-19. Navigate to the DHCP section in the website.
-20. Turn on one of the drones and a new IP address should appear in the DHCP section. Record the IP address shown in the DHCP section.
-21. Repeat step 20 for all of the drones but ensure that only one drone is active at a time.
-22. Now all drones(have a recorded IP address) and add these drone IPs in the code.
+6. Turn on one of the Tello Edu Drones by clicking on the side power button.
+7. Connect the wifi to the tello edu drone.
+8. Use the connectivity page to set the router information.
+9. Run <i>connect_to_router.py</i>
+10. Repeat steps  for the other drones you would like to link up with the router.
+11. Turn off all drones. 
+12. Connect to the router. Type "tplinkwifi.net" and fill in the login information displayed.
+13. Navigate to the DHCP section in the website.
+14. Turn on one of the drones and a new IP address should appear in the DHCP section. Record the IP address shown in the DHCP section.
+15. Repeat step 14 for all of the drones but ensure that only one drone is active at a time.
+16. Now that all drones have a recorded IP address, use the connectivity page to save these values.
 
 ## Necessary Installations
 
