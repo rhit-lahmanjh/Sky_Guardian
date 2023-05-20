@@ -333,10 +333,20 @@ Here, dance() could be whatever you want. Just make sure the function isn't bloc
 TODO - RUTH/ Arvind maybe?
 
 # Recommendations
-TODO
-- improve gui, limit memory usage, add adjustable telemetry displays (i.e. have the gui display location of each drone, or show all the different velocity vectors acting on it)
-- Adjust to make extensible for more than 2 drones, currently the swarm class supports 2 and only 2
-- Add in functionality for task planning
+The following recommendations present valuable avenues for enhancing the capabilities and functionality of our project, allowing for future improvements and expanded possibilities:
+
+1. GUI Improvement: Enhancing the graphical user interface (GUI) can significantly improve the user experience and ease of operation. By focusing on intuitive design, streamlined controls, and informative visualizations, we can provide users with a more efficient and user-friendly interface.
+
+2. Memory Usage Optimization: Limiting memory usage is a crucial consideration for optimizing performance and resource utilization. Implementing efficient memory management techniques, such as reducing unnecessary data storage or optimizing algorithms, can enhance the project's efficiency and allow for smoother operation.
+
+3. Adjustable Telemetry Displays: Introducing customizable telemetry displays within the GUI offers users greater insights into the drones' status and behavior. Features such as displaying each drone's location or visualizing different velocity vectors acting on them can provide valuable real-time information and improve situational awareness.
+
+4. Extensibility for Multiple Drones: Modifying the swarm class to support more than just two drones would expand the project's capabilities and accommodate larger-scale operations. By enabling seamless integration and control of multiple drones, we can enhance the project's scalability and versatility.
+
+5. Task Planning Functionality: Incorporating task planning capabilities into the project would enable automated mission execution and optimize drone coordination. Implementing algorithms or frameworks for task allocation, path planning, or collaborative decision-making would enhance the project's ability to handle complex missions efficiently.
+
+6. ESP32 Microcontroller Integration: Introducing an ESP32 microcontroller and enabling independent computation on each drone opens up possibilities for decentralized control and distributed decision-making. This integration would facilitate autonomous and intelligent behavior on individual drones, enhancing their capabilities and enabling more sophisticated swarm behaviors.
+
 
 
 # Supplemental Documentation
