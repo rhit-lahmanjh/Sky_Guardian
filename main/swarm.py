@@ -68,8 +68,17 @@ class Swarm():
 
     # Pose is a np array of size (4,1), where [[xpos],[ypos],[zpos],[yaw]]
     # [0,0] = xpos, [1,0] = ypos, [2,0] = zpos
-    def handleDroneTwoCollision(self,drone1Pose,drone2Pose) -> np.array:
+    def handle_drone_two_collision(self,drone1Pose,drone2Pose) -> np.array:
+        """This function calculates the appropriate velocity vector on drone 2 based on drone 1's pose. 
+        It can be flipped for the same vector on drone 1.
 
+        Args:
+            drone1Pose: np array of size (4,1), where [[xpos],[ypos],[zpos],[yaw]]
+            drone2Pose: np array of size (4,1), where [[xpos],[ypos],[zpos],[yaw]]
+
+        Returns:
+            np.array: np array of size (4,1), where [[xpos],[ypos],[zpos],[yaw]]
+        """
         # 60cm threshold
         distanceThreshold = 60
         forceMagnitude = 10

@@ -7,8 +7,9 @@
 - [inTellogence](#intellogence)
 - [Table of Contents](#table-of-contents)
 - [About](#about)
-  - [Features](#features)
-  - [System Components](#system-components)
+- [Introduction](#introduction)
+  - [Needs and Features](#needs-and-features)
+  - [System Overview](#system-overview)
 - [Getting Started](#getting-started)
   - [Router and Drone Connection](#router-and-drone-connection)
   - [Necessary Installations](#necessary-installations)
@@ -17,6 +18,8 @@
     - [Environment Setup](#environment-setup)
   - [Mission Pad Setup](#mission-pad-setup)
 - [Examples](#examples)
+- [Performance Metrics](#performance-metrics)
+- [Recommendations](#recommendations)
 - [Supplemental Documentation](#supplemental-documentation)
 - [Troublehooting resources](#troublehooting-resources)
 - [References](#references)
@@ -29,7 +32,13 @@
 <img style="max-width:95%;border:5px solid black;" src="imgs/diagram_topics.png" width="500" class="center"> 
 </div>
 
-## Features
+# Introduction
+TODO - maybe give more of a blurb about who this is written for, and what skill level you should be at, how to best use it. - Kirk
+
+## Needs and Features
+
+TODO add section about Needs/Quantitative Metrics I Guess - RUTH
+
 inTellogence has the following features:
 - Ability to control 1 or 2 drones through a router
 - Use of Tello Mission Pads to keep the drone within a constrained airspace
@@ -40,11 +49,21 @@ inTellogence has the following features:
 - [Flet](https://flet.dev)-powered GUI using Python
 - Easy-to-understand documentation
 
-## System Components
 
-  <details><summary>Graphic User Interface (GUI)</summary><br>
-    <p>inTellogence uses <a href="https://flet.dev">Flet</a>, a simplified <a href="https://flutter.dev">Flutter</a> model, to build the GUI. Python is currently supported, but Go and C# are <a href="https://flet.dev/roadmap/">coming soon</a>.
-    </p> 
+## System Overview
+<p>inTellogence forms a wrapper around the low level Tello class, from the <a href=https://github.com/damiafuentes/DJITelloPy>DJITelloPy</a> library, with some minor edits to the source code. Otherwise the structure of our repository can be seen in the abbreviated UML below. GUI classes are optional, and main files to run with the gui, with a swarm, and with a single drone are provided in the repository. </p>
+
+<div style="text-align: center;">
+  <img src="imgs/uml.png" width="700"></div><br>
+
+Current UML FOR RUTH:
+//www.plantuml.com/plantuml/png/VLDHRzem47xth_3ZXfI_K1N6Dl50MnKwbIVBn0VnwlWYso5YMV_xpd4y258h8JX_zztvky_7lG_IXROsh3JIUxu1wz6TDq46wDdHu5wQ9_J039PZv0VACqYbxT6pa_PwR-1n_nlA48yAy0U0OcsZP80lNzaHWaX5mgKg0j_PUECMZC6UpMQpRQKzfu_a1Zjku0I6Tqus3JZU0LTQSOk181s0wDGYz_ZvikhVnvY4bK6ZNTcc3OIEy3TiRL3OsGkqwQIhUuRKNmOIXoTmJgieEM4nggHL1eHoQ4643aM9nj38QA-7MCPqpxxRjkQ3TynH7TQYenzmH2qhADz400Cr17ScH9vGAx4dNKeEGA0QVq1NY-Ix23ZUwnjPPbctKdrqDquYQa9hiE5Q_qNY0YfvqkXwvbgxhHosnofxvGTYugt7BZb7_1XTCHO6opTwnOyPIpXe2-epOhvD--ZbarHhsVJiLQnN3sBn-FAmd3_lud7-UZdkfjdTD5l_RxMfz25SxlWLLt9kfJd_0HhVe5JabG8JnrOGe0m2q_ecQRHEl2ZkqeBaqtInCdhPApOiCYzCyVSkxGCRwdcXYWmCtmcu_gDbdE297natbCZFntAGw3UFDStU-3_DVlH8x5fP94xzkqtVIcRtO5LRcty0
+
+<p>Further details about the design are detailed in the dropdowns below.</p>
+
+<details><summary>Graphic User Interface (GUI)</summary><br>
+  <p>inTellogence uses <a href="https://flet.dev">Flet</a>, a simplified <a href="https://flutter.dev">Flutter</a> model, to build the GUI. Python is currently supported, but Go and C# are <a href="https://flet.dev/roadmap/">coming soon</a>.
+  </p> 
 
 <p>There are two distinct GUI pages. First, the connection page allows you to input device information by running <i>connectivity_page.py.</i> This brings up a connection setup page, where the user can easily input device information for each drone.</p><br> 
 
@@ -309,6 +328,16 @@ Now, in <i>drone.py</i>, find the operate function. In it is a match-case block 
 ```
 Here, dance() could be whatever you want. Just make sure the function isn't blocking (contains no infinite loops)!
 </details>
+
+# Performance Metrics
+TODO - RUTH/ Arvind maybe?
+
+# Recommendations
+TODO
+- improve gui, limit memory usage, add adjustable telemetry displays (i.e. have the gui display location of each drone, or show all the different velocity vectors acting on it)
+- Adjust to make extensible for more than 2 drones, currently the swarm class supports 2 and only 2
+- Add in functionality for task planning
+
 
 # Supplemental Documentation
 

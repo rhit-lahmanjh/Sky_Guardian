@@ -102,7 +102,7 @@ class Drone(djitellopy_edited.Tello):
 
     #region UTILITY FUNCTIONS
 
-    def __randomWander__(self):
+    def random_wander(self):
         if self.wander_counter >= 10:
             self.random_wander_force[0] = rand.randint(-15,15)
             self.random_wander_force[1] = rand.randint(-15,15)
@@ -116,7 +116,7 @@ class Drone(djitellopy_edited.Tello):
         if new_behavior is not None:
             self.behavior = new_behavior
     
-    def __avoidBoundary__(self):
+    def avoid_boundary(self):
         movement_force_magnitude = 1.2
         global_force = np.zeros((3,1))
 
@@ -133,14 +133,14 @@ class Drone(djitellopy_edited.Tello):
         elif self.sensoryState.globalPose[1] > MissionPadMap.Y_MAX_BOUNDARY:
             global_force[1,0] = movement_force_magnitude*(MissionPadMap.Y_MAX_BOUNDARY - self.sensoryState.globalPose[1,0])
         
-        res = self.transformGlobalToDroneSpace(global_force,yaw=yaw)
+        res = self.transform_global_to_drone_space(global_force,yaw=yaw)
 
         if self.DEBUG_PRINTS:
             print(f' Total Boundary Force: X: {res[0]} Y: {res[1]}')
 
         return res
     
-    def transformGlobalToDroneSpace(self,force:np.array((3,1)),yaw = 0):
+    def transform_global_to_drone_space(self,force:np.array((3,1)),yaw = 0):
         globalSpaceForce = force
 
         transformationMatrix = np.array([[math.cos(yaw),-math.sin(yaw),0],
@@ -153,7 +153,7 @@ class Drone(djitellopy_edited.Tello):
         res[0:3] = droneSpaceForce
         return res
     
-    def operatorOverride(self):
+    def operator_override(self):
         # land interrupt
         if(key.is_pressed(self.repo_properties.get("all","D1_LAND_KEY"))) and not self.recently_sent_land:
             self.opState = State.Land
@@ -193,11 +193,11 @@ class Drone(djitellopy_edited.Tello):
     def getPose(self):
         return self.sensoryState.globalPose
     
-    def swarmMovement(self,swarmMovementVector):
+    def set_swarm_movement(self,swarmMovementVector):
         if self.swarm:
             self.swarm_force = swarmMovementVector
 
-    def moveDirection(self,direction = np.array([[0], [0], [0], [0]])):
+    def move_direction(self,direction = np.array([[0], [0], [0], [0]])):
         """Set the speed of the drone based on xyz and yaw
         direction is:
         left/right       : x or element 1 (right +)
@@ -220,41 +220,41 @@ class Drone(djitellopy_edited.Tello):
         return direction
                 
     def rotate_clockwise(self):
-        self.moveDirection([0,0,0,10])
+        self.move_direction([0,0,0,10])
 
     def hover(self):
         self.send_command_with_return('stop')
     #endregion
 
-    def checkTelemetry(self):
+    def check_telemetry(self):
         # Checks the battery charge before takeoff
         if self.opState.Grounded:
-            print("Battery Charge: " + str(self.sensoryState.getSensorReading("bat")))
-            if self.sensoryState.getSensorReading("bat") > 25:
+            print("Battery Charge: " + str(self.sensoryState.get_sensor_reading("bat")))
+            if self.sensoryState.get_sensor_reading("bat") > 25:
                 BatCheck = True
             else:
                 BatCheck = False
                 self.telemetryReason["bat"] = "Battery requires more charging."
 
         if not self.opState.Grounded:
-            print("Battery Charge: " + str(self.sensoryState.getSensorReading("bat")))
-            if self.sensoryState.getSensorReading("bat") > 12:
+            print("Battery Charge: " + str(self.sensoryState.get_sensor_reading("bat")))
+            if self.sensoryState.get_sensor_reading("bat") > 12:
                 BatCheck = True
             else:
                 BatCheck = False
                 self.telemetryReason["bat"] = "Battery charge too low."
 
         # Checks the highest battery temperature before takeoff
-        print("Highest Battery Temperature: " + str(self.sensoryState.getSensorReading("temph")))
-        if self.sensoryState.getSensorReading("temph") < 140:
+        print("Highest Battery Temperature: " + str(self.sensoryState.get_sensor_reading("temph")))
+        if self.sensoryState.get_sensor_reading("temph") < 140:
             TemphCheck = True
         else:
             TemphCheck = False
             self.telemetryReason["temph"] = "Battery temperature too high."
 
         # Checks the baseline low temperature before takeoff
-        print("Average Battery Temperature: " + str(self.sensoryState.getSensorReading("templ")))
-        if self.sensoryState.getSensorReading("templ") < 95:
+        print("Average Battery Temperature: " + str(self.sensoryState.get_sensor_reading("templ")))
+        if self.sensoryState.get_sensor_reading("templ") < 95:
             TemplCheck = True
         else:
             TemplCheck = False
@@ -278,7 +278,7 @@ class Drone(djitellopy_edited.Tello):
         # If the drone is too far from 0 degrees on pitch the takeoff
         # could be unsafe
         # print("Pitch: " + str(self.sensoryState.getSensorReading("pitch")))
-        pitch = abs(self.sensoryState.getSensorReading("pitch"))
+        pitch = abs(self.sensoryState.get_sensor_reading("pitch"))
         if pitch < 15:
             pitchCheck = True
         else:
@@ -289,7 +289,7 @@ class Drone(djitellopy_edited.Tello):
         # If the drone is too far from 0 degrees on roll the takeoff
         # could be unsafe
         # print("Roll: " + str(self.sensoryState.getSensorReading("roll")))
-        roll = abs(self.sensoryState.getSensorReading("roll"))
+        roll = abs(self.sensoryState.get_sensor_reading("roll"))
         if roll < 25:
             rollCheck = True
         else:
@@ -299,7 +299,7 @@ class Drone(djitellopy_edited.Tello):
         # Comment out function as needed until testing can confirm desired threshold value
         # Checks to ensure the drone is at a low enough height to ensure room during takeoff for safe ascent
         # print("Height: " + str(self.sensoryState.getSensorReading("h")))
-        if self.sensoryState.getSensorReading("h") < 90:
+        if self.sensoryState.get_sensor_reading("h") < 90:
             HeightCheck = True
         else:
             HeightCheck = False
@@ -334,7 +334,7 @@ class Drone(djitellopy_edited.Tello):
                     cv2.imshow(self.identifier,self.sensoryState.image)
 
             if not self.swarm:
-                self.operatorOverride()
+                self.operator_override()
 
             print(f"{self.identifier}")
             self.refreshTracker.update()
@@ -346,7 +346,7 @@ class Drone(djitellopy_edited.Tello):
             match self.opState:
                 case State.Grounded:
                     if self.identifier == 'beta':
-                        self.__avoidBoundary__()
+                        self.avoid_boundary()
                     
                     if(self.DEBUG_PRINTS):
                         print('Landed')
@@ -356,7 +356,7 @@ class Drone(djitellopy_edited.Tello):
 
                 case State.Takeoff:
                     if self.WITH_DRONE:
-                        safeToTakeOff = self.checkTelemetry()
+                        safeToTakeOff = self.check_telemetry()
                         if safeToTakeOff:
                             print("Telemetry Checks Successful")
                             print('Taking off') 
@@ -395,11 +395,11 @@ class Drone(djitellopy_edited.Tello):
                 case State.Wander:
                     if self.DEBUG_PRINTS:
                         print("Wandering")
-                    wanderVec = np.add(self.__randomWander__(),self.__avoidBoundary__(),self.swarm_force)
+                    wanderVec = np.add(self.__randomWander__(),self.avoid_boundary(),self.swarm_force)
                     if self.behavior is not None:
                         reactionMovement = self.behavior.runReactions(drone = self, input = self.sensoryState, currentMovement = wanderVec)
                         wanderVec = np.add(wanderVec, reactionMovement)
-                    self.moveDirection(wanderVec)
+                    self.move_direction(wanderVec)
 
                 case State.Hover:
                     if self.WITH_DRONE:
@@ -409,18 +409,18 @@ class Drone(djitellopy_edited.Tello):
 
                 case State.Drift:
                     if self.WITH_DRONE:
-                        wanderVec = self.__avoidBoundary__()
+                        wanderVec = self.avoid_boundary()
                         if self.behavior is not None:
                             reactionMovement = self.behavior.runReactions(drone = self, input = self.sensoryState, currentMovement = wanderVec)
                             wanderVec = np.add(wanderVec, reactionMovement)
-                        self.moveDirection(wanderVec)
+                        self.move_direction(wanderVec)
 
                 case State.NoPad:
                     if self.sensoryState.missionPadVisibleID == -1 and self.is_flying and self.lost_pad_counter <=5:
                         print(f"{self.identifier} lost mission pads")
                         print('Trying to re-acquire pad ID')
                         # Elapse 5 cycles, give the drone time to reacquire Mission Pad ID
-                        self.moveDirection(self.__avoidBoundary__())
+                        self.move_direction(self.avoid_boundary())
                         self.lost_pad_counter += 1
                     elif self.sensoryState.missionPadVisibleID == -1 and self.is_flying:
                         print(f"{self.identifier} could not reacquire mission pad, landing...")
