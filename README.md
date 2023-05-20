@@ -56,9 +56,6 @@ inTellogence has the following features:
 <div style="text-align: center;">
   <img src="imgs/uml.png" width="700"></div><br>
 
-Current UML FOR RUTH:
-//www.plantuml.com/plantuml/png/VLDHRzem47xth_3ZXfI_K1N6Dl50MnKwbIVBn0VnwlWYso5YMV_xpd4y258h8JX_zztvky_7lG_IXROsh3JIUxu1wz6TDq46wDdHu5wQ9_J039PZv0VACqYbxT6pa_PwR-1n_nlA48yAy0U0OcsZP80lNzaHWaX5mgKg0j_PUECMZC6UpMQpRQKzfu_a1Zjku0I6Tqus3JZU0LTQSOk181s0wDGYz_ZvikhVnvY4bK6ZNTcc3OIEy3TiRL3OsGkqwQIhUuRKNmOIXoTmJgieEM4nggHL1eHoQ4643aM9nj38QA-7MCPqpxxRjkQ3TynH7TQYenzmH2qhADz400Cr17ScH9vGAx4dNKeEGA0QVq1NY-Ix23ZUwnjPPbctKdrqDquYQa9hiE5Q_qNY0YfvqkXwvbgxhHosnofxvGTYugt7BZb7_1XTCHO6opTwnOyPIpXe2-epOhvD--ZbarHhsVJiLQnN3sBn-FAmd3_lud7-UZdkfjdTD5l_RxMfz25SxlWLLt9kfJd_0HhVe5JabG8JnrOGe0m2q_ecQRHEl2ZkqeBaqtInCdhPApOiCYzCyVSkxGCRwdcXYWmCtmcu_gDbdE297natbCZFntAGw3UFDStU-3_DVlH8x5fP94xzkqtVIcRtO5LRcty0
-
 <p>Further details about the design are detailed in the dropdowns below.</p>
 
 <details><summary>Graphic User Interface (GUI)</summary><br>
