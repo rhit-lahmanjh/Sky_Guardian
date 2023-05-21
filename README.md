@@ -47,10 +47,6 @@ inTellogence has the following features:
 - [Flet](https://flet.dev)-powered GUI using Python
 - Easy-to-understand documentation
 
-Quantitative Metrics:
-- Computer Vision model inference: 90 ms
-- Average Loop Rate: 6 Hz
-
 If you are interested in learning about the development of our features based off of the projected needs of our "Users", feel free to check out the Software Requirements materials in <a href=#supplemental-documentation>Supplemental Documentation</a>.
 
 ## System Overview
@@ -330,7 +326,9 @@ Here, dance() could be whatever you want. Just make sure the function isn't bloc
 </details>
 
 # Performance Metrics
-TODO - RUTH/ Arvind maybe?
+Quantitative Metrics:
+- Computer Vision model inference: 90 ms
+- Average Loop Rate: 6 Hz
 
 # Recommendations
 The following recommendations present valuable avenues for enhancing the capabilities and functionality of our project, allowing for future improvements and expanded possibilities:
