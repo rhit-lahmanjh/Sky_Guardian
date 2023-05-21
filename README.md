@@ -48,7 +48,7 @@ inTellogence has the following features:
 - Easy-to-understand documentation
 
 Quantitative Metrics:
-- Copmuter Vision model inference: 90 ms
+- Computer Vision model inference: 90 ms
 - Average Loop Rate: 6 Hz
 
 If you are interested in learning about the development of our features based off of the projected needs of our "Users", feel free to check out the Software Requirements materials in <a href=#supplemental-documentation>Supplemental Documentation</a>.
