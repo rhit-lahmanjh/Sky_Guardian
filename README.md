@@ -35,8 +35,8 @@
 # Introduction
 <p>InTellogence is a codebase that incorporates autonomous navigation features, computer vision capabilities, centralized control via a router, a custom user interface, and functional safety engineering concepts. 
 This is written for students who have at least a basic understanding of python programming and would like to learn more about concepts within the realms of various drone capabilities.
-The best way to use this repository is by forking a copy over and running the user interface file. From there the students can use debugger to see the steps that the program executes in the codebase.
-Once the user attains a good understanding of the codebase, they can begin to create their own features for their drones.
+The best way to use this repository is by forking a copy over and following the setup steps covered in <a href=#getting-started> Getting Started</a>. Please also take some time to peruse this document. Due to project requirements, this ReadMe contains a lot more information about project structure than most.
+Once the user attains a good understanding of the codebase and have read through the <a href=#examples>examples</a>, they can begin to create their own behaviors and states.
 </p>
 
 ## Features
