@@ -37,8 +37,6 @@ TODO - maybe give more of a blurb about who this is written for, and what skill 
 
 ## Needs and Features
 
-TODO add section about Needs/Quantitative Metrics I Guess - RUTH
-
 inTellogence has the following features:
 - Ability to control 1 or 2 drones through a router
 - Use of Tello Mission Pads to keep the drone within a constrained airspace
@@ -49,6 +47,11 @@ inTellogence has the following features:
 - [Flet](https://flet.dev)-powered GUI using Python
 - Easy-to-understand documentation
 
+Quantitative Metrics:
+- Copmuter Vision model inference: 90 ms
+- Average Loop Rate: 6 Hz
+
+If you are interested in learning about our Software Requirements process, inlcuding the development of our projected Users, Needs, and Necessary features, feel free to check out Software Requirements in <a href=#supplemental-documentation>Supplemental Documentation</a>.
 
 ## System Overview
 <p>inTellogence forms a wrapper around the low level Tello class, from the <a href=https://github.com/damiafuentes/DJITelloPy>DJITelloPy</a> library, with some minor edits to the source code. Otherwise the structure of our repository can be seen in the abbreviated UML below. GUI classes are optional, and main files to run with the gui, with a swarm, and with a single drone are provided in the repository. </p>
