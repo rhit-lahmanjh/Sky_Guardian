@@ -18,7 +18,7 @@
     - [Environment Setup](#environment-setup)
   - [Mission Pad Setup](#mission-pad-setup)
 - [Examples](#examples)
-- [Performance Metrics](#performance-metrics)
+- [Performance](#performance)
 - [Recommendations](#recommendations)
 - [Supplemental Documentation](#supplemental-documentation)
 - [Troublehooting resources](#troublehooting-resources)
@@ -327,12 +327,34 @@ Now, in <i>drone.py</i>, find the operate function. In it is a match-case block 
       self.opState = State.NextState #pseudocode
 ```
 Here, dance() could be whatever you want. Just make sure the function isn't blocking (contains no infinite loops)!
-</details>
+</details><br>
 
-# Performance Metrics
-Quantitative Metrics:
-- Computer Vision model inference: 90 ms
-- Average Loop Rate: 6 Hz
+# Performance
+<p>It's easy to adjust the size of the YOLO model being used, via the <i>repo.properties</i> file. Using a Lenovo Thinkpad P1, with Nvidia Quadro P1000, we saw the following speeds for 1 drone:
+
+YOLOv8n:
+- Inference time: ~40 ms
+- Average Loop Rate: ~7.5 Hz
+
+YOLOv8s:
+- Inference time: ~55 ms
+- Average Loop Rate: ~7.3 Hz
+
+YOLOv8m:
+- Inference time: ~85 ms
+- Average Loop Rate: ~6.2 Hz
+
+YOLOv8l:
+- Inference time: ~145 ms
+- Average Loop Rate: ~4.3 Hz
+
+YOLOv8x:
+- Inference time: ~235 ms
+- Average Loop Rate: ~3 Hz
+
+When flying more than 1 drone, it's advisable to use a smaller model, as all computation occurs in series.
+
+</p><br>
 
 # Recommendations
 The following recommendations present valuable avenues for enhancing the capabilities and functionality of our project, allowing for future improvements and expanded possibilities:
