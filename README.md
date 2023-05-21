@@ -33,7 +33,11 @@
 </div>
 
 # Introduction
-TODO - maybe give more of a blurb about who this is written for, and what skill level you should be at, how to best use it. - Kirk
+<p>InTellogence is a codebase that incorporates autonomous navigation features, computer vision capabilities, centralized control via a router, a custom user interface, and functional safety engineering concepts. 
+This is written for students who have at least a basic understanding of python programming and would like to learn more about concepts within the realms of various drone capabilities.
+The best way to use this repository is by forking a copy over and running the user interface file. From there the students can use debugger to see the steps that the program executes in the codebase.
+Once the user attains a good understanding of the codebase, they can begin to create their own features for their drones.
+</p>
 
 ## Features
 
