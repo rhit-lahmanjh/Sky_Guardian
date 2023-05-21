@@ -8,7 +8,7 @@
 - [Table of Contents](#table-of-contents)
 - [About](#about)
 - [Introduction](#introduction)
-  - [Needs and Features](#needs-and-features)
+  - [Features](#features)
   - [System Overview](#system-overview)
 - [Getting Started](#getting-started)
   - [Router and Drone Connection](#router-and-drone-connection)
@@ -347,9 +347,6 @@ The following recommendations present valuable avenues for enhancing the capabil
 
 5. Task Planning Functionality: Incorporating task planning capabilities into the project would enable automated mission execution and optimize drone coordination. Implementing algorithms or frameworks for task allocation, path planning, or collaborative decision-making would enhance the project's ability to handle complex missions efficiently.
 
-6. ESP32 Microcontroller Integration: Introducing an ESP32 microcontroller and enabling independent computation on each drone opens up possibilities for decentralized control and distributed decision-making. This integration would facilitate autonomous and intelligent behavior on individual drones, enhancing their capabilities and enabling more sophisticated swarm behaviors.
-
-
 
 # Supplemental Documentation
 
@@ -361,70 +358,7 @@ The following recommendations present valuable avenues for enhancing the capabil
 
 [Software Requirements & Evidence](Ref/SFQ_reference.pdf)
 
-
-<details><summary>Hazard Analysis and Risk Assessment</summary>
-
-The HARA consists of the following steps:
-<details><summary><b>Assumptions</b></summary>
-
-<br>
-Assumptions are created on how terminology is used and about the environment the product is in.
-<br> <br>
-<p>For this project, an example assumption is that the primary obstacles to be avoided will be stationary furniture and walls along with the users of the drones in the testing room.
-<br>
-</details> 
-
-<details><summary><b>Existing External Mitigating Measures</b></summary>
-
-<br>
-These are risk reducing factors that are already present in an environment. They exist independently of the systems.
-<br>
-For this project, to prevent the drone from hitting people, the only person(s) that can be present in the testing room are the drone operators. This mitigating measure is not in any drone control systems.<br><br>
-</details> 
-
-<details><summary><b>Operational Situations</b></summary>
-
-<br>
-These are the scenarios that the designers expect their product to be in regularly while it is operating, active, or in use. The designers will come up with ‘Considered Situational Attributes’ which are guide words that describe ‘motion’, ‘mode’, ‘obstacle exposure’, and ‘control’.
-</details> 
-
-<details><summary><b>Guide words</b></summary>
-
-<br>
-In Functional Safety, guide words are created to produce operational scenarios. For this project some of our guide words were as follows: Mode = Launched, Motion = Forward, Control = Independent (not in swarm configuration), Obstacle Exposure = ‘Static’. An example operational scenario is ‘a single independent drone is launched and in a forward motion surveying a space with static objects.’
-</details> 
-
-<details>
-<summary><b>Hazard List</b></summary>
-
-<br>
-List of potential hazards and their type pulled from a list in the <a href=https://www.cencenelec.eu/media/CEN-CENELEC/Areas%20of%20Work/CENELEC%20sectors/Mechanical%20and%20Machines/Documents/Quicklinks/eniso12100relationmachinerydirective.pdf>ISO12100</a> standard. Relevant Mechanical Hazards for the project include:
-<li> Impact due to collision with stationary object</li>
-<li> Impact due to collision with moving object</li>
-</details> 
-
-<details>
-<summary><b>Hazardous Operation</b></summary>
-<br>
-Hazardous Operation combines Tasks and Functions along with suggested guidewords pulled from the <a href=https://www.nhtsa.gov/sites/nhtsa.gov/files/documents/13498a_812_573_alcsystemreport.pdf>SAEJ2980</a> standard to create potential resulting malfunctions. The resulting malfunctions constitute Hazardous Operation.
-In this project, when the ‘Automated drone(s) is exploring’ an environment ‘as intended’, there is hazard exposure do to obstacles that are present in the environment. The resulting malfunction is an errant flight path if a collision occurs.<br>
-</details> 
-
-<details>
-<summary><b>Hazardous Events</b></summary>
-
-<br>
-Hazardous events combines Hazardous Operation and Operational Situation to describe the Hazardous Event that needs to be mitigated. 
-In this project when the ‘Automated drone(s) is exploring’ an environment ‘as intended’, and there is hazard exposure due to obstacles that are present in the environment while ‘a single independent drone is launched and in a forward motion surveying a space with static objects’, the hazardous event is that the drone or operator is at risk of being hit by the drone should a malfunction occur because of the collision. 
-</details> 
-
-<details><summary><b>Risk Reduction Measure</b></summary>
-
-<br>
-These are the safety features, which could either be design based or policy/procedural based, that are implemented to reduce the HARA line item to a lower risk rating per the ASIL risk rating chart.
-For this project, we utilized the Tello Mission Pads to constrain the drone to an airspace, and built a netted cage for redundancy, as the basis for collision-based Risk Reduction Measures that lowered our SIL1 rating down to SIL0.
-</details> 
-</details>
+[HARA](Ref/HARA.pdf)
 
 # Troublehooting resources
 + [Tello Drone User Manual](https://dl-cdn.ryzerobotics.com/downloads/Tello/Tello%20User%20Manual%20v1.4.pdf)
